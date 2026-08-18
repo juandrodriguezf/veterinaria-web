@@ -1,0 +1,48 @@
+/* Estilo general de la página siendo (#0f1512) el color del fondo principal
+ y el color de texto claro (#dee4df) */
+body {
+        background-color: #0f1512;
+        color: #dee4df;
+}
+        
+/* Estado base del header transparente
+.glass-header: Al cargar la página el header es transparente. Define la transición suave de 0.3s
+para que el cambio de fondo y borde (al hacer scroll) se anime en lugar de aplicarse bruscamente. */
+.glass-header {
+        transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Estado del header al hacer scroll
+.glass-header.scrolled: Se activa cuando el usuario hace scroll (agregada por js/main.js).
+Aplica un fondo oscuro semi transparente con desenfoque de vidrio (backdrop-filter: blur)
+y un borde inferior sutil para que el contenido se deslice por debajo y el header se diferencie del fondo. */
+.glass-header.scrolled { 
+        background-color: rgba(15, 21, 18, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hover de las tarjetas de la sección QUÉ HACEMOS
+.card-hover:hover: Al pasar el cursor sobre las 3 tarjetas de servicios pinta el borde de verde menta
+(#81F0CA) y eleva la tarjeta 4px hacia arriba (transform: translateY) para dar una sensación de flotación. */
+.card-hover:hover {
+        border-color: #81F0CA;
+        transform: translateY(-4px);
+}
+
+.btn-primary{
+        border-radius: 35px;
+}
+
+.btn-secondary{
+        border-radius: 35px;
+}
+
+/* Hover de los botones principales
+.btn-primary:hover: Al pasar el cursor sobre los botones de CTA (Book Appointment, AGENDA UNA CITA)
+los agranda sutilmente (scale 1.02) y les añade un brillo interior verde menta
+(box-shadow inset) para reforzar la acción principal. */
+.btn-primary:hover {
+        transform: scale(1.02);
+        box-shadow: inset 0 0 10px rgba(129, 240, 202, 0.5);
+}
