@@ -38,6 +38,6 @@ Abre `app/index.html` en el navegador o usa cualquier servidor estático (por ej
 
 - HTML5
 - CSS3
-- JavaScript (vanilla)
-- Tailwind CSS (CDN con configuración personalizada)
+- JavaScript
+- Tailwind CSS
 - Google Fonts
