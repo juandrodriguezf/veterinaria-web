@@ -10,86 +10,31 @@
 <script id="tailwind-config">
 // Configuración personalizada de Tailwind CSS mediante el script ejecutable en el navegador
 tailwind.config = {
-  // Activa el modo oscuro si está la clase CSS dark en el elemento <html>
-  darkMode: "class",
   theme: {
     // extend permite agregar nuevas reglas al tema por defecto sin sobrescribir las preexistentes de Tailwind
     extend: {
       // Paleta de colores usando matieral design
       "colors": {
-        // Colores para estados de error y alertas
-        //documentacion: https://m3.material.io/styles/color/roles
-        "error": "#ffb4ab",               //Mensajes de validación fallida, bordes de entradas con error o alertas de emergencia médica.
-        "error-container": "#93000a",     //Fondo de banners de alerta urgentes o badges de alta prioridad.
-        "on-error": "#690005",           // Texto que va sobre un fondo error
-        "on-error-container": "#ffdad6", // Texto o ícono claro que va dentro de un error-container oscuro.
-
         /* Colores primarios
         [Rol] define el fondo de un elemento.
         On-[Rol] define el texto o ícono que va encima del fondo
         */ 
         "primary": "#e1fff1",                  // Enlaces activos del menú, indicador inferior del link actual y logo del footer.
-        "primary-container": "#81f0ca",        // Contenedor destacado para badges, botones principales o tarjetas especiales.
-        "primary-fixed": "#88f7d1",            // Paneles destacados que mantienen el color verde menta fijo sin importar si cambia el tema.
-        "primary-fixed-dim": "#6bdab5",        // Variación más suave/oscura de fondos menta fijos para estados hover.
-        "on-primary": "#00382a",               // Texto o íconos oscuros que van sobre un fondo primary cmo por ejemplo los botones principales
-        "on-primary-container": "#006e54",     // Texto sobre contenedores color verde menta brillante.
-        "on-primary-fixed": "#002117",         // Texto oscuro sobre superficies primary-fixed.
-        "on-primary-fixed-variant": "#00513e", // Texto o íconos secundarios sobre superficies primary-fixed.
-        "inverse-primary": "#006c53",          // Elementos destacados en componentes como notificaciones emergentes.
         "mint-accent": "#81F0CA", // Color verde brillante utilizado en botones y destacados como el botón 'Book Appointment', 'AGENDA UNA CITA', bordes de botones secundarios, títulos destacados, ícono de hospitalización y número '01' del timeline.
-
-        // Colores secundarios 
-        "secondary": "#c4c7c8",                    // Botones secundarios deshabilitados, bordes neutros o texto complementario.
-        "secondary-container": "#464a4b",          // Fondo de tarjetas o chips secundarios de menor importancia visual.
-        "secondary-fixed": "#e0e3e4",              // Contenedores secundarios que no se mantienen fijos al cambio de tema.
-        "secondary-fixed-dim": "#c4c7c8",          // Versión mas oscurita de contenedores secundarios fijos.
-        "on-secondary": "#2d3132",                // Texto oscuro sobre fondos secondary.
-        "on-secondary-container": "#b6b9ba",      // Texto sobre fondos secondary-container.
-        "on-secondary-fixed": "#181c1d",          // Texto oscuro sobre superficies secondary-fixed.
-        "on-secondary-fixed-variant": "#434748",  // Texto secundario sobre superficies 'secondary-fixed'.
-        
-        // Colores terciarios
-        "tertiary": "#f4f9fb",                    //  Acentos sutiles en tarjetas, áreas de código o resaltados
-        "tertiary-container": "#d8dcdf",          //  Fondo de contenedores informativos menos informativos.
-        "tertiary-fixed": "#dfe3e6",              //  Contenedores terciarios fijos.
-        "tertiary-fixed-dim": "#c3c7ca",          //  Versión atenuada de contenedores terciarios fijos.
-        "on-tertiary": "#2c3133",                // Texto sobre superficies tertiary.
-        "on-tertiary-container": "#5c6163",      // Texto sobre tertiary-container.
-        "on-tertiary-fixed": "#171c1e",          // Texto sobre tertiary-fixed.
-        "on-tertiary-fixed-variant": "#42484a",  // Texto secundario sobre tertiary-fixed.
 
         // Superficies, fondos y contenedores (Para profundidad en modo oscuro)
         "background": "#0f1512",               // Fondo principal de la web contenedor general de la página.
-        "surface": "#0f1512",                  // Superficie base, fondo base de secciones principales.
-        "surface-dim": "#0f1512",              // Áreas de fondo que requieren menor brillo.
-        "surface-bright": "#353a37",           // Áreas de fondo iluminadas o tarjetas con brillo suave.
         "surface-elevated": "#1A1F21",         // para tarjetas con elevación visual como las 3 tarjetas de la sección QUÉ HACEMOS.
-        "surface-tint": "#6bdab5",             // color superpuesto en capas elevadas.
-        "surface-variant": "#303633",          // Variación de fondo para inputs de formulario o divisores de tarjetas.
-        "surface-container-lowest": "#0a0f0d", // El tono más oscuro para capas profundas como áreas muy hundidas.
-        "surface-container-low": "#171d1a",    // Fondo para secciones secundarias.
-        "surface-container": "#1b211e",        // Contenedores estándar dentro de la interfaz.
-        "surface-container-high": "#252b28",   // Tarjetas o menús desplegables sobrepuestos.
-        "surface-container-highest": "#303633",// Elementos flotantes con la mayor elevación visual.
-        "inverse-surface": "#dee4df",          // Fondos claros que aparecen dentro del modo oscuro.
-        "inverse-on-surface": "#2c322f",      // Texto oscuro dentro de elementos inverse-surface.
         "deep-carbon": "#0B0F10",              // color oscuro para el footer y elementos base como el <footer>, círculos numéricos del timeline 01-04 y estado base del header).
 
         // Textos y Bordes
-        "text-primary": "#FFFFFF",             // Texto blanco puro para títulos como los títulos de sección 'QUÉ HACEMOS', 'CÓMO FUNCIONA' y encabezados de tarjetas.
         "text-secondary": "#8E9192",           // Texto gris para párrafos o elementos secundarios como subtítulos, descripciones de tarjetas de servicios, textos descriptivos del timeline y enlaces del footer.
-        "on-background": "#dee4df",            // Texto sobre el fondo principal como el cuerpo del texto en <body>.
-        "on-surface": "#dee4df",               // Texto sobre superficies estándar, el texto dentro de contenedores estándar.
-        "on-surface-variant": "#bccac2",       // Texto sobre superficies variantes como links, submenús por ejemplo los enlaces de navegación superior en el Header y botón Log In.
-        "outline": "#87948d",                  // Color para bordes visibles como bordes de inputs de formulario y divisores principales.
-        "outline-variant": "#3d4944"           // Color para bordes sutiles o divisores secundarios.
+        "on-surface-variant": "#bccac2"        // Texto sobre superficies variantes como links, submenús por ejemplo los enlaces de navegación superior en el Header y botón Log In.
         },
 
       //Bordes redondeados
       "borderRadius": {
         "DEFAULT": "0.25rem", // Radio por defecto = 4px, se usa en el boton de book appointment y otros
-        "lg": "0.5rem",       // Esquinas medianas = 8px
         "xl": "0.75rem",      // Esquinas grandes = 12px, se usa en las 3 tarjetas
         "full": "9999px"      // Redondeo circular completo, se usa para los circulos del timeline
       },
@@ -106,7 +51,6 @@ tailwind.config = {
       // Tipografias
       "fontFamily": {
         "headline-lg": ["Bricolage Grotesque"],        // Para títulos grandes
-        "headline-lg-mobile": ["Bricolage Grotesque"], // Para títulos móviles
         "headline-md": ["Bricolage Grotesque"],        // Para títulos medianos
         "display-xl": ["Bricolage Grotesque"],         // Para el título principal
         "body-lg": ["Hanken Grotesk"],                 // Para texto de cuerpo grande
@@ -131,14 +75,6 @@ tailwind.config = {
           {
             "lineHeight": "72px",
             "letterSpacing": "-0.02em",
-            "fontWeight": "800"
-          }
-        ],
-        // Título de sección para pantallas móviles, text-headline-lg-mobile
-        "headline-lg-mobile": [
-          "40px",
-          {
-            "lineHeight": "48px",
             "fontWeight": "800"
           }
         ],
@@ -216,7 +152,7 @@ tailwind.config = {
                                         w-auto: Ajusta el ancho automáticamente según la altura definida para evitar deformaciones.
                                         object-contain: Asegura que la imagen mantenga su relación de aspecto original dentro del área delimitada sin recortarse ni estirarse.
                                         -->
-                                        <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="C:\Users\PC\Github\Vetopia\app\images\logo_Vetopia_sinFondo.png"/>
+                                        <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="images/logo_Vetopia_sinFondo.png"/>
                                 </a>
 
                                 <!-- Menu de navegacion principal
