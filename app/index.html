@@ -10,86 +10,32 @@
 <script id="tailwind-config">
 // Configuración personalizada de Tailwind CSS mediante el script ejecutable en el navegador
 tailwind.config = {
-  // Activa el modo oscuro si está la clase CSS dark en el elemento <html>
-  darkMode: "class",
   theme: {
     // extend permite agregar nuevas reglas al tema por defecto sin sobrescribir las preexistentes de Tailwind
     extend: {
       // Paleta de colores usando matieral design
       "colors": {
-        // Colores para estados de error y alertas
-        //documentacion: https://m3.material.io/styles/color/roles
-        "error": "#ffb4ab",               //Mensajes de validación fallida, bordes de entradas con error o alertas de emergencia médica.
-        "error-container": "#93000a",     //Fondo de banners de alerta urgentes o badges de alta prioridad.
-        "on-error": "#690005",           // Texto que va sobre un fondo error
-        "on-error-container": "#ffdad6", // Texto o ícono claro que va dentro de un error-container oscuro.
-
         /* Colores primarios
         [Rol] define el fondo de un elemento.
         On-[Rol] define el texto o ícono que va encima del fondo
         */ 
         "primary": "#e1fff1",                  // Enlaces activos del menú, indicador inferior del link actual y logo del footer.
-        "primary-container": "#81f0ca",        // Contenedor destacado para badges, botones principales o tarjetas especiales.
-        "primary-fixed": "#88f7d1",            // Paneles destacados que mantienen el color verde menta fijo sin importar si cambia el tema.
-        "primary-fixed-dim": "#6bdab5",        // Variación más suave/oscura de fondos menta fijos para estados hover.
-        "on-primary": "#00382a",               // Texto o íconos oscuros que van sobre un fondo primary cmo por ejemplo los botones principales
-        "on-primary-container": "#006e54",     // Texto sobre contenedores color verde menta brillante.
-        "on-primary-fixed": "#002117",         // Texto oscuro sobre superficies primary-fixed.
-        "on-primary-fixed-variant": "#00513e", // Texto o íconos secundarios sobre superficies primary-fixed.
-        "inverse-primary": "#006c53",          // Elementos destacados en componentes como notificaciones emergentes.
         "mint-accent": "#81F0CA", // Color verde brillante utilizado en botones y destacados como el botón 'Book Appointment', 'AGENDA UNA CITA', bordes de botones secundarios, títulos destacados, ícono de hospitalización y número '01' del timeline.
-
-        // Colores secundarios 
-        "secondary": "#c4c7c8",                    // Botones secundarios deshabilitados, bordes neutros o texto complementario.
-        "secondary-container": "#464a4b",          // Fondo de tarjetas o chips secundarios de menor importancia visual.
-        "secondary-fixed": "#e0e3e4",              // Contenedores secundarios que no se mantienen fijos al cambio de tema.
-        "secondary-fixed-dim": "#c4c7c8",          // Versión mas oscurita de contenedores secundarios fijos.
-        "on-secondary": "#2d3132",                // Texto oscuro sobre fondos secondary.
-        "on-secondary-container": "#b6b9ba",      // Texto sobre fondos secondary-container.
-        "on-secondary-fixed": "#181c1d",          // Texto oscuro sobre superficies secondary-fixed.
-        "on-secondary-fixed-variant": "#434748",  // Texto secundario sobre superficies 'secondary-fixed'.
-        
-        // Colores terciarios
-        "tertiary": "#f4f9fb",                    //  Acentos sutiles en tarjetas, áreas de código o resaltados
-        "tertiary-container": "#d8dcdf",          //  Fondo de contenedores informativos menos informativos.
-        "tertiary-fixed": "#dfe3e6",              //  Contenedores terciarios fijos.
-        "tertiary-fixed-dim": "#c3c7ca",          //  Versión atenuada de contenedores terciarios fijos.
-        "on-tertiary": "#2c3133",                // Texto sobre superficies tertiary.
-        "on-tertiary-container": "#5c6163",      // Texto sobre tertiary-container.
-        "on-tertiary-fixed": "#171c1e",          // Texto sobre tertiary-fixed.
-        "on-tertiary-fixed-variant": "#42484a",  // Texto secundario sobre tertiary-fixed.
 
         // Superficies, fondos y contenedores (Para profundidad en modo oscuro)
         "background": "#0f1512",               // Fondo principal de la web contenedor general de la página.
-        "surface": "#0f1512",                  // Superficie base, fondo base de secciones principales.
-        "surface-dim": "#0f1512",              // Áreas de fondo que requieren menor brillo.
-        "surface-bright": "#353a37",           // Áreas de fondo iluminadas o tarjetas con brillo suave.
         "surface-elevated": "#1A1F21",         // para tarjetas con elevación visual como las 3 tarjetas de la sección QUÉ HACEMOS.
-        "surface-tint": "#6bdab5",             // color superpuesto en capas elevadas.
-        "surface-variant": "#303633",          // Variación de fondo para inputs de formulario o divisores de tarjetas.
-        "surface-container-lowest": "#0a0f0d", // El tono más oscuro para capas profundas como áreas muy hundidas.
-        "surface-container-low": "#171d1a",    // Fondo para secciones secundarias.
-        "surface-container": "#1b211e",        // Contenedores estándar dentro de la interfaz.
-        "surface-container-high": "#252b28",   // Tarjetas o menús desplegables sobrepuestos.
-        "surface-container-highest": "#303633",// Elementos flotantes con la mayor elevación visual.
-        "inverse-surface": "#dee4df",          // Fondos claros que aparecen dentro del modo oscuro.
-        "inverse-on-surface": "#2c322f",      // Texto oscuro dentro de elementos inverse-surface.
+        "surface-cream": "#d3d3d3",            // Fondo claro crema para las 3 tarjetas de la sección QUÉ HACEMOS.
         "deep-carbon": "#0B0F10",              // color oscuro para el footer y elementos base como el <footer>, círculos numéricos del timeline 01-04 y estado base del header).
 
         // Textos y Bordes
-        "text-primary": "#FFFFFF",             // Texto blanco puro para títulos como los títulos de sección 'QUÉ HACEMOS', 'CÓMO FUNCIONA' y encabezados de tarjetas.
-        "text-secondary": "#8E9192",           // Texto gris para párrafos o elementos secundarios como subtítulos, descripciones de tarjetas de servicios, textos descriptivos del timeline y enlaces del footer.
-        "on-background": "#dee4df",            // Texto sobre el fondo principal como el cuerpo del texto en <body>.
-        "on-surface": "#dee4df",               // Texto sobre superficies estándar, el texto dentro de contenedores estándar.
-        "on-surface-variant": "#bccac2",       // Texto sobre superficies variantes como links, submenús por ejemplo los enlaces de navegación superior en el Header y botón Log In.
-        "outline": "#87948d",                  // Color para bordes visibles como bordes de inputs de formulario y divisores principales.
-        "outline-variant": "#3d4944"           // Color para bordes sutiles o divisores secundarios.
+        "text-secondary": "#0f1512",           // Texto gris oscuro para párrafos y elementos secundarios sobre fondos claros.
+        "on-surface-variant": "#bccac2"        // Texto sobre superficies variantes como links, submenús por ejemplo los enlaces de navegación superior en el Header y botón Log In.
         },
 
       //Bordes redondeados
       "borderRadius": {
         "DEFAULT": "0.25rem", // Radio por defecto = 4px, se usa en el boton de book appointment y otros
-        "lg": "0.5rem",       // Esquinas medianas = 8px
         "xl": "0.75rem",      // Esquinas grandes = 12px, se usa en las 3 tarjetas
         "full": "9999px"      // Redondeo circular completo, se usa para los circulos del timeline
       },
@@ -106,7 +52,6 @@ tailwind.config = {
       // Tipografias
       "fontFamily": {
         "headline-lg": ["Bricolage Grotesque"],        // Para títulos grandes
-        "headline-lg-mobile": ["Bricolage Grotesque"], // Para títulos móviles
         "headline-md": ["Bricolage Grotesque"],        // Para títulos medianos
         "display-xl": ["Bricolage Grotesque"],         // Para el título principal
         "body-lg": ["Hanken Grotesk"],                 // Para texto de cuerpo grande
@@ -131,14 +76,6 @@ tailwind.config = {
           {
             "lineHeight": "72px",
             "letterSpacing": "-0.02em",
-            "fontWeight": "800"
-          }
-        ],
-        // Título de sección para pantallas móviles, text-headline-lg-mobile
-        "headline-lg-mobile": [
-          "40px",
-          {
-            "lineHeight": "48px",
             "fontWeight": "800"
           }
         ],
@@ -216,7 +153,7 @@ tailwind.config = {
                                         w-auto: Ajusta el ancho automáticamente según la altura definida para evitar deformaciones.
                                         object-contain: Asegura que la imagen mantenga su relación de aspecto original dentro del área delimitada sin recortarse ni estirarse.
                                         -->
-                                        <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="C:\Users\PC\Github\Vetopia\app\images\logo_Vetopia_sinFondo.png"/>
+                                        <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="images/logo_Vetopia.png"/>
                                 </a>
 
                                 <!-- Menu de navegacion principal
@@ -238,10 +175,10 @@ tailwind.config = {
                                         font-bold: Texto en negrita.
                                         border-b-2 border-primary pb-1: Subrayado inferior de 2px en color primario.
                                         -->
-                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#experiencia">Experience</a>
-                                        <a class="text-primary font-bold border-b-2 border-primary pb-1" href="#servicios">Services</a>
+                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#experiencia">Experiencia</a>
+                                        <a class="text-primary font-bold border-b-2 border-primary pb-1" href="#servicios">Servicios</a>
                                         <a class="hover:text-primary transition-colors duration-300 font-medium" href="#timeline">Timeline</a>
-                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#contacto">Contact</a>
+                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#contacto">Contacto</a>
                                 </nav>
                                 <!-- Contenedor de acciones del lado derecho
                                 hidden md:flex: Oculto en móvil, se muestra como Flexbox en pantallas medianas en adelante.
@@ -274,7 +211,7 @@ tailwind.config = {
                                         rounded-DEFAULT: Esquinas redondeadas de 4px.
                                         -->
                                         <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-6 py-3 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300" href="#">
-                                                        Book Appointment
+                                                        Agendar cita
                                         </a>
                                 </div>
                                 <!-- Botón de menú de barras horizaontales (solo móvil)
@@ -286,24 +223,25 @@ tailwind.config = {
                                 </button>
                         </div>
                 </header>
-                <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-32">
+                <main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
                         <!-- Hero Section o seccion titulo -->
                         <!-- Sección principal 
-                        min-h-[80vh]: Altura mínima del 80% de la altura de la pantalla.
+                        min-h-screen: Ocupa al menos el 100% de la altura de la pantalla para que la imagen cubra todo el primer viewport sin dejar franja blanca abajo.
                         flex flex-col justify-center: Centra verticalmente el contenido.
+                        pt-20 md:pt-24: Padding superior para que el texto quede debajo del header fijo (la imagen absoluta no lo respeta y queda pegada al header).
                         relative: Crea el contexto de posicionamiento para la imagen de fondo en absoluto.
                         mb-section-gap: Separación inferior de 160px con la siguiente sección.
                         -->
-                        <section class="min-h-[80vh] flex flex-col justify-center relative mb-section-gap">
+                        <section class="min-h-screen flex flex-col justify-center relative pt-20 md:pt-24 mb-section-gap">
 
-                                <!-- Imagen de fondo
-                                absolute inset-0: Cubre toda la sección.
+                                <!-- Imagen de fondo a ancho completo y responsive
+                                w-screen max-w-none left-1/2 -translate-x-1/2: Rompe el contenedor con margen y ocupa el 100% del ancho de la pantalla centrado, pegada al header.
+                                absolute top-0 bottom-0: No la afecta el padding del section, cubre la sección completa de arriba a abajo.
                                 z-[-1]: Se coloca detrás del contenido de texto.
-                                opacity-40: Imagen al 40% de opacidad.
-                                mix-blend-luminosity: Mezcla la luminosidad de la imagen con el fondo oscuro.
+                                img: min-w-full min-h-full object-cover object-center escala/cubre sin deformarse en cualquier tamaño de pantalla.
                                 -->
-                                <div class="absolute inset-0 z-[-1] opacity-40 mix-blend-luminosity">
-                                        <img class="w-full h-full object-cover rounded-xl border border-white/10" data-alt="A cinematic, high-contrast, moody portrait of a sleek greyhound in a cutting-edge, minimalist futuristic veterinary clinic. Soft glowing mint green LED accents reflect off polished dark surfaces. The lighting is dramatic and directional, highlighting the dog's calm demeanor in a high-tech medical environment." src="images/perro-vetopia.jpg"/>
+                                <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-screen max-w-none z-[-1] overflow-hidden">
+                                        <img class="w-full h-full min-w-full min-h-full object-cover object-center" data-alt="A cinematic, high-contrast, moody portrait of a sleek greyhound in a cutting-edge, minimalist futuristic veterinary clinic. Soft glowing mint green LED accents reflect off polished dark surfaces. The lighting is dramatic and directional, highlighting the dog's calm demeanor in a high-tech medical environment." src="images/gato-header.jpg"/>
                                 </div>
 
                                 <!-- Contenedor del texto del hero
@@ -314,19 +252,12 @@ tailwind.config = {
 
                                         <!-- Título principal
                                         font-display-xl text-display-xl: Tipografía Bricolage Grotesque de 96px con peso 800.
-                                        text-white: Color blanco puro.
+                                        text-white: Color blanco para que se vea sobre la imagen oscura de fondo.
                                         leading-tight: Interlineado ajustado.
                                         -->
-                                        <h1 class="font-display-xl text-display-xl mb-6 text-white leading-tight ml-1.5">PRECISIÓN EN EL<br/><span class="text-mint-accent">CUIDADO ANIMAL</span></h1>
+                                        <h1 class="font-display-xl text-display-xl mb-10 text-white leading-tight ml-1.5">PRECISIÓN EN EL<br/><span class="text-mint-accent text-shadow-mint">CUIDADO ANIMAL</span></h1>
                                         
-                                        <!-- Párrafo descriptivo
-                                        font-body-lg text-body-lg: Tipografía Hanken Grotesk de 20px.
-                                        text-text-secondary: Color gris secundario para el cuerpo de texto.
-                                        mb-10: Margen inferior de 40px.
-                                        max-w-2xl: Ancho máximo de 672px.
-                                        -->
-                                        <p class="font-body-lg text-body-lg text-text-secondary mb-10 max-w-2xl ml-1.5">El futuro de la medicina veterinaria ha llegado. Diagnósticos avanzados, atención personalizada y tecnología de vanguardia para quienes más quieres.</p>
-                                        
+                                        <!-- Párrafo descriptivo eliminado: los botones suben al espacio donde estaba el texto. -->
                                         <!-- Contenedor de botones de acción
                                         flex flex-wrap: Los botones se alinean en fila y, si el espacio es pequeño, bajan a la siguiente línea.
                                         gap-4: Espacio horizontal de 16px entre botones.
@@ -363,48 +294,127 @@ tailwind.config = {
                         -->
                         <section class="mb-section-gap" id="servicios">
 
-                                <!-- Título de sección "QUÉ HACEMOS"
-                                font-headline-lg text-headline-lg: Tipografía Bricolage Grotesque de 64px.
-                                mb-16: Margen inferior de 64px.
-                                El span text-text-secondary resalta "HACEMOS" en gris secundario.
-                                -->
-                                <h2 class="font-headline-lg text-headline-lg mb-16 text-white">QUÉ <span class="text-text-secondary">HACEMOS</span></h2>
-                                
-                                <!-- Grid de 3 tarjetas
-                                grid-cols-1: 1 columna en móvil (tarjetas apiladas).
-                                md:grid-cols-3: 3 columnas en escritorio.
+                                <!-- Contenido de la sección en dos columnas
+                                grid grid-cols-1 md:grid-cols-2: 1 columna en móvil, 2 en escritorio.
                                 gap-gutter: Espacio de 32px entre columnas (definido en la config).
+                                items-center: Centra verticalmente la imagen y el texto.
                                 -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
 
-                                        <!-- Tarjeta "Hospitalización"
-                                        bg-surface-elevated: Fondo de tarjeta elevada definido en la config (#1A1F21).
-                                        border border-white/10: Borde sutil claro para dar relieve.
-                                        rounded-xl: Esquinas de 12px.
-                                        card-hover: Efecto hover que pinta el borde de menta y eleva la tarjeta (definido en <style>).
-                                        flex flex-col: Columna para apilar ícono, título y descripción.
+                                        <!-- Imagen flotante
+                                        order-2 md:order-1: En móvil aparece debajo del texto, en escritorio a la izquierda.
+                                        float-animation: Animación infinita de flotación definida en css/styles.css.
+                                        rounded-3xl: Esquinas grandes de 24px.
                                         -->
-                                        <div class="bg-surface-elevated border border-white/10 rounded-xl p-8 card-hover transition-all duration-500 flex flex-col">
-                                                <!-- Ícono de hospital en color menta con grosor fino (wght 200) -->
-                                                <span class="material-symbols-outlined text-[48px] text-mint-accent mb-6" style="font-variation-settings: 'wght' 200;">local_hospital</span>
-                                                <h3 class="font-headline-md text-headline-md text-white mb-4">Hospitalización</h3>
-                                                <!-- flex-grow: Hace que la descripción ocupe el espacio restante e iguale las alturas de las tarjetas -->
-                                                <p class="text-text-secondary flex-grow">Monitoreo constante 24/7 en instalaciones de última generación diseñadas para la recuperación óptima y el confort absoluto.</p>
+                                        <div class="order-2 md:order-1 relative">
+                                                <img alt="Mascota recibiendo atención veterinaria de última generación" class="float-animation w-full rounded-3xl shadow-2xl object-cover aspect-[2/2]" src="https://i.pinimg.com/736x/52/74/02/52740253b489af1e3a1fd8d0303cf19a.jpg"/>
                                         </div>
-                                        <!-- Tarjeta "Tratamientos Personalizados" (misma estructura que la anterior) -->
-                                        <div class="bg-surface-elevated border border-white/10 rounded-xl p-8 card-hover transition-all duration-500 flex flex-col">
-                                                <!-- Ícono de biotecnología en blanco -->
-                                                <span class="material-symbols-outlined text-[48px] text-white mb-6" style="font-variation-settings: 'wght' 200;">biotech</span>
-                                                <h3 class="font-headline-md text-headline-md text-white mb-4">Tratamientos Personalizados</h3>
-                                                <p class="text-text-secondary flex-grow">Planes de salud basados en perfiles genéticos y biométricos precisos, asegurando la intervención más efectiva posible.</p>
+
+                                        <!-- Texto unificado
+                                        order-1 md:order-2: En móvil aparece arriba, en escritorio a la derecha.
+                                        -->
+                                        <div class="order-1 md:order-2">
+                                                <!-- Título de sección "QUÉ HACEMOS"
+                                                font-headline-lg text-headline-lg: Tipografía Bricolage Grotesque de 64px.
+                                                El span text-mint-accent resalta "HACEMOS" en verde con sombra.
+                                                -->
+                                                <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">QUÉ <span class="text-mint-accent text-shadow-mint">HACEMOS</span></h2>
+                                                <!-- Párrafo que unifica la información de las antiguas tarjetas -->
+                                                <p class="text-body-lg text-text-secondary">
+                                                        En Vetopia ofrecemos una atención integral y de vanguardia para tu mascota: hospitalización con monitoreo constante 24/7 en instalaciones de última generación, planes de tratamiento personalizados basados en perfiles genéticos y biométricos precisos, y acceso instantáneo a los signos vitales y al progreso de tu mascota a través de nuestra plataforma digital integrada.
+                                                </p>
                                         </div>
-                                        <!-- Tarjeta "Monitoreo en Tiempo Real" (misma estructura que las anteriores) -->
-                                        <div class="bg-surface-elevated border border-white/10 rounded-xl p-8 card-hover transition-all duration-500 flex flex-col">
-                                                <!-- Ícono de monitor cardiaco en blanco -->
-                                                <span class="material-symbols-outlined text-[48px] text-white mb-6" style="font-variation-settings: 'wght' 200;">monitor_heart</span>
-                                                <h3 class="font-headline-md text-headline-md text-white mb-4">Monitoreo en Tiempo Real</h3>
-                                                <p class="text-text-secondary flex-grow">Acceso instantáneo a los signos vitales y progreso de tu mascota a través de nuestra plataforma digital integrada.</p>
+                                </div>
+                        </section>
+                        <!-- Sección "Nuestro Equipo". id="equipo" con carrusel de imágenes de los veterinarios.
+                        mb-section-gap: Separación vertical de 160px con las secciones contiguas.
+                        -->
+                        <section class="mb-section-gap" id="equipo">
+                                <!-- Título de sección "NUESTRO EQUIPO"
+                                El span text-mint-accent resalta "EQUIPO" en verde con sombra.
+                                -->
+                                <h2 class="font-headline-lg text-headline-lg mb-10 text-deep-carbon">NUESTRO <span class="text-mint-accent text-shadow-mint">EQUIPO</span></h2>
+
+                                <!-- Contenedor del carrusel. relative para posicionar las flechas de navegación.
+                                -->
+                                <div class="relative">
+
+                                        <!-- Vista del carrusel con scroll horizontal y snap
+                                        flex gap-gutter: Los slides se alinean en fila con espacio de 32px.
+                                        overflow-x-auto scroll-smooth: Permite desplazarse horizontalmente con suavidad.
+                                        snap-x snap-mandatory snap-center: Cada tarjeta se detiene centrada al hacer scroll.
+                                        [scrollbar-width:none] + [&::-webkit-scrollbar]:hidden: Oculta la barra de scroll.
+                                        -->
+                                        <div class="flex gap-gutter overflow-x-auto snap-x snap-mandatory scroll-smooth pt-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="team-carousel">
+
+                                                <!-- Tarjeta de veterinario
+                                                snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%]: Tarjeta responsive, se ve 1 en móvil, 2 en tablet y 3 en escritorio.
+                                                -->
+                                                <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
+                                                        <div class="h-64 md:h-80 overflow-hidden">
+                                                                <img alt="Dra. Laura Gómez" class="w-full h-full object-cover object-center" src="https://static.wixstatic.com/media/18bd0e_362fbe37c0fa49b9ac549267aef40bc3~mv2.jpg/v1/fill/w_744,h_950,fp_0.64_0.38,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/IMG_2808.jpg"/>
+                                                        </div>
+                                                        <div class="p-6 text-center">
+                                                                <h3 class="font-headline-md text-headline-md text-white mb-1">Dra. Laura Gómez</h3>
+                                                                <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Medicina Veterinaria</p>
+                                                        </div>
+                                                </div>
+                                                <!-- Tarjeta de veterinario -->
+                                                <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
+                                                        <div class="h-64 md:h-80 overflow-hidden">
+                                                                <img alt="Dr. Carlos Ruiz" class="w-full h-full object-cover object-center" src="https://img.magnific.com/psd-premium/veterinario-sonriente-sosteniendo-perro-pequeno_1269612-43094.jpg"/>
+                                                        </div>
+                                                        <div class="p-6 text-center">
+                                                                <h3 class="font-headline-md text-headline-md text-white mb-1">Dr. Carlos Ruiz</h3>
+                                                                <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Veterinario Cirujano</p>
+                                                        </div>
+                                                </div>
+                                                <!-- Tarjeta de veterinario (placeholder) -->
+                                                <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
+                                                        <div class="h-64 md:h-80 overflow-hidden">
+                                                                <img alt="Dra. Ana Torres" class="w-full h-full object-cover object-[center_30%]" src="https://thumbs.dreamstime.com/b/veterinario-y-perro-9461018.jpg"/>
+                                                        </div>
+                                                        <div class="p-6 text-center">
+                                                                <h3 class="font-headline-md text-headline-md text-white mb-1">Dra. Felipe Torres</h3>
+                                                                <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Cardiología veterinaria</p>
+                                                        </div>
+                                                </div>
+                                                <!-- Tarjeta de veterinario (placeholder) -->
+                                                <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
+                                                        <div class="h-64 md:h-80 overflow-hidden">
+                                                                <img alt="Dr. Jorge Méndez" class="w-full h-full object-cover object-[center_30%]" src="https://st2.depositphotos.com/3662505/6206/i/450/depositphotos_62061453-stock-photo-veterinary.jpg"/>
+                                                        </div>
+                                                        <div class="p-6 text-center">
+                                                                <h3 class="font-headline-md text-headline-md text-white mb-1">Dr. Jorge Méndez</h3>
+                                                                <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Dermatología veterinaria</p>
+                                                        </div>
+                                                </div>
+                                                <!-- Tarjeta de veterinario (placeholder) -->
+                                                <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
+                                                        <div class="h-64 md:h-80 overflow-hidden">
+                                                                <img alt="Dra. Sofía Herrera" class="w-full h-full object-cover object-[center_30%]" src="https://img.magnific.com/fotos-premium/medico-veterinario-clinica-veterinaria_1368-127913.jpg"/>
+                                                        </div>
+                                                        <div class="p-6 text-center">
+                                                                <h3 class="font-headline-md text-headline-md text-white mb-1">Dra. Sofía Herrera</h3>
+                                                                <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Nutrición veterinaria</p>
+                                                        </div>
+                                                </div>
                                         </div>
+
+                                        <!-- Flecha anterior
+                                        hidden md:flex: Solo visible en escritorio.
+                                        absolute left-0 top-1/2 -translate-y-1/2: Centrada verticalmente en el borde izquierdo.
+                                        -->
+                                        <button aria-label="Anterior" class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300" id="team-prev">
+                                                <span class="material-symbols-outlined">chevron_left</span>
+                                        </button>
+                                        <!-- Flecha siguiente
+                                        hidden md:flex: Solo visible en escritorio.
+                                        absolute right-0 top-1/2 -translate-y-1/2: Centrada verticalmente en el borde derecho.
+                                        -->
+                                        <button aria-label="Siguiente" class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300" id="team-next">
+                                                <span class="material-symbols-outlined">chevron_right</span>
+                                        </button>
                                 </div>
                         </section>
                         <!-- Sección "CÓMO FUNCIONA". id="timeline" es el destino del enlace "Timeline" del menú.
@@ -412,66 +422,72 @@ tailwind.config = {
                         -->
                         <section class="mb-section-gap" id="timeline">
                                 <!-- Título de sección "CÓMO FUNCIONA"
-                                El span text-text-secondary resalta "FUNCIONA" en gris secundario.
+                                El span text-mint-accent resalta "FUNCIONA" en verde con sombra.
                                 -->
-                                <h2 class="font-headline-lg text-headline-lg mb-16 text-white">CÓMO <span class="text-text-secondary">FUNCIONA</span></h2>
-                                <!-- Contenedor relative del timeline: los elementos absolutos se posicionan respecto a este div. -->
-                                <div class="relative">
+                                <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">CÓMO <span class="text-mint-accent text-shadow-mint">FUNCIONA</span></h2>
+                                <!-- Contenido en dos columnas
+                                grid grid-cols-1 lg:grid-cols-2: 1 columna en móvil, 2 en escritorio.
+                                gap-gutter: Espacio de 32px entre columnas.
+                                items-center: Centra verticalmente el texto y el video.
+                                -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
 
-                                        <!-- Línea horizontal decorativa que une los 4 pasos
-                                        absolute top-1/2: Centrada verticalmente en el contenedor.
-                                        left-0 w-full h-[1px]: Línea de 1px de alto a lo ancho.
-                                        bg-white/10: Color blanco al 10% de opacidad.
-                                        -z-10: Se dibuja detrás de los círculos numerados.
-                                        hidden md:block: Solo visible en escritorio.
-                                        -->
-                                        <div class="absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -z-10 hidden md:block"></div>
+                                        <!-- Texto explicativo a la izquierda -->
+                                        <div>
+<p class="text-body-lg text-text-secondary mb-3">
+                                                        El proceso en Vetopia es simple y transparente: registras a tu mascota en nuestra plataforma digital, donde se crea su perfil biométrico de forma ágil y segura.
+                                                </p>
+                                                <p class="text-body-lg text-text-secondary mb-3">
+                                                        Nuestro equipo realiza un diagnóstico integral con escaneo y laboratorio in situ, diseña un tratamiento personalizado con base en su perfil genético y da seguimiento continuo durante la recuperación.
+                                                </p>
+                                                <p class="text-body-lg text-text-secondary">
+                                                        Todo con monitoreo 24/7 en instalaciones de última generación y acceso en tiempo real a los signos vitales y al progreso de tu mascota desde cualquier dispositivo.
+                                                </p>
+                                        </div>
 
-                                        <!-- Grid de 4 pasos
-                                        grid-cols-1: 1 columna en móvil (pasos apilados).
-                                        md:grid-cols-4: 4 columnas en escritorio.
-                                        gap-8: Espacio de 32px entre pasos.
+                                        <!-- Espacio para video a la derecha
+                                        aspect-video: Proporción 16:9 para el video.
+                                        bg-deep-carbon: Fondo oscuro del placeholder.
+                                        border border-mint-accent/20: Borde menta sutil.
                                         -->
-                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                                                <!-- Paso 01 - Registro
-                                                flex flex-col items-center text-center: Contenido apilado y centrado horizontalmente.
-                                                -->
-                                                <div class="flex flex-col items-center text-center">
-                                                        <!-- Círculo numerado "01"
-                                                        w-16 h-16: 64px de diámetro.
-                                                        bg-deep-carbon: Fondo oscuro base.
-                                                        border border-mint-accent: Borde menta destacado.
-                                                        rounded-full: Forma circular perfecta.
-                                                        shadow-[0_0_15px_rgba(129,240,202,0.2)]: Resplandor menta alrededor del círculo.
-                                                        -->
-                                                        <div class="w-16 h-16 bg-deep-carbon border border-mint-accent rounded-full flex items-center justify-center mb-6 text-mint-accent font-label-sm text-label-sm shadow-[0_0_15px_rgba(129,240,202,0.2)]">01</div>
-                                                        <h4 class="font-headline-md text-body-lg font-bold text-white mb-2">Registro</h4>
-                                                        <p class="text-text-secondary text-sm">Ingreso digital ágil y perfilado biométrico inicial.</p>
-                                                </div>
-                                                <!-- Paso 02 - Diagnóstico (misma estructura, sin resplandor) -->
-                                                <div class="flex flex-col items-center text-center">
-                                                        <!-- Círculo numerado "02" con borde blanco sutil -->
-                                                        <div class="w-16 h-16 bg-deep-carbon border border-white/10 rounded-full flex items-center justify-center mb-6 text-white font-label-sm text-label-sm">02</div>
-                                                        <h4 class="font-headline-md text-body-lg font-bold text-white mb-2">Diagnóstico</h4>
-                                                        <p class="text-text-secondary text-sm">Escaneo integral y análisis de laboratorio in situ.</p>
-                                                </div>
-                                                <!-- Paso 03 - Tratamiento (misma estructura, sin resplandor) -->
-                                                <div class="flex flex-col items-center text-center">
-                                                        <!-- Círculo numerado "03" con borde blanco sutil -->
-                                                        <div class="w-16 h-16 bg-deep-carbon border border-white/10 rounded-full flex items-center justify-center mb-6 text-white font-label-sm text-label-sm">03</div>
-                                                        <h4 class="font-headline-md text-body-lg font-bold text-white mb-2">Tratamiento</h4>
-                                                        <p class="text-text-secondary text-sm">Ejecución del protocolo médico personalizado.</p>
-                                                </div>
-                                                <!-- Paso 04 - Recuperación (misma estructura, sin resplandor) -->
-                                                <div class="flex flex-col items-center text-center">
-                                                        <!-- Círculo numerado "04" con borde blanco sutil -->
-                                                        <div class="w-16 h-16 bg-deep-carbon border border-white/10 rounded-full flex items-center justify-center mb-6 text-white font-label-sm text-label-sm">04</div>
-                                                        <h4 class="font-headline-md text-body-lg font-bold text-white mb-2">Recuperación</h4>
-                                                        <p class="text-text-secondary text-sm">Monitoreo continuo y seguimiento post-operatorio.</p>
-                                                </div>
+                                        <div class="aspect-video rounded-3xl overflow-hidden border border-mint-accent/20 shadow-2xl">
+                                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/MNvAtxbjNng" title="Video de Vetopia" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                                         </div>
                                 </div>
                         </section>
+                        <!-- Sección "DÓNDE UBICARNOS". Ubicación del hospital con mapa de Google Maps embebido. -->
+<section class="mb-section-gap" id="ubicacion">
+					<!-- Contenido de la sección en dos columnas
+					grid grid-cols-1 lg:grid-cols-2: 1 columna en móvil, 2 en escritorio.
+					gap-gutter: Espacio de 32px entre columnas (definido en la config).
+					items-center: Centra verticalmente el mapa y el texto.
+					-->
+					<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+
+							<!-- Mapa de Google Maps en cuadrado a la izquierda
+							order-2 lg:order-1: En móvil aparece debajo del texto, en escritorio a la izquierda.
+							aspect-square: Garantiza que el mapa quede en un cuadrado perfecto.
+							rounded-3xl: Esquinas grandes de 24px.
+							border border-white/10: Borde sutil.
+							-->
+							<div class="order-2 lg:order-1 rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
+									<iframe class="w-full h-full" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31814.088114193386!2d-74.0655104!3d4.636672!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f99a8193f1c9f%3A0xf93431640f134c07!2sPontificia%20Universidad%20Javeriana!5e0!3m2!1ses!2sco!4v1787244200838!5m2!1ses!2sco" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa de ubicación de Vetopia"></iframe>
+							</div>
+
+							<!-- Texto a la derecha
+							order-1 lg:order-2: En móvil aparece arriba, en escritorio a la derecha.
+							-->
+							<div class="order-1 lg:order-2">
+									<!-- Título de sección "DÓNDE UBICARNOS"
+									El span text-mint-accent resalta "UBICARNOS" en verde con sombra.
+									-->
+									<h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">DÓNDE <span class="text-mint-accent text-shadow-mint">UBICARNOS</span></h2>
+									<p class="text-body-lg text-text-secondary max-w-3xl">
+											Visítanos en nuestras instalaciones de última generación, pensadas para el bienestar y la recuperación de tu mascota. Encuéntranos en <span class="text-deep-carbon font-semibold">Ak 7 #40 - 62, Bogotá D.C., Colombia</span>.
+									</p>
+							</div>
+					</div>
+			</section>
                 </main>
                 <!-- Footer -->
                 <!-- Pie de página
@@ -479,7 +495,7 @@ tailwind.config = {
                 border-t border-white/10: Línea superior sutil que separa el footer del contenido.
                 py-section-gap: Relleno vertical de 160px (definido en la config).
                 -->
-                <footer class="bg-deep-carbon border-t border-white/10 w-full py-section-gap">
+                <footer class="bg-deep-carbon border-t border-white/10 w-full py-12">
                         <!-- Contenedor del footer: logo a la izquierda, enlaces al centro y copyright a la derecha
                         flex flex-col md:flex-row: Apilado en móvil, en fila en escritorio.
                         justify-between: Reparte los bloques en los extremos.
@@ -490,24 +506,38 @@ tailwind.config = {
                         -->
                         <div class="flex flex-col md:flex-row justify-between items-center px-margin-desktop gap-8 max-w-container-max mx-auto">
                                 <!-- Logo del footer -->
-                                <div class="font-headline-md text-headline-md text-primary">
-                                        <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLvRZgKbDBTTszRq13Rz-5CoJd052LZ5zc1ZnMsgSZgtvshBtUAkuj6q2qhq52XMlWkZbveNsmLXEE4IyAQVVMo81ldup2IqYcPhSdqKcdAtzeOYwZz6qrh9iqcZ32iiY9qwmb3lc3jkvKERXBIYGtTDN5vixfAa72_ZvyMtNguyF0w8Kg42lboMxX5cBc9zw7FBdpCxCK3ltCc1TBOvpm9ZLbzuv1_sFdAnUsWFapBLZal6BKtvuJUArS8BMBpUn3SdVspwIpMiolw"/>
+                                <div class="flex items-center">
+                                        <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="images/logo_Vetopia.png"/>
                                 </div>
                                 <!-- Enlaces legales del footer
                                 flex flex-wrap justify-center: En línea y centrados, con salto de línea si no caben.
                                 uppercase tracking-widest: Estilo de etiqueta en mayúsculas.
                                 hover:text-mint-accent: Al pasar el cursor se pintan de menta.
                                 -->
-                                <div class="flex flex-wrap justify-center gap-8 font-label-sm text-label-sm uppercase tracking-widest text-text-secondary">
-                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Privacy Policy</a>
-                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Terms of Service</a>
-                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Emergency Protocol</a>
-                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Patient Portal</a>
+                                <div class="flex flex-wrap justify-center gap-8 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
+                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Política de Privacidad</a>
+                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Términos de Servicio</a>
+                                        <a class="hover:text-mint-accent transition-colors ease-in-out duration-300" href="#">Protocolo de Emergencia</a>
                                 </div>
                                 <!-- Línea de copyright, centrada en móvil y alineada a la derecha en escritorio -->
-                                <div class="font-label-sm text-label-sm uppercase tracking-widest text-text-secondary text-center md:text-right">
-                                                © 2026 VETOPIA. PRECISION CARE FOR THE NEXT GENERATION.
+                                <div class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant text-center md:text-right">
+                                                © 2026 VETOPIA. CARE FOR THE NEXT GENERATION.
                                 </div>
+                        </div>
+                        <!-- Redes sociales: paralelas a los enlaces legales, con íconos SVG para Facebook e Instagram -->
+                        <div class="flex justify-center gap-8 border-t border-white/10 mt-6 pt-6 px-margin-desktop max-w-container-max mx-auto">
+                                <a class="flex items-center gap-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-mint-accent transition-colors ease-in-out duration-300" href="https://www.facebook.com" title="Facebook" target="_blank" rel="noopener noreferrer">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                        </svg>
+                                        Facebook
+                                </a>
+                                <a class="flex items-center gap-2 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-mint-accent transition-colors ease-in-out duration-300" href="https://www.instagram.com" title="Instagram" target="_blank" rel="noopener noreferrer">
+                                        <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                        </svg>
+                                        Instagram
+                                </a>
                         </div>
                 </footer>
                 <script src="js/main.js" defer></script>
