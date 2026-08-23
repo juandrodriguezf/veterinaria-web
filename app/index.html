@@ -13,30 +13,31 @@ tailwind.config = {
   theme: {
     // extend permite agregar nuevas reglas al tema por defecto sin sobrescribir las preexistentes de Tailwind
     extend: {
-      // Paleta de colores usando Material Design
+      // Paleta de colores usando matieral design
       "colors": {
         /* Colores primarios
         [Rol] define el fondo de un elemento.
         On-[Rol] define el texto o ícono que va encima del fondo
         */ 
-        "primary": "#e1fff1",                  // Texto y subrayado del enlace activo del menú, y color hover de los enlaces.
-        "mint-accent": "#81F0CA", // Verde brillante para los botones principales ("Agendar cita" y "AGENDA UNA CITA"), los botones secundarios de contorno, los títulos destacados y las flechas del carrusel.
+        "primary": "#e1fff1",                  // Enlaces activos del menú, indicador inferior del link actual y logo del footer.
+        "mint-accent": "#81F0CA", // Color verde brillante utilizado en botones y destacados como el botón 'Book Appointment', 'AGENDA UNA CITA', bordes de botones secundarios, títulos destacados, ícono de hospitalización y número '01' del timeline.
 
         // Superficies, fondos y contenedores (Para profundidad en modo oscuro)
-        "background": "#0f1512",               // Fondo principal de la página (aplicado al header con bg-background/80).
-        "surface-elevated": "#1A1F21",         // Fondo de tarjetas con elevación visual, como las del carrusel NUESTRO EQUIPO.
-        "deep-carbon": "#0B0F10",              // Color oscuro para el <footer> y las flechas de navegación del carrusel.
+        "background": "#0f1512",               // Fondo principal de la web contenedor general de la página.
+        "surface-elevated": "#1A1F21",         // para tarjetas con elevación visual como las 3 tarjetas de la sección QUÉ HACEMOS.
+        "surface-cream": "#d3d3d3",            // Fondo claro crema para las 3 tarjetas de la sección QUÉ HACEMOS.
+        "deep-carbon": "#0B0F10",              // color oscuro para el footer y elementos base como el <footer>, círculos numéricos del timeline 01-04 y estado base del header).
 
         // Textos y Bordes
-        "text-secondary": "#0f1512",           // Texto oscuro (verde casi negro) para párrafos sobre fondos claros.
-        "on-surface-variant": "#bccac2"        // Texto e íconos sobre superficies oscuras: enlaces de navegación del header, botón Log In y texto secundario del footer.
+        "text-secondary": "#0f1512",           // Texto gris oscuro para párrafos y elementos secundarios sobre fondos claros.
+        "on-surface-variant": "#bccac2"        // Texto sobre superficies variantes como links, submenús por ejemplo los enlaces de navegación superior en el Header y botón Log In.
         },
 
       //Bordes redondeados
       "borderRadius": {
-        "DEFAULT": "0.25rem", // Radio por defecto = 4px (sin uso en el HTML actual).
-        "xl": "0.75rem",      // Esquinas grandes = 12px, se usa en las tarjetas del carrusel Nuestro Equipo.
-        "full": "9999px"      // Redondeo circular completo, se usa en las flechas de navegación del carrusel.
+        "DEFAULT": "0.25rem", // Radio por defecto = 4px, se usa en el boton de book appointment y otros
+        "xl": "0.75rem",      // Esquinas grandes = 12px, se usa en las 3 tarjetas
+        "full": "9999px"      // Redondeo circular completo, se usa para los circulos del timeline
       },
 
       //Espaciado y dimensiones
@@ -126,11 +127,11 @@ tailwind.config = {
                         w-full: Hace que el encabezado ocupe el 100% del ancho de la pantalla 
                         z-50: Coloca el encabezado en la capa más alta del eje Z. Esto garantiza que pase por encima de las imágenes, textos u otros elementos de la página al hacer scroll.
                         -->
-                        <!-- Estilo visual (clases definidas en css/styles.css)
-                        glass-header: Define la transición suave de fondo y borde para animar el cambio de estado al hacer scroll.
-                        glass-header.scrolled: Estado con scroll activo: fondo oscuro semitransparente, efecto vidrio (blur) y borde inferior sutil.
-                        card-hover:hover: Al pasar el cursor sobre las tarjetas del carrusel NUESTRO EQUIPO cambia el borde a menta y eleva la tarjeta.
-                        btn-primary:hover: Agranda sutilmente el botón y añade un brillo interior verde menta.
+                        <!-- Estilo visual
+                        glass-header: define el tiempo de transicion para el hover
+                        glass-header.scrolled: deifne los colores de la transicion, fondo oscurosemi transparente, efecto vidrio, borde inferior
+                        card-hover:hover: Aplica una animacion al pasar sobre las tarjetas de la seccion de qué hacemos, cambia el color del borde y eleva la tarjeta
+                        btn-primary:hover: Aplica animacion a los botones del header, agranda sutilmente el boton, 
                 -->
                 <header class="fixed top-0 w-full z-50 glass-header border-b border-white/10 bg-background/80 backdrop-blur-xl" id="main-header">
                         <!-- Cotenedor principal del header: 
@@ -174,14 +175,14 @@ tailwind.config = {
                                         font-bold: Texto en negrita.
                                         border-b-2 border-primary pb-1: Subrayado inferior de 2px en color primario.
                                         -->
-                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#equipo">Equipo</a>
+                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#experiencia">Experiencia</a>
                                         <a class="text-primary font-bold border-b-2 border-primary pb-1" href="#servicios">Servicios</a>
                                         <a class="hover:text-primary transition-colors duration-300 font-medium" href="#timeline">Timeline</a>
-                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#ubicacion">Ubicación</a>
+                                        <a class="hover:text-primary transition-colors duration-300 font-medium" href="#contacto">Contacto</a>
                                 </nav>
                                 <!-- Contenedor de acciones del lado derecho
                                 hidden md:flex: Oculto en móvil, se muestra como Flexbox en pantallas medianas en adelante.
-                                items-center: Alinea verticalmente el botón "Log In" y "Agendar cita".
+                                items-center: Alinea verticalmente el botón "Log In" y "Book Appointment".
                                 gap-4: Espacio de 16px entre ambos elementos.
                                 -->
                                 <div class="hidden md:flex items-center gap-4">
@@ -202,13 +203,14 @@ tailwind.config = {
                                                 </button>
                                         </div>
 
-                                        <!-- Botón "Agendar cita"
-                                        btn-primary: Borde redondeado (35px) y efecto hover de escala y brillo menta definidos en css/styles.css.
+                                        <!-- Botón "Book Appointment"
+                                        btn-primary: Efecto hover de escala y brillo menta definido en <style>.
                                         bg-mint-accent: Fondo verde menta brillante.
                                         text-deep-carbon: Texto oscuro de alto contraste.
                                         px-6 py-3: Padding para un botón compacto.
+                                        rounded-DEFAULT: Esquinas redondeadas de 4px.
                                         -->
-                                        <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-6 py-3 font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300" href="#">
+                                        <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-6 py-3 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300" href="#">
                                                         Agendar cita
                                         </a>
                                 </div>
@@ -239,7 +241,7 @@ tailwind.config = {
                                 img: min-w-full min-h-full object-cover object-center escala/cubre sin deformarse en cualquier tamaño de pantalla.
                                 -->
                                 <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-screen max-w-none z-[-1] overflow-hidden">
-                                        <img class="w-full h-full min-w-full min-h-full object-cover object-center" alt="Gato en las instalaciones del hospital veterinario Vetopia" src="images/gato-header.jpg"/>
+                                        <img class="w-full h-full min-w-full min-h-full object-cover object-center" data-alt="A cinematic, high-contrast, moody portrait of a sleek greyhound in a cutting-edge, minimalist futuristic veterinary clinic. Soft glowing mint green LED accents reflect off polished dark surfaces. The lighting is dramatic and directional, highlighting the dog's calm demeanor in a high-tech medical environment." src="images/gato-header.jpg"/>
                                 </div>
 
                                 <!-- Contenedor del texto del hero
@@ -255,6 +257,7 @@ tailwind.config = {
                                         -->
                                         <h1 class="font-display-xl text-display-xl mb-10 text-white leading-tight ml-1.5">PRECISIÓN EN EL<br/><span class="text-mint-accent text-shadow-mint">CUIDADO ANIMAL</span></h1>
                                         
+                                        <!-- Párrafo descriptivo eliminado: los botones suben al espacio donde estaba el texto. -->
                                         <!-- Contenedor de botones de acción
                                         flex flex-wrap: Los botones se alinean en fila y, si el espacio es pequeño, bajan a la siguiente línea.
                                         gap-4: Espacio horizontal de 16px entre botones.
@@ -262,31 +265,31 @@ tailwind.config = {
                                         <div class="flex flex-wrap gap-4">
 
                                                 <!-- Botón principal "AGENDA UNA CITA"
-                                                btn-primary: Borde redondeado (35px) y efecto hover de escala y brillo menta definidos en css/styles.css.
+                                                btn-primary: Efecto hover de escala y brillo menta definido en <style>.
                                                 bg-mint-accent: Fondo verde menta brillante.
                                                 text-deep-carbon: Texto oscuro de alto contraste.
                                                 px-8 py-4: Padding generoso para un botón grande y táctil.
                                                 inline-flex items-center gap-2: Alinea el texto y el ícono de flecha al centro con separación.
                                                 -->
-                                                <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-8 py-4 font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center gap-2" href="#">
+                                                <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-8 py-4 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center gap-2" href="#">
                                                                         AGENDA UNA CITA <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                                                 </a>
 
                                                 <!-- Botón secundario "CONOCE NUESTROS SERVICIOS"
-                                                btn-secondary: Borde redondeado (35px) definido en css/styles.css.
+                                                btn-secondary: Efecto hover de escala y brillo menta definido en <style>.
                                                 border border-mint-accent: Solo borde menta, sin relleno (botón de contorno).
                                                 text-mint-accent: Texto del mismo color menta.
                                                 hover:bg-mint-accent/10: Al pasar el cursor se rellena ligeramente de menta al 10% de opacidad.
                                                 href="#servicios": Ancla hacia la sección de servicios de la misma página.
                                                 -->
-                                                <a class="btn-secondary border border-mint-accent text-mint-accent hover:bg-mint-accent/10 font-bold px-8 py-4 font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center" href="#servicios">
+                                                <a class="btn-secondary border border-mint-accent text-mint-accent hover:bg-mint-accent/10 font-bold px-8 py-4 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center" href="#servicios">
                                                                         CONOCE NUESTROS SERVICIOS
                                                 </a>
                                         </div>
                                 </div>
                         </section>
                         <!-- Sección de servicios. 
-                        id="servicios" es el destino del enlace "Servicios" del menú y del botón "CONOCE NUESTROS SERVICIOS".
+                        id="servicios" es el destino del enlace "Services" del menú y del botón "CONOCE NUESTROS SERVICIOS".
                         mb-section-gap: Separación vertical de 160px con la sección anterior.
                         -->
                         <section class="mb-section-gap" id="servicios">
@@ -366,17 +369,17 @@ tailwind.config = {
                                                                 <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Veterinario Cirujano</p>
                                                         </div>
                                                 </div>
-                                                <!-- Tarjeta de veterinario -->
+                                                <!-- Tarjeta de veterinario (placeholder) -->
                                                 <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
                                                         <div class="h-64 md:h-80 overflow-hidden">
-                                                                <img alt="Dra. Felipe Torres" class="w-full h-full object-cover object-[center_30%]" src="https://thumbs.dreamstime.com/b/veterinario-y-perro-9461018.jpg"/>
+                                                                <img alt="Dra. Ana Torres" class="w-full h-full object-cover object-[center_30%]" src="https://thumbs.dreamstime.com/b/veterinario-y-perro-9461018.jpg"/>
                                                         </div>
                                                         <div class="p-6 text-center">
                                                                 <h3 class="font-headline-md text-headline-md text-white mb-1">Dra. Felipe Torres</h3>
                                                                 <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Cardiología veterinaria</p>
                                                         </div>
                                                 </div>
-                                                <!-- Tarjeta de veterinario -->
+                                                <!-- Tarjeta de veterinario (placeholder) -->
                                                 <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
                                                         <div class="h-64 md:h-80 overflow-hidden">
                                                                 <img alt="Dr. Jorge Méndez" class="w-full h-full object-cover object-[center_30%]" src="https://st2.depositphotos.com/3662505/6206/i/450/depositphotos_62061453-stock-photo-veterinary.jpg"/>
@@ -386,7 +389,7 @@ tailwind.config = {
                                                                 <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">Dermatología veterinaria</p>
                                                         </div>
                                                 </div>
-                                                <!-- Tarjeta de veterinario -->
+                                                <!-- Tarjeta de veterinario (placeholder) -->
                                                 <div class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500">
                                                         <div class="h-64 md:h-80 overflow-hidden">
                                                                 <img alt="Dra. Sofía Herrera" class="w-full h-full object-cover object-[center_30%]" src="https://img.magnific.com/fotos-premium/medico-veterinario-clinica-veterinaria_1368-127913.jpg"/>
