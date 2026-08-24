@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Vetopia - Portal del Cliente</title>
+    <title>Vetopia - Portal Veterinario</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -115,11 +115,11 @@
         <!-- Logo y nombre del portal -->
             <a class="flex items-center gap-3" th:href="@{/}">
                 <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
-            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300">Portal del Cliente</span>
+            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300">Portal Veterinario</span>
         </a>
         <!-- Navegación del portal -->
         <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
-            <a class="font-bold text-primary-fixed border-b-2 border-primary-fixed pb-1" href="#">Mis Mascotas</a>
+            <a class="font-bold text-primary-fixed border-b-2 border-primary-fixed pb-1" href="#">Mascotas</a>
             <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" href="#">Citas</a>
             <a class="flex items-center gap-2 text-gray-300 hover:text-error transition-colors" th:href="@{/login}">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
@@ -132,7 +132,7 @@
 <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg">
     <!-- Encabezado de la sección -->
     <section class="mb-stack-lg">
-        <h1 class="mb-2 font-headline-xl text-headline-xl text-on-surface">Mis Mascotas</h1>
+        <h1 class="mb-2 font-headline-xl text-headline-xl text-on-surface">Mascotas A Cargo</h1>
         <p class="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">
             Consulta la información de tus mascotas registradas en Vetopia. Selecciona una mascota para ver su perfil completo.
         </p>
