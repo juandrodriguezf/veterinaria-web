@@ -1,9 +1,6 @@
 package com.vetopia.service;
 
-import java.text.Collator;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,18 +38,12 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * El repositorio entrega una Collection con los valores del HashMap
-     * (id -> Mascota); aquí se aplica la regla de negocio del ordenamiento
-     * para que la vista reciba las filas ya ordenadas.
+     * El repositorio entrega una Lista con los valores del HashMap
+     * (id -> Mascota); aquí se convierte a lista para que la vista la reciba.
      */
     @Override
     public List<Mascota> listarMascotas() {
-        // Orden alfabético en español (ignora mayúsculas y tildes).
-        Collator collator = Collator.getInstance(new Locale("es", "CO"));
-        collator.setStrength(Collator.PRIMARY);
-        return mascotaRepository.searchAll().stream()
-                .sorted(Comparator.comparing(Mascota::getNombre, collator))
-                .toList();
+        return List.copyOf(mascotaRepository.searchAll());
     }
 
     /**
