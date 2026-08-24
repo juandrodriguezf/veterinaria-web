@@ -1,0 +1,71 @@
+/* Estilo general de la página: fondo blanco (#ffffff) y texto oscuro (#0f1512).
+ Las secciones y el header aplican sus propios fondos oscuros con utilidades de Tailwind en index.html. */
+body {
+        background-color: #ffffff;
+        color: #0f1512;
+}
+
+/* Estado base del header transparente
+.glass-header: Al cargar la página el header es transparente. Define la transición suave de 0.3s
+para que el cambio de fondo y borde (al hacer scroll) se anime en lugar de aplicarse bruscamente. */
+.glass-header {
+        transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Estado del header al hacer scroll
+.glass-header.scrolled: Se activa cuando el usuario hace scroll (agregada por js/main.js).
+Aplica un fondo oscuro semi transparente con desenfoque de vidrio (backdrop-filter: blur)
+y un borde inferior sutil para que el contenido se deslice por debajo y el header se diferencie del fondo. */
+.glass-header.scrolled { 
+        background-color: rgba(15, 21, 18, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hover de las tarjetas del carrusel NUESTRO EQUIPO
+.card-hover:hover: Al pasar el cursor sobre cada tarjeta del equipo pinta su borde de verde menta
+(#81F0CA) y la eleva 4px hacia arriba (transform: translateY) para dar una sensación de flotación. */
+.card-hover:hover {
+        border-color: #81F0CA;
+        transform: translateY(-4px);
+}
+
+/* Estado base de los botones "Agendar cita" y "AGENDA UNA CITA" (btn-primary)
+   y "CONOCE NUESTROS SERVICIOS" (btn-secondary)
+.btn-primary / .btn-secondary: Redondean el botón a 35px (forma de píldora).
+Los colores, bordes y paddings se aplican con utilidades de Tailwind en index.html. */
+.btn-primary{
+        border-radius: 35px;
+}
+
+.btn-secondary{
+        border-radius: 35px;
+}
+
+/* Sombra suave verde menta para títulos de sección
+.text-shadow-mint: Aplica una sombra sutil del color verde al texto menta,
+dándole profundidad sin el efecto de resplandor neón. */
+.text-shadow-mint {
+        text-shadow: 0 2px 6px rgba(129, 240, 202, 0.55);
+}
+
+/* Hover de los botones principales
+.btn-primary:hover: Al pasar el cursor sobre los botones de CTA ("Agendar cita" del header y "AGENDA UNA CITA" del hero)
+los agranda sutilmente (scale 1.02) y les añade un brillo interior verde menta
+(box-shadow inset) para reforzar la acción principal. */
+.btn-primary:hover {
+        transform: scale(1.02);
+        box-shadow: inset 0 0 10px rgba(129, 240, 202, 0.5);
+}
+
+/* Animación de flotación para la imagen de la sección QUÉ HACEMOS
+.float-animation: Mueve la imagen suavemente de arriba a abajo de forma infinita
+para darle un efecto de imagen flotante sobre el contenido. */
+@keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-14px); }
+}
+
+.float-animation {
+        animation: float 6s ease-in-out infinite;
+}
