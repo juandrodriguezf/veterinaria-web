@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * CAPA ENTITIES - Entidad Mascota
+ * ENTIDAD - Mascota
  * Representa una mascota registrada en Vetopia. No contiene lógica de
  * acceso a datos ni de presentación, solo el estado y las reglas propias
  * de la entidad.
@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
  * Lombok genera automáticamente getters/setters (@Data), el constructor
  * vacío (@NoArgsConstructor) y el constructor con todos los atributos
  * (@AllArgsConstructor), eliminando el código boilerplate.
- *
- * Nota: la imagen se maneja como String (URL). Cuando no hay URL
- * disponible su valor es null y las vistas deben mostrar un placeholder.
  */
 @Data
 @NoArgsConstructor

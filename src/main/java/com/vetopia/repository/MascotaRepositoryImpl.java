@@ -11,13 +11,8 @@ import org.springframework.stereotype.Repository;
 import com.vetopia.entities.Mascota;
 
 /**
- * CAPA REPOSITORIO / DAO - Implementación en memoria
  * Simula la persistencia de datos usando un HashMap (llave = id,
  * valor = Mascota), a modo de tabla de base de datos. La anotación
- * {@code @Repository} registra la clase como bean de acceso a datos,
- * habilita la traducción de excepciones de persistencia y permite que
- * Spring la inyecte automáticamente en el Service.
- *
  * Cuando se conecte una base de datos real, solo esta implementación
  * cambia; Service y Controller no requieren modificaciones.
  */
@@ -49,7 +44,6 @@ public class MascotaRepositoryImpl implements MascotaRepository {
     }
 
     /**
-     * {@inheritDoc}
      * Se devuelve una copia de los valores del HashMap (Collection) para
      * que las capas superiores no manipulen directamente los datos
      * almacenados.
@@ -59,9 +53,6 @@ public class MascotaRepositoryImpl implements MascotaRepository {
         return new ArrayList<>(tablaMascotas.values());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Mascota searchById(Integer id) {
         return tablaMascotas.get(id);

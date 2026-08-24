@@ -13,7 +13,7 @@ import com.vetopia.entities.Mascota;
 import com.vetopia.service.MascotaService;
 
 /**
- * CAPA CONTROLLER - Portal del Cliente
+ * CONTROLLER (Portal del Veterinario)
  * Gestiona las peticiones del usuario con @Controller y @RequestMapping,
  * delega la lógica de negocio en el Service y retorna los nombres de las
  * vistas que Thymeleaf renderiza. No contiene lógica de negocio ni acceso
@@ -32,7 +32,6 @@ public class MascotaController {
      * Constructor con inyección por constructor: Spring entrega
      * automáticamente el bean @Service que implementa MascotaService.
      * El controlador nunca accede al repositorio directamente.
-     *
      * @param mascotaService servicio de mascotas inyectado por Spring.
      */
     @Autowired
@@ -45,10 +44,7 @@ public class MascotaController {
      * de mascotas ordenadas alfabéticamente por nombre.
      *
      * URL para visualizar: http://localhost:8080/mascotas
-     * Vista renderizada:   src/main/resources/templates/principal-cliente.html
-     *
-     * @param model modelo enviado a la vista Thymeleaf.
-     * @return nombre de la vista {@code principal-cliente}.
+     * Vista: src/main/resources/templates/principal-cliente.html
      */
     @GetMapping
     public String listarMascotas(Model model) {
@@ -62,14 +58,7 @@ public class MascotaController {
      * JavaScript original.
      *
      * URL para visualizar: http://localhost:8080/mascotas/detalle?id=2
-     * (sin id, con id inexistente o inválido se muestra el panel
-     * "Mascota no encontrada").
-     * Vista renderizada:   src/main/resources/templates/detalle-mascota.html
-     *
-     * @param id identificador de la mascota a consultar.
-     * @param model modelo enviado a la vista Thymeleaf; contiene la mascota
-     *              o el mensaje de error para el panel "no encontrada".
-     * @return nombre de la vista {@code detalle-mascota}.
+     * Vista: src/main/resources/templates/detalle-mascota.html
      */
     @GetMapping("/detalle")
     public String verDetalle(@RequestParam(name = "id", required = false) Integer id, Model model) {
@@ -90,12 +79,9 @@ public class MascotaController {
     }
 
     /**
-     * Maneja ids no numéricos (por ejemplo ?id=abc): Spring no puede
-     * convertirlos a Integer y lanzaría un 400; en su lugar se renderiza
+     * Maneja ids no numéricos (id=abc): Spring no puede
+     * convertirlos a Integer y lanzaria un 400; en su lugar se renderiza
      * el panel "Mascota no encontrada" con un mensaje amigable.
-     *
-     * @param modelo modelo enviado a la vista Thymeleaf.
-     * @return nombre de la vista {@code detalle-mascota}.
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public String idNoNumerico(Model modelo) {
