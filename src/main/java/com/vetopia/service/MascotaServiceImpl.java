@@ -1,0 +1,62 @@
+package com.vetopia.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.vetopia.entities.Mascota;
+import com.vetopia.repository.MascotaRepository;
+
+/**
+ * CAPA SERVICIO - Implementación de MascotaService
+ * Contiene la lógica de negocio. La anotación @Service registra la clase
+ * como bean de negocio y Spring gestiona automáticamente su ciclo de vida.
+ *
+ * El repositorio se recibe por inyección por constructor (recomendación
+ * oficial de Spring): garantiza dependencias obligatorias, facilita las
+ * pruebas unitarias y mantiene la inmutabilidad del bean. Esta capa nunca
+ * conoce los detalles de la persistencia, solo el contrato del repositorio.
+ */
+@Service
+public class MascotaServiceImpl implements MascotaService {
+
+    /** Repositorio de mascotas (flujo obligatorio: Service -> Repository). */
+    private final MascotaRepository mascotaRepository;
+
+    /**
+     * Constructor con inyección de dependencias: Spring busca el bean
+     * marcado con @Repository que implemente MascotaRepository y lo
+     * entrega automáticamente al crear este servicio.
+     *
+     * @param mascotaRepository repositorio de mascotas inyectado por Spring.
+     */
+    @Autowired
+    public MascotaServiceImpl(MascotaRepository mascotaRepository) {
+        this.mascotaRepository = mascotaRepository;
+    }
+
+    /**
+     * {@inheritDoc}
+     * El repositorio entrega una Lista con los valores del HashMap
+     * (id -> Mascota); aquí se convierte a lista para que la vista la reciba.
+     */
+    @Override
+    public List<Mascota> listarMascotas() {
+        return List.copyOf(mascotaRepository.searchAll());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Mascota obtenerMascotaPorId(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("No se especificó el identificador de la mascota.");
+        }
+        if (id <= 0) {
+            throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
+        }
+        return mascotaRepository.searchById(id);
+    }
+}

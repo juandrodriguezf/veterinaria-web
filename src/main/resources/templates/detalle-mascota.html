@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<!--
+    Vista Thymeleaf (NO funciona con Go Live: se renderiza en el servidor).
+    URL: http://localhost:8080/mascotas/detalle?id={id}   (ejemplo: ?id=2)
+    Controlador: MascotaController.verDetalle(...)  [GET /mascotas/detalle]
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title th:text="${mascota != null} ? ${mascota.nombre} + ' - Vetopia' : 'Vetopia - Detalle de Mascota'">Vetopia - Detalle de Mascota</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-secondary": "#ffffff",
+                        "outline": "#6d7a73",
+                        "inverse-primary": "#5adcb3",
+                        "primary-fixed-dim": "#5adcb3",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-high": "#e6e8ea",
+                        "on-primary-fixed-variant": "#00513d",
+                        "primary-fixed": "#79f9ce",
+                        "on-primary-container": "#00765b",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary": "#006c52",
+                        "on-secondary-fixed": "#151d1c",
+                        "secondary": "#58605f",
+                        "on-primary-fixed": "#002117",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-fixed-variant": "#404847",
+                        "outline-variant": "#bccac2",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-tint": "#006c52",
+                        "surface-dim": "#d8dadc",
+                        "on-background": "#191c1e",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#d9e1df",
+                        "primary-container": "#7fffd4",
+                        "surface-container": "#eceef0",
+                        "tertiary-container": "#e8e8e8",
+                        "tertiary": "#5d5f5f",
+                        "background": "#f7f9fb",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#666868",
+                        "secondary-fixed-dim": "#c0c8c6",
+                        "secondary-fixed": "#dce4e2",
+                        "on-secondary-container": "#5c6463",
+                        "on-surface-variant": "#3d4a44",
+                        "on-tertiary-fixed": "#1a1c1c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "section-padding": "120px",
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-xl-mobile": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "button": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "headline-xl-mobile": ["36px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "button": ["13px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.1em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
+<!-- TopNavBar del Portal del Cliente -->
+<header class="sticky top-0 z-50 bg-[#0f1115] text-white">
+    <div class="max-w-container-max mx-auto flex items-center justify-between px-gutter py-stack-md">
+        <!-- Logo y nombre del portal -->
+        <a class="flex items-center gap-3" href="#">
+            <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
+            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300">Portal Veterinario</span>
+        </a>
+        <!-- Navegación del portal -->
+        <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
+            <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" th:href="@{/mascotas}">Mascotas</a>
+            <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" href="#">Citas</a>
+            <a class="flex items-center gap-2 text-gray-300 hover:text-error transition-colors" th:href="@{/login}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+                Cerrar Sesión
+            </a>
+        </nav>
+    </div>
+</header>
+
+<main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+    <!-- Navegación de regreso al listado -->
+    <section class="mb-stack-md">
+        <a class="inline-flex items-center gap-2 font-button text-button uppercase tracking-widest text-secondary hover:text-primary transition-colors"
+           th:href="@{/mascotas}">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+            Volver a Mis Mascotas
+        </a>
+    </section>
+
+    <!-- Vista del detalle: se renderiza solo cuando el Service encontró la mascota -->
+    <section th:if="${mascota != null}">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-start">
+            <!-- Columna izquierda: imagen de la mascota (placeholder si no hay URL) -->
+            <div class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-stack-md">
+                <div class="aspect-square rounded-DEFAULT overflow-hidden bg-surface-container-high flex items-center justify-center">
+                    <img alt="Foto de la mascota"
+                         class="h-full w-full object-cover"
+                         th:alt="'Foto de ' + ${mascota.nombre}"
+                         th:if="${mascota.tieneImagen()}"
+                         th:src="${mascota.imagen}"/>
+                    <div class="flex flex-col items-center gap-3 text-outline" th:unless="${mascota.tieneImagen()}">
+                        <span class="material-symbols-outlined text-[64px]" style="font-variation-settings: 'FILL' 0;">pets</span>
+                        <p class="font-label-md text-label-md uppercase tracking-widest">Sin fotografía disponible</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Columna derecha: información de la mascota -->
+            <div class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-stack-lg">
+                <p class="mb-2 font-label-md text-label-md uppercase tracking-widest text-primary"
+                   th:text="'Paciente N° ' + ${#numbers.formatInteger(mascota.id, 4)}"></p>
+                <h1 class="font-headline-xl text-headline-xl text-on-surface mb-4" th:text="${mascota.nombre}"></h1>
+                <!-- Chips de especie y sexo -->
+                <div class="flex flex-wrap items-center gap-stack-sm mb-4">
+                    <span class="inline-flex items-center rounded-full bg-primary-container px-4 py-1.5 font-button text-button uppercase text-on-primary-container"
+                          th:text="${mascota.especie}"></span>
+                    <span class="inline-flex items-center rounded-full bg-secondary-container px-4 py-1.5 font-button text-button uppercase text-on-secondary-container"
+                          th:text="${mascota.sexo}"></span>
+                </div>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mb-8"
+                   th:text="${mascota.raza} + ' · ' + ${mascota.especie}"></p>
+                <!-- Datos básicos -->
+                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-gutter gap-y-stack-lg pt-stack-lg border-t border-surface-container-high">
+                    <div>
+                        <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-secondary">Edad</dt>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface" th:text="${mascota.obtenerEdadDescripcion()}">-</dd>
+                    </div>
+                    <div>
+                        <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-secondary">Sexo</dt>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface"
+                            th:text="${mascota.sexo != null and !mascota.sexo.isBlank()} ? ${mascota.sexo} : 'No registrado'">-</dd>
+                    </div>
+                    <div>
+                        <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-secondary">Peso</dt>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface"
+                            th:text="${mascota.pesoKg != null} ? ${mascota.pesoKg} + ' kg' : 'No registrado'">-</dd>
+                    </div>
+                    <div>
+                        <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-secondary">Color</dt>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface"
+                            th:text="${mascota.color != null and !mascota.color.isBlank()} ? ${mascota.color} : 'No registrado'">-</dd>
+                    </div>
+                    <div>
+                        <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-secondary">Fecha de ingreso</dt>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface"
+                            th:if="${mascota.fechaIngreso != null}"
+                            th:text="${#temporals.format(mascota.fechaIngreso, &quot;d 'de' MMMM 'de' yyyy&quot;)}">-</dd>
+                        <dd class="font-body-lg text-body-lg font-semibold text-on-surface"
+                            th:if="${mascota.fechaIngreso == null}">No registrada</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </section>
+
+    <!-- Panel mostrado cuando no se encuentra la mascota o el id es inválido -->
+    <section class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-stack-lg text-center"
+             th:unless="${mascota != null}">
+        <span class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface-container-high">
+            <span class="material-symbols-outlined text-[32px] text-outline" style="font-variation-settings: 'FILL' 0;">search_off</span>
+        </span>
+        <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Mascota no encontrada</h1>
+        <p class="max-w-xl mx-auto font-body-lg text-body-lg text-on-surface-variant mb-8"
+           th:text="${mensajeError} ?: 'No encontramos ninguna mascota registrada.'"></p>
+        <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
+           th:href="@{/mascotas}">
+            Ver mis mascotas
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+        </a>
+    </section>
+</main>
+
+<!-- Footer del portal -->
+<footer class="bg-[#0f1115] text-white py-12 mt-stack-lg">
+    <div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-8 px-gutter">
+        <!-- Logo -->
+        <a class="flex items-center" href="#">
+            <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
+        </a>
+        <!-- Enlaces legales -->
+        <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 font-label-md text-label-md uppercase tracking-widest text-gray-300 w-full md:w-auto">
+            <a class="hover:text-primary transition-colors" href="#">Política de Privacidad</a>
+            <a class="hover:text-primary transition-colors" href="#">Términos de Servicio</a>
+            <a class="hover:text-primary transition-colors" href="#">Protocolo de Emergencia</a>
+        </div>
+        <!-- Copyright -->
+        <div class="text-xs uppercase tracking-widest text-gray-400 text-center md:text-right">
+            <p>© 2026 VETOPIA. CARE FOR THE NEXT GENERATION.</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

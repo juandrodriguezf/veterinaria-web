@@ -1,43 +1,79 @@
 # Vetopia
 
-**Vetopia – Hospital Veterinario del Futuro.** Página web institucional de un hospital veterinario de diagnóstico avanzado, atención personalizada y tecnología de vanguardia.
-
-**Sitio en vivo (GitHub Pages):** https://david-beltrang.github.io/Vetopia/
+**Vetopia – Hospital Veterinario del Futuro.** Aplicación web de un hospital veterinario con portal del cliente para consulta de mascotas registradas, construida con **Spring Boot** siguiendo el patrón de diseño de capas.
 
 ## Descripción
 
-Landing page estática con diseño de alto impacto visual, construida con HTML, CSS, JavaScript y estilizada con **Tailwind CSS**.
+Aplicación servidor con separación clara de responsabilidades mediante el patrón de capas:
 
-## Características
+```
+Controller  ->  Service  ->  Repository
+(@Controller)   (@Service)   (@Repository, HashMap en memoria)
+```
 
-- **Diseño responsive** adaptable a los tamaños de los dispositivos.
-- **Tema oscuro** con paleta de colores Material Design (M3) personalizada.
-- **Header tipo "glass"**: transparente al inicio y con efecto de vidrio (blur) al hacer scroll (manejado por `js/main.js`).
-- **Tipografías web** Google Fonts: Bricolage Grotesque, Hanken Grotesk, JetBrains Mono y Material Symbols Outlined.
-- **Secciones**: Hero, Servicios (Hospitalización, Tratamientos Personalizados, Monitoreo en Tiempo Real), Timeline del proceso en 4 pasos y Footer con enlaces legales.
-- **Efectos hover** en tarjetas y botones definidos en `css/styles.css`.
+Cada capa se comunica únicamente con la capa inferior y las dependencias se gestionan con inyección por `@Autowired`, de modo que Spring crea e inyecta automáticamente las instancias de cada clase.
 
 ## Estructura del proyecto
 
 ```
 Vetopia/
-└── app/
-    ├── index.html        # Página principal
-    ├── css/
-    │   └── styles.css    # Estilos personalizados (header glass, hovers, botones)
-    ├── js/
-    │   └── main.js       # Efecto de scroll del header
-    └── images/           # Logo y recursos visuales
+├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Lombok, Thymeleaf)
+└── src/main/
+    ├── java/com/vetopia/
+    │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
+    │   ├── controller/
+    │   │   └── MascotaController.java       # @Controller + @RequestMapping("/mascotas")
+    │   ├── service/
+    │   │   ├── MascotaService.java          # Interfaz de lógica de negocio
+    │   │   └── MascotaServiceImpl.java      # @Service (inyecta el repositorio con @Autowired)
+    │   ├── repository/
+    │   │   ├── MascotaRepository.java       # Interfaz DAO
+    │   │   └── MascotaRepositoryImpl.java   # @Repository con HashMap (persistencia simulada)
+    │   └── entities/
+    │       └── Mascota.java                 # Entidad con Lombok (@Data, @NoArgsConstructor, @AllArgsConstructor)
+    └── resources/
+        ├── application.properties
+        ├── templates/                       # Vistas Thymeleaf
+        │   ├── principal-cliente.html       # Listado de mascotas
+        │   └── detalle-mascota.html         # Detalle de una mascota
+        └── static/
+            ├── index.html                   # Landing institucional
+            ├── login.html                   # Página de inicio de sesión
+            ├── css/styles.css               # Estilos personalizados del landing
+            ├── js/main.js                   # Efecto glass del header al hacer scroll
+            └── images/                      # Logo y recursos visuales
 ```
 
-## Cómo ejecutar localmente
+## Requisitos
 
-Abre `app/index.html` en el navegador o usa cualquier servidor estático (por ejemplo, la extensión **Live Server** de VS Code sobre la carpeta `app/`).
+- JDK 21 o superior
+- Maven 3.9+
+
+## Cómo ejecutar
+
+```bash
+mvn spring-boot:run
+```
+
+Luego abre en el navegador:
+
+| Ruta | Descripción |
+|---|---|
+| `http://localhost:8080/` | Landing institucional |
+| `http://localhost:8080/login.html` | Inicio de sesión |
+| `http://localhost:8080/mascotas` | Portal del cliente: listado de mascotas |
+| `http://localhost:8080/mascotas/detalle?id=1` | Detalle de la mascota con id 1 |
+
+## Funcionalidades
+
+- **Listado de mascotas** ordenadas alfabéticamente (regla de negocio en el Service).
+- **Detalle de mascota** con validación del identificador y panel amigable cuando no existe.
+- **Persistencia simulada** en memoria (`HashMap`) precargada con datos de ejemplo; al conectar una base de datos real solo cambia la implementación del repositorio.
 
 ## Tecnologías
 
-- HTML5
-- CSS3
-- JavaScript
-- Tailwind CSS
-- Google Fonts
+- Java 21
+- Spring Boot 3.5.4 (Web + Thymeleaf)
+- Lombok
+- Tailwind CSS (vía CDN) con paleta Material Design M3 personalizada
+- Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
