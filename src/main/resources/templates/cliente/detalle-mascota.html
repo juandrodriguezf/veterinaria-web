@@ -2,8 +2,8 @@
 
 <!--
     Vista Thymeleaf (NO funciona con Go Live: se renderiza en el servidor).
-    URL: http://localhost:8080/mascotas/detalle?id={id}   (ejemplo: ?id=2)
-    Controlador: MascotaController.verDetalle(...)  [GET /mascotas/detalle]
+    URL: http://localhost:8080/cliente/mascotas/detalle?id={id}   (ejemplo: ?id=2)
+    Controlador: ClienteMascotaController.verDetalle(...)  [GET /cliente/mascotas/detalle]
 -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -21,7 +21,7 @@
         </a>
         <!-- Navegación del portal -->
         <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
-            <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" th:href="@{/mascotas}">Mascotas</a>
+            <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" th:href="@{/cliente/mascotas}">Mascotas</a>
             <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" href="#">Citas</a>
             <a class="flex items-center gap-2 text-gray-300 hover:text-error transition-colors" th:href="@{/login}">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
@@ -35,7 +35,7 @@
     <!-- Navegación de regreso al listado -->
     <section class="mb-stack-md">
         <a class="inline-flex items-center gap-2 font-button text-button uppercase tracking-widest text-secondary hover:text-primary transition-colors"
-           th:href="@{/mascotas}">
+           th:href="@{/cliente/mascotas}">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
             Volver a Mis Mascotas
         </a>
@@ -116,7 +116,7 @@
         <p class="max-w-xl mx-auto font-body-lg text-body-lg text-on-surface-variant mb-8"
            th:text="${mensajeError} ?: 'No encontramos ninguna mascota registrada.'"></p>
         <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-6 py-3 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
-           th:href="@{/mascotas}">
+           th:href="@{/cliente/mascotas}">
             Ver mis mascotas
             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
         </a>

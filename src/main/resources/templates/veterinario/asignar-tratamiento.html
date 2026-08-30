@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragmentos-portal :: head"></div>
+    <title>Vetopia - Asignar Nuevo Tratamiento</title>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <!-- HEADER del portal -->
+    <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+        <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="/" class="flex items-center">
+                    <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-8 w-auto object-contain"/>
+                </a>
+            </div>
+            <!-- Enlaces de navegación -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/veterinario/mascotas" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Pacientes</a>
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Clientes</a>
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
+                <a href="/veterinario/mascotas/asignar-tratamiento" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1 shadow-[0px_2px_4px_rgba(0,0,0,0.30)]">Tratamientos</a>
+            </div>
+            <!-- Trailing: notificaciones, usuario, logout -->
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">notifications</span>
+                </button>
+                <div class="flex items-center gap-3">
+                    <span class="text-white font-label-md text-label-md uppercase tracking-widest hidden sm:inline">Carlos Gómez</span>
+                    <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+                        <span class="text-on-primary-container font-bold text-body-md">CG</span>
+                    </div>
+                </div>
+                <button class="px-6 py-3 rounded-full border border-gray-600 text-white font-button text-button uppercase hover:bg-white/5 transition-colors">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="flex-1">
+        <div class="max-w-container-max mx-auto px-gutter py-stack-lg">
+            <div class="max-w-[768px] mx-auto">
+                <!-- Título y subtítulo -->
+                <div class="mb-stack-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 bg-primary rounded-full"></div>
+                        <h1 class="text-headline-lg font-headline-lg text-on-surface">Asignar Nuevo Tratamiento</h1>
+                    </div>
+                    <p class="text-body-lg font-body-lg text-on-surface-variant mt-1">Portal Veterinario / Registro Clínico</p>
+                </div>
+
+                <!-- Tarjeta del formulario -->
+                <form class="bg-surface-container-lowest p-6 md:p-10 rounded-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-surface-container-highest" th:action="@{/veterinario/mascotas/asignar-tratamiento}" method="post">
+                    <!-- Veterinario Responsable -->
+                    <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-full border border-surface-container-highest">
+                        <div>
+                            <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">VETERINARIO RESPONSABLE</span>
+                            <p class="font-body-md text-body-md text-on-surface font-semibold">Dr. Carlos Ruiz</p>
+                        </div>
+                        <div class="p-2 bg-primary-container/30 rounded-full">
+                            <span class="material-symbols-outlined text-primary text-xl">verified</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-6">
+                        <!-- Selector de Mascota y Fecha -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Selector de Mascota -->
+                            <div class="flex flex-col gap-1">
+                                <label class="font-body-md text-body-md text-on-surface">Selector de Mascota</label>
+                                <div class="relative">
+                                    <select name="mascotaId" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                        <option value="">Seleccionar paciente activo...</option>
+                                        <option th:each="mascota : ${mascotas}" th:value="${mascota.id}" th:text="${mascota.nombre}"></option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                        <span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fecha de Aplicación -->
+                            <div class="flex flex-col gap-1">
+                                <label class="font-body-md text-body-md text-on-surface">Fecha de Aplicación</label>
+                                <input type="date" name="fecha"
+                                       class="w-full px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       value="2026-08-30" />
+                            </div>
+                        </div>
+
+                        <hr class="border-surface-container-highest" />
+
+                        <!-- Medicamento -->
+                        <div class="flex flex-col gap-1">
+                            <label class="font-body-md text-body-md text-on-surface">Medicamento / Droga</label>
+                            <div class="relative">
+                                <select name="drogaId" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                    <option value="">Seleccionar medicamento...</option>
+                                    <option th:each="droga : ${drogas}" th:value="${droga.id}" th:text="${droga.nombre}"></option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                    <span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-surface-container-highest">
+                            <button type="button" class="px-8 py-4 rounded-full border border-surface-container-highest text-on-surface font-button text-button uppercase hover:bg-surface-container-high transition-colors">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-primary-container px-8 py-4 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary">
+                                Aplicar Tratamiento
+                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer th:replace="fragmentos-portal :: footer"></footer>
+</body>
+</html>

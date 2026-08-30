@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragmentos-portal :: head"></div>
+    <title>Vetopia - Tratamiento Aplicado</title>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <!-- HEADER del portal -->
+    <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+        <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="/" class="flex items-center">
+                    <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-8 w-auto object-contain"/>
+                </a>
+            </div>
+            <!-- Enlaces de navegación -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="/veterinario/mascotas" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Pacientes</a>
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Clientes</a>
+                <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
+                <a href="/veterinario/mascotas/asignar-tratamiento" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1 shadow-[0px_2px_4px_rgba(0,0,0,0.30)]">Tratamientos</a>
+            </div>
+            <!-- Trailing: notificaciones, usuario, logout -->
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    <span class="material-symbols-outlined text-2xl">notifications</span>
+                </button>
+                <div class="flex items-center gap-3">
+                    <span class="text-white font-label-md text-label-md uppercase tracking-widest hidden sm:inline">Carlos Gómez</span>
+                    <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+                        <span class="text-on-primary-container font-bold text-body-md">CG</span>
+                    </div>
+                </div>
+                <button class="px-6 py-3 rounded-full border border-gray-600 text-white font-button text-button uppercase hover:bg-white/5 transition-colors">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL (oscurecido) -->
+    <main class="flex-1 flex items-center justify-center p-4 bg-background/40 backdrop-blur-sm">
+        <!-- Modal -->
+        <div class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] border border-outline-variant/20 overflow-hidden">
+            <div class="p-8 flex flex-col items-center">
+                <!-- Icono de éxito -->
+                <div class="w-24 h-24 rounded-full bg-primary-container flex items-center justify-center mb-8">
+                    <span class="material-symbols-outlined text-5xl text-primary">check_circle</span>
+                </div>
+
+                <!-- Título -->
+                <h2 class="text-headline-xl-mobile font-headline-xl-mobile text-on-surface text-center mb-4">
+                    Tratamiento Aplicado
+                </h2>
+
+                <!-- Mensaje -->
+                <div class="text-center mb-8">
+                    <p class="text-body-lg font-body-lg text-on-surface-variant">
+                        Se han descontado <span class="font-semibold text-on-surface" th:text="${unidadesDescontadas}">2</span> unidades de <span class="font-semibold text-on-surface" th:text="${medicamentoNombre}">Amoxicilina</span>.
+                    </p>
+                    <p class="text-body-lg font-body-lg text-on-surface font-semibold mt-1">
+                        Stock restante: <span th:text="${stockRestante}">48</span> unidades.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="w-full max-w-sm flex flex-col gap-2">
+                    <a th:href="@{/veterinario/mascotas/ficha(id=${mascotaId})}" 
+                       class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-container px-6 py-4 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary">
+                        Volver a la Ficha
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                    </a>
+                    <button onclick="window.close()" 
+                            class="w-full py-4 px-6 border border-outline text-on-surface font-button text-button uppercase text-center rounded-full hover:bg-surface-container-high transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER (oculto en modal) -->
+    <footer th:replace="fragmentos-portal :: footer" class="hidden"></footer>
+</body>
+</html>

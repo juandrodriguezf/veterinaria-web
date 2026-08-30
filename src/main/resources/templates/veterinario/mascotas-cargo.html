@@ -2,33 +2,51 @@
 
 <!--
     Vista Thymeleaf (NO funciona con Go Live: se renderiza en el servidor).
-    URL: http://localhost:8080/cliente/mascotas
-    Controlador: ClienteMascotaController.listarMascotas()  [GET /cliente/mascotas]
+    URL: http://localhost:8080/veterinario/mascotas
+    Controlador: VeterinarioMascotaController.listarMascotas()  [GET /veterinario/mascotas]
 -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
         <div th:replace="fragmentos-portal :: head"></div>
 </head>
-<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
-<!-- TopNavBar del Portal del Cliente -->
-<header class="sticky top-0 z-50 bg-[#0f1115] text-white">
-    <div class="max-w-container-max mx-auto flex items-center justify-between px-gutter py-stack-md">
-        <!-- Logo y nombre del portal -->
-            <a class="flex items-center gap-3" th:href="@{/}">
-                <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
-            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300">Portal Veterinario</span>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar (Transactional/Onboarding - Suppressed Navigation Shell) -->
+<nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+        <!-- Brand / Logo -->
+        <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2" href="#">
+            <img alt="Veto Precision Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGmAr_Hjp4ZCy8ezWVGciiNxUFa1a57lruSDgy0Xgk93QhrPSm4d8_uHrpj5GeNa8Gg7ipmkurP9qB75txOTGtJUl2O3Lps_uTsgVNoa-a34c6FNLAzDjLCSH5ZfIOMfLPBF4t-Twzkz4dvRsbGPzjr3wffVSkXbSjl5eiMJcgXm8I4yRlfxpuqeBtiFVV-UglKNkgxmK5yYEIB3TPFhPQC9TIA74zwryNrRCa5D_BeiKeTUJ9KI9bSUIY0pSF4GegTUA"/>
         </a>
-        <!-- Navegación del portal -->
-        <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
-            <a class="font-bold text-primary-fixed border-b-2 border-primary-fixed pb-1" href="#">Mascotas</a>
-            <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" href="#">Citas</a>
-            <a class="flex items-center gap-2 text-gray-300 hover:text-error transition-colors" th:href="@{/login}">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
-                Cerrar Sesión
+        <!-- Navigation Links (Desktop) -->
+        <div class="hidden md:flex gap-8">
+            <a aria-current="page" class="text-white font-bold border-b-2 border-white pb-1 hover:text-primary transition-colors duration-200" href="#" style="color: rgb(127, 255, 212); text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px; border-color: rgb(127, 255, 212);">Pacientes</a>
+            <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Clientes</a>
+            <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Citas</a>
+            <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Tratamientos</a>
+        </div>
+        <!-- Trailing Actions -->
+        <div class="flex items-center gap-4">
+            <button aria-label="Notifications" class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors text-white">
+                <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-end hidden sm:flex">
+                    <span class="font-label-md text-label-md text-white">Carlos Gómez</span>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                    CG
+                </div>
+            </div>
+            <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2" href="#">
+                Logout
             </a>
-        </nav>
+            <!-- Mobile Menu Toggle (simplified for layout) -->
+            <button class="md:hidden p-2 text-on-surface-variant">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
     </div>
-</header>
+</nav>
 
 <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg">
     <!-- Encabezado de la sección -->
@@ -39,7 +57,7 @@
         </p>
     </section>
 
-    <!-- Tarjeta contenedora del listado. El controlador ClienteMascotaController pidió
+    <!-- Tarjeta contenedora del listado. El controlador VeterinarioMascotaController pidió
          los datos al Service y este al Repository; aquí solo se renderizan. -->
     <section class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
         <div class="flex items-center justify-between gap-4 p-stack-lg border-b border-surface-container-high">
@@ -95,9 +113,9 @@
                     <td class="px-6 py-4 font-body-md text-body-md text-on-surface" th:text="${mascota.sexo}"></td>
                     <td class="px-6 py-4">
                         <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
-                           th:aria-label="'Consultar detalles de ' + ${mascota.nombre}"
-                           th:href="@{/cliente/mascotas/detalle(id=${mascota.id})}">
-                            Ver detalles
+                           th:aria-label="'Consultar ficha clínica de ' + ${mascota.nombre}"
+                           th:href="@{/veterinario/mascotas/ficha(id=${mascota.id})}">
+                            Ver ficha
                             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
                         </a>
                     </td>

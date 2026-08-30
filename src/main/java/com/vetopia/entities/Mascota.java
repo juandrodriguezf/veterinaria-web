@@ -52,6 +52,20 @@ public class Mascota {
     private LocalDate fechaIngreso;
 
     /**
+     * Identificador del dueño que posee la mascota (llave foránea a
+     * Dueno). En una base de datos real esta es una FK; en la fake DB
+     * en memoria se guarda el id y el Service resuelve el objeto
+     * preguntando a DuenoRepository.
+     */
+    private Integer duenoId;
+
+    /**
+     * Estado de la mascota (Activo / Inactivo). El veterinario puede
+     * cambiar este valor para darla de alta o de baja en la clínica.
+     */
+    private String estado;
+
+    /**
      * Indica si la mascota tiene una URL de imagen disponible.
      * Las vistas usan este método para decidir entre mostrar la imagen
      * o el placeholder.

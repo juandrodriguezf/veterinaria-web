@@ -22,7 +22,9 @@ Vetopia/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
     │   ├── controller/
-    │   │   └── MascotaController.java       # @Controller + @RequestMapping("/mascotas")
+    │   │   ├── HomeController.java          # Raíz "/" y login "/login"
+    │   │   ├── VeterinarioMascotaController.java  # @Controller + @RequestMapping("/veterinario/mascotas")
+    │   │   └── ClienteMascotaController.java      # @Controller + @RequestMapping("/cliente/mascotas")
     │   ├── service/
     │   │   ├── MascotaService.java          # Interfaz de lógica de negocio
     │   │   └── MascotaServiceImpl.java      # @Service (inyecta el repositorio con @Autowired)
@@ -34,11 +36,21 @@ Vetopia/
     └── resources/
         ├── application.properties
         ├── templates/                       # Vistas Thymeleaf
-        │   ├── principal-cliente.html       # Listado de mascotas
-        │   └── detalle-mascota.html         # Detalle de una mascota
+        │   ├── principal-cliente.html       # Listado de mascotas (portal del cliente)
+        │   ├── fragmentos-portal.html       # Fragments head/footer del portal
+        │   ├── fragmentos-landing.html      # Fragments head/footer de la landing
+        │   ├── landing/index.html           # Landing institucional
+        │   ├── login/login.html             # Página de inicio de sesión
+        │   ├── cliente/
+        │   │   └── detalle-mascota.html     # Detalle de una mascota (portal del cliente)
+        │   └── veterinario/                 # Vistas del portal del veterinario
+        │       ├── mascotas-cargo.html      # Listado de mascotas a cargo
+        │       ├── ficha-clinica.html       # Ficha clínica de una mascota
+        │       ├── registrar-cliente.html   # Formulario de registro de cliente
+        │       ├── registrar-mascotas.html  # Formulario de registro de mascota
+        │       ├── asignar-tratamiento.html # Formulario de asignación de tratamiento
+        │       └── tratamiento-confirmacion.html # Confirmación de tratamiento
         └── static/
-            ├── index.html                   # Landing institucional
-            ├── login.html                   # Página de inicio de sesión
             ├── css/styles.css               # Estilos personalizados del landing
             ├── js/main.js                   # Efecto glass del header al hacer scroll
             └── images/                      # Logo y recursos visuales
@@ -60,9 +72,11 @@ Luego abre en el navegador:
 | Ruta | Descripción |
 |---|---|
 | `http://localhost:8080/` | Landing institucional |
-| `http://localhost:8080/login.html` | Inicio de sesión |
-| `http://localhost:8080/mascotas` | Portal del cliente: listado de mascotas |
-| `http://localhost:8080/mascotas/detalle?id=1` | Detalle de la mascota con id 1 |
+| `http://localhost:8080/login` | Inicio de sesión |
+| `http://localhost:8080/veterinario/mascotas` | Portal del veterinario: listado de mascotas a cargo |
+| `http://localhost:8080/veterinario/mascotas/ficha?id=1` | Ficha clínica de la mascota con id 1 |
+| `http://localhost:8080/cliente/mascotas` | Portal del cliente: listado de mascotas |
+| `http://localhost:8080/cliente/mascotas/detalle?id=1` | Detalle de la mascota con id 1 |
 
 ## Funcionalidades
 

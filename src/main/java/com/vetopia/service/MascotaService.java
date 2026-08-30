@@ -23,4 +23,16 @@ public interface MascotaService {
      * identificador recibido.
      */
     Mascota obtenerMascotaPorId(Integer id);
+
+    /**
+     * Guarda (registra) una nueva mascota. El identificador lo asigna
+     * la capa repository automáticamente.
+     */
+    void guardar(Mascota mascota);
+
+    /**
+     * Cambia el estado (Activo/Inactivo) de una mascota por su id.
+     * Usado por el veterinario para dar de alta o de baja una mascota.
+     */
+    void cambiarEstado(Integer id, String estado);
 }

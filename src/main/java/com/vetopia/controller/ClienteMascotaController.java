@@ -13,27 +13,29 @@ import com.vetopia.entities.Mascota;
 import com.vetopia.service.MascotaService;
 
 /**
- * CONTROLLER (Portal del Veterinario)
- * Gestiona las peticiones del usuario con @Controller y @RequestMapping,
- * delega la lógica de negocio en el Service y retorna los nombres de las
- * vistas que Thymeleaf renderiza. No contiene lógica de negocio ni acceso
- * a datos.
+ * CONTROLLER (Portal del Cliente)
+ * Responsabilidad única: gestiona las peticiones del portal del cliente.
+ * Todas las rutas viven bajo el contexto /cliente/mascotas. El listado
+ * usa la plantilla principal (src/main/resources/templates/principal-cliente.html)
+ * y el detalle usa src/main/resources/templates/cliente/detalle-mascota.html.
  *
- * Flujo estricto de comunicación: Controller -> Service -> Repository.
+ * El controller delega la lógica de negocio en el Service (MascotaService)
+ * y solo retorna los nombres de las vistas que Thymeleaf renderiza.
+ * Flujo estricto: Controller -> Service -> Repository.
  */
 @Controller
-@RequestMapping("/mascotas")
-public class MascotaController {
+@RequestMapping("/cliente/mascotas")
+public class ClienteMascotaController {
 
     /** Servicio de mascotas (flujo obligatorio: Controller -> Service). */
     @Autowired
     private MascotaService mascotaService;
 
     /**
-     * Atiende GET /mascotas: vista principal del cliente con el listado
-     * de mascotas ordenadas alfabéticamente por nombre.
+     * Atiende GET /cliente/mascotas: listado de mascotas del cliente
+     * ordenadas alfabéticamente por nombre.
      *
-     * URL para visualizar: http://localhost:8080/mascotas
+     * URL para visualizar: http://localhost:8080/cliente/mascotas
      * Vista: src/main/resources/templates/principal-cliente.html
      */
     @GetMapping
@@ -43,12 +45,11 @@ public class MascotaController {
     }
 
     /**
-     * Atiende GET /mascotas/detalle?id=N: vista de detalle de una mascota.
-     * El id llega como parámetro de consulta, igual que en la versión
-     * JavaScript original.
+     * Atiende GET /cliente/mascotas/detalle?id=N: vista de detalle de una
+     * mascota. El id llega como parámetro de consulta.
      *
-     * URL para visualizar: http://localhost:8080/mascotas/detalle?id=2
-     * Vista: src/main/resources/templates/detalle-mascota.html
+     * URL para visualizar: http://localhost:8080/cliente/mascotas/detalle?id=2
+     * Vista: src/main/resources/templates/cliente/detalle-mascota.html
      */
     @GetMapping("/detalle")
     public String verDetalle(@RequestParam(name = "id", required = false) Integer id, Model model) {
@@ -65,17 +66,17 @@ public class MascotaController {
             // Id nulo o fuera de rango: se muestra el panel informativo.
             model.addAttribute("mensajeError", excepcion.getMessage());
         }
-        return "detalle-mascota";
+        return "cliente/detalle-mascota";
     }
 
     /**
-     * Maneja ids no numéricos (id=abc): Spring no puede
-     * convertirlos a Integer y lanzaria un 400; en su lugar se renderiza
-     * el panel "Mascota no encontrada" con un mensaje amigable.
+     * Maneja ids no numéricos (id=abc) en el portal del cliente: Spring
+     * no puede convertirlos a Integer y lanzaria un 400; en su lugar se
+     * renderiza el panel "Mascota no encontrada" con un mensaje amigable.
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public String idNoNumerico(Model modelo) {
         modelo.addAttribute("mensajeError", "El identificador suministrado no es válido.");
-        return "detalle-mascota";
+        return "cliente/detalle-mascota";
     }
 }

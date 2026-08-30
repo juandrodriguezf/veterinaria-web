@@ -80,13 +80,15 @@
                                         <div class="relative group">
 
                                                 <!-- Botón "Log In"
-                                                flex items-center gap-2: Alinea el texto con el ícono expand_more.
+                                                flex items-center gap-2: Alinea el texto con el ícono.
                                                 hover:text-primary: Al pasar el cursor se ilumina en menta.
-                                                El span usa material-symbols-outlined con tamaño 16px para el ícono de flecha hacia abajo.
+                                                border border-white: Bordecito blanco alrededor del botón.
+                                                rounded-[35px]: Mismo radio de píldora que el botón "Agendar cita" de la derecha.
+                                                Al ser un enlace a /login, al hacer clic se navega a la pantalla de inicio de sesión.
                                                 -->
-                                                <button class="flex items-center gap-2 text-on-surface-variant hover:text-primary font-label-sm text-label-sm uppercase tracking-widest transition-colors">
-                                                                        Log In <span class="material-symbols-outlined text-[16px]">expand_more</span>
-                                                </button>
+                                                <a class="flex items-center gap-2 border border-white rounded-[35px] px-4 py-2 text-on-surface-variant hover:text-primary font-label-sm text-label-sm uppercase tracking-widest transition-colors" href="/login">
+                                                                        Log In <span class="material-symbols-outlined text-[16px]">login</span>
+                                                </a>
                                         </div>
 
                                         <!-- Botón "Book Appointment"

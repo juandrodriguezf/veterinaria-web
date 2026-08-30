@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragmentos-portal :: head"></div>
+    <title>Vetopia - Iniciar Sesión</title>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <!-- CONTENIDO PRINCIPAL (sin header ni footer del portal) -->
+    <main class="flex-1 flex flex-col md:flex-row min-h-screen">
+        <!-- Columna izquierda: Hero image -->
+        <div class="relative flex-1 bg-surface-container-high overflow-hidden flex items-end p-8 md:p-16 min-h-[300px] md:min-h-screen">
+            <!-- Imagen de fondo (placeholder) -->
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0f1716]/60 to-[#0f1716]/20 z-10"></div>
+            <div class="absolute inset-0 z-0">
+                <img th:src="@{/images/veterinarioretriever.avif}" alt="Veterinario sujetando un golden retriever"
+                     class="w-full h-full object-cover object-center"/>
+            </div>
+
+            <!-- Contenido del hero -->
+            <div class="relative z-20 max-w-[512px] w-full">
+                <!-- Logo -->
+                <div class="mb-6">
+                    <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-16 w-auto object-contain brightness-0 invert"/>
+                </div>
+
+                <!-- Título -->
+                <h1 class="text-display-lg font-display-lg text-white leading-tight shadow-[0px_4px_3px_rgba(0,0,0,0.07),0px_2px_2px_rgba(0,0,0,0.06)] mb-4">
+                    Cuidamos a<br/>quienes más<br/>quieres.
+                </h1>
+
+                <!-- Subtítulo -->
+                <p class="text-body-lg font-body-lg text-white/90 shadow-[0px_1px_1px_rgba(0,0,0,0.05)]">
+                    Accede a tu portal para gestionar estados de<br/>salud, atenciones y tratamientos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Formulario de login -->
+        <div class="flex-1 bg-background flex items-center justify-center p-6 md:p-16 relative">
+            <!-- Botón "Volver al Inicio" -->
+            <a href="/" class="absolute top-8 right-6 md:right-8 flex items-center gap-2 text-on-surface-variant font-button text-button uppercase hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                Volver al Inicio
+            </a>
+
+            <!-- Tarjeta de login -->
+            <div class="w-full max-w-[448px]">
+                <div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-surface-container-highest">
+                    <!-- Título -->
+                    <h2 class="text-headline-lg font-headline-lg text-on-surface mb-1">Iniciar Sesión</h2>
+                    <p class="text-body-lg font-body-lg text-on-surface-variant mb-6">Ingresa tus credenciales para acceder a tu portal.</p>
+
+                    <!-- Mensaje de error de credenciales -->
+                    <div th:if="${mensajeError != null}" role="alert"
+                         class="mb-6 flex items-start gap-3 rounded-xl border border-error/30 bg-error-container/20 p-4">
+                        <span class="material-symbols-outlined text-error mt-0.5">error</span>
+                        <p class="font-body-md text-body-md text-on-error-container" th:text="${mensajeError}">Credenciales incorrectas.</p>
+                    </div>
+
+                    <!-- Campos del formulario -->
+                    <form th:action="@{/login}" method="post" class="space-y-6">
+                        <!-- Cédula o Correo -->
+                        <div class="space-y-2">
+                            <label for="username" class="font-label-md text-label-md text-on-surface uppercase tracking-widest">Cédula o Correo Electrónico</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-on-surface-variant">person</span>
+                                </div>
+                                <input type="text" 
+                                       id="username"
+                                       name="username"
+                                       class="w-full pl-12 pr-4 py-3 bg-surface-container-lowest text-on-surface border border-outline rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-on-surface-variant/40"
+                                       placeholder="ejemplo@correo.com o número de documento" />
+                            </div>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="space-y-2">
+                            <label for="password" class="font-label-md text-label-md text-on-surface uppercase tracking-widest">Contraseña</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-on-surface-variant">lock</span>
+                                </div>
+                                <input type="password" 
+                                       id="password"
+                                       name="password"
+                                       class="w-full pl-12 pr-12 py-3 bg-surface-container-lowest text-on-surface border border-outline rounded-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-on-surface-variant/40"
+                                       placeholder="••••••••" />
+                                <button type="button" class="absolute inset-y-0 right-4 flex items-center text-on-surface-variant hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined">visibility</span>
+                                </button>
+                            </div>
+                            <!-- Olvidé mi contraseña -->
+                            <div class="text-right pt-1">
+                                <a href="#" class="text-primary font-button text-button uppercase hover:underline">¿Olvidaste tu contraseña?</a>
+                            </div>
+                        </div>
+
+                        <!-- Botón de envío -->
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary-container px-6 py-4 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary">
+                            INGRESAR AL PORTAL
+                            <span class="material-symbols-outlined text-lg">login</span>
+                        </button>
+                    </form>
+
+                    <!-- Footer del formulario -->
+                    <div class="mt-6 pt-6 border-t border-surface-container-high">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary">info</span>
+                            <p class="text-body-md font-body-md text-on-surface-variant text-sm">
+                                El sistema identificará automáticamente tu rol (Cliente,<br/>Veterinario o Administrador) y te dirigirá a tu panel<br/>correspondiente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER (fragmento del portal) -->
+    <footer th:replace="fragmentos-portal :: footer"></footer>
+</body>
+</html>

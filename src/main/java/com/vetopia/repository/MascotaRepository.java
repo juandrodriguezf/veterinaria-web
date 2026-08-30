@@ -21,4 +21,18 @@ public interface MascotaRepository {
      * Busca una mascota por su identificador dentro del HashMap.
      */
     Mascota searchById(Integer id);
+
+    /**
+     * Guarda (persiste) una mascota en el HashMap asignándole
+     * automáticamente el siguiente id disponible.
+     */
+    void save(Mascota mascota);
+
+    /**
+     * Cambia el estado de una mascota (Activo/Inactivo) según su id.
+     *
+     * @param id     identificador de la mascota
+     * @param estado nuevo estado ("Activo" o "Inactivo")
+     */
+    void cambiarEstado(Integer id, String estado);
 }
