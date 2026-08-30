@@ -7,106 +7,7 @@
 -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Vetopia - Portal Veterinario</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "tertiary-fixed-dim": "#c6c6c7",
-                        "on-secondary": "#ffffff",
-                        "outline": "#6d7a73",
-                        "inverse-primary": "#5adcb3",
-                        "primary-fixed-dim": "#5adcb3",
-                        "surface-container-low": "#f2f4f6",
-                        "surface-container-high": "#e6e8ea",
-                        "on-primary-fixed-variant": "#00513d",
-                        "primary-fixed": "#79f9ce",
-                        "on-primary-container": "#00765b",
-                        "on-tertiary-fixed-variant": "#454747",
-                        "surface-container-highest": "#e0e3e5",
-                        "primary": "#006c52",
-                        "on-secondary-fixed": "#151d1c",
-                        "secondary": "#58605f",
-                        "on-primary-fixed": "#002117",
-                        "surface-variant": "#e0e3e5",
-                        "on-secondary-fixed-variant": "#404847",
-                        "outline-variant": "#bccac2",
-                        "inverse-surface": "#2d3133",
-                        "surface-container-lowest": "#ffffff",
-                        "surface": "#f7f9fb",
-                        "on-surface": "#191c1e",
-                        "error": "#ba1a1a",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-fixed": "#e2e2e2",
-                        "on-primary": "#ffffff",
-                        "error-container": "#ffdad6",
-                        "surface-tint": "#006c52",
-                        "surface-dim": "#d8dadc",
-                        "on-background": "#191c1e",
-                        "surface-bright": "#f7f9fb",
-                        "on-error-container": "#93000a",
-                        "secondary-container": "#d9e1df",
-                        "primary-container": "#7fffd4",
-                        "surface-container": "#eceef0",
-                        "tertiary-container": "#e8e8e8",
-                        "tertiary": "#5d5f5f",
-                        "background": "#f7f9fb",
-                        "inverse-on-surface": "#eff1f3",
-                        "on-error": "#ffffff",
-                        "on-tertiary-container": "#666868",
-                        "secondary-fixed-dim": "#c0c8c6",
-                        "secondary-fixed": "#dce4e2",
-                        "on-secondary-container": "#5c6463",
-                        "on-surface-variant": "#3d4a44",
-                        "on-tertiary-fixed": "#1a1c1c"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "1rem",
-                        "lg": "2rem",
-                        "xl": "3rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "stack-md": "16px",
-                        "stack-sm": "8px",
-                        "section-padding": "120px",
-                        "gutter": "24px",
-                        "container-max": "1280px",
-                        "stack-lg": "32px"
-                    },
-                    "fontFamily": {
-                        "headline-lg": ["Hanken Grotesk"],
-                        "headline-xl-mobile": ["Hanken Grotesk"],
-                        "body-md": ["Hanken Grotesk"],
-                        "display-lg": ["Hanken Grotesk"],
-                        "headline-xl": ["Hanken Grotesk"],
-                        "button": ["Hanken Grotesk"],
-                        "body-lg": ["Hanken Grotesk"],
-                        "label-md": ["Hanken Grotesk"]
-                    },
-                    "fontSize": {
-                        "headline-lg": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "headline-xl-mobile": ["36px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
-                        "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "button": ["13px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.1em", "fontWeight": "600" }]
-                    }
-                }
-            }
-        }
-    </script>
+        <div th:replace="fragmentos-portal :: head"></div>
 </head>
 <body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col">
 <!-- TopNavBar del Portal del Cliente -->
@@ -207,24 +108,7 @@
     </section>
 </main>
 
-<!-- Footer simplificado del portal -->
-<footer class="bg-[#0f1115] text-white py-12">
-    <div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center justify-between gap-8 px-gutter">
-        <!-- Logo -->
-        <a class="flex items-center" href="#">
-            <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
-        </a>
-        <!-- Enlaces legales -->
-        <div class="flex flex-wrap justify-center gap-x-12 gap-y-4 font-label-md text-label-md uppercase tracking-widest text-gray-300 w-full md:w-auto">
-            <a class="hover:text-primary transition-colors" href="#">Política de Privacidad</a>
-            <a class="hover:text-primary transition-colors" href="#">Términos de Servicio</a>
-            <a class="hover:text-primary transition-colors" href="#">Protocolo de Emergencia</a>
-        </div>
-        <!-- Copyright -->
-        <div class="text-xs uppercase tracking-widest text-gray-400 text-center md:text-right">
-            <p>© 2026 VETOPIA. CARE FOR THE NEXT GENERATION.</p>
-        </div>
-    </div>
-</footer>
+<!-- Footer del portal -->
+<footer th:replace="fragmentos-portal :: footer"></footer>
 </body>
 </html>
