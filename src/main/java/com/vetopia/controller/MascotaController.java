@@ -26,18 +26,8 @@ import com.vetopia.service.MascotaService;
 public class MascotaController {
 
     /** Servicio de mascotas (flujo obligatorio: Controller -> Service). */
-    private final MascotaService mascotaService;
-
-    /**
-     * Constructor con inyección por constructor: Spring entrega
-     * automáticamente el bean @Service que implementa MascotaService.
-     * El controlador nunca accede al repositorio directamente.
-     * @param mascotaService servicio de mascotas inyectado por Spring.
-     */
     @Autowired
-    public MascotaController(MascotaService mascotaService) {
-        this.mascotaService = mascotaService;
-    }
+    private MascotaService mascotaService;
 
     /**
      * Atiende GET /mascotas: vista principal del cliente con el listado

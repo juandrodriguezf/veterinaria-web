@@ -22,19 +22,8 @@ import com.vetopia.repository.MascotaRepository;
 public class MascotaServiceImpl implements MascotaService {
 
     /** Repositorio de mascotas (flujo obligatorio: Service -> Repository). */
-    private final MascotaRepository mascotaRepository;
-
-    /**
-     * Constructor con inyección de dependencias: Spring busca el bean
-     * marcado con @Repository que implemente MascotaRepository y lo
-     * entrega automáticamente al crear este servicio.
-     *
-     * @param mascotaRepository repositorio de mascotas inyectado por Spring.
-     */
     @Autowired
-    public MascotaServiceImpl(MascotaRepository mascotaRepository) {
-        this.mascotaRepository = mascotaRepository;
-    }
+    private MascotaRepository mascotaRepository;
 
     /**
      * {@inheritDoc}
