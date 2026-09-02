@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Administrador;
 import com.vetopia.entities.Dueno;
+import com.vetopia.entities.ResultadoLogin;
 import com.vetopia.entities.Veterinario;
 
 /**

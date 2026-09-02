@@ -1,5 +1,7 @@
 package com.vetopia.service;
 
+import com.vetopia.entities.ResultadoLogin;
+
 /**
  * SERVICIO - LoginService
  * Define la lógica de negocio de autenticación. Como las credenciales
@@ -19,11 +21,4 @@ public interface LoginService {
      * Rol: "VETERINARIO", "ADMINISTRADOR" o "CLIENTE".
      */
     ResultadoLogin autenticar(String correo, String contrasena);
-
-    /**
-     * Resultado de una autenticación exitosa: el rol del usuario
-     * autenticado y su identificador en la tabla correspondiente.
-     */
-    record ResultadoLogin(String rol, Integer id) {
-    }
 }

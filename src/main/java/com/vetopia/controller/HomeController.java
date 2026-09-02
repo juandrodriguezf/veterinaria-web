@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.vetopia.entities.ResultadoLogin;
 import com.vetopia.service.LoginService;
-import com.vetopia.service.LoginService.ResultadoLogin;
 
 /**
  * CONTROLLER (Página principal)
@@ -55,7 +55,7 @@ public class HomeController {
             return "login/login";
         }
 
-        switch (resultado.rol()) {
+        switch (resultado.getRol()) {
             case "VETERINARIO":
                 return "redirect:/veterinario/mascotas";
             case "ADMINISTRADOR":
@@ -63,7 +63,7 @@ public class HomeController {
             case "CLIENTE":
             default:
                 // El id del dueño viaja en la URL (@RequestParam del portal cliente).
-                return "redirect:/cliente/mascotas?idUsuario=" + resultado.id();
+                return "redirect:/cliente/mascotas?idUsuario=" + resultado.getId();
         }
     }
 }
