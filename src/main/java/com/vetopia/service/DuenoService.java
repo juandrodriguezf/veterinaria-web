@@ -26,4 +26,7 @@ public interface DuenoService {
 
     /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
     void cambiarEstado(Integer id, String estado);
+
+    /** Elimina definitivamente un dueño por su id (borrado físico). */
+    void eliminar(Integer id);
 }

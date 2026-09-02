@@ -70,6 +70,15 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
+     * Delega en el repositorio, que retira el registro del HashMap.
+     */
+    @Override
+    public void eliminar(Integer id) {
+        mascotaRepository.eliminar(id);
+    }
+
+    /**
+     * {@inheritDoc}
      * Recorre las mascotas del repositorio y conserva las del dueño
      * indicado .
      */

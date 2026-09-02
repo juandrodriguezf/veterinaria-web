@@ -35,4 +35,10 @@ public interface MascotaRepository {
      * @param estado nuevo estado ("Activo" o "Inactivo")
      */
     void cambiarEstado(Integer id, String estado);
+
+    /**
+     * Elimina definitivamente la mascota identificada (borrado físico del
+     * HashMap). Si el id no existe, no se realiza ningún cambio.
+     */
+    void eliminar(Integer id);
 }

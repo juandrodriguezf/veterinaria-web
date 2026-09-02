@@ -84,4 +84,14 @@ public class MascotaRepositoryImpl implements MascotaRepository {
             mascota.setEstado(estado);
         }
     }
+
+    /**
+     * Elimina el registro de la mascota del HashMap (borrado físico, a
+     * diferencia de cambiarEstado que realiza un borrado lógico). Se usa
+     * al eliminar un dueño para no dejar mascotas huérfanas.
+     */
+    @Override
+    public void eliminar(Integer id) {
+        tablaMascotas.remove(id);
+    }
 }

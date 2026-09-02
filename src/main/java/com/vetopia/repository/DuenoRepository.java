@@ -33,4 +33,10 @@ public interface DuenoRepository {
 
     /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
     void cambiarEstado(Integer id, String estado);
+
+    /**
+     * Elimina definitivamente al dueño identificado (borrado físico del
+     * HashMap). Si el id no existe, no se realiza ningún cambio.
+     */
+    void eliminar(Integer id);
 }

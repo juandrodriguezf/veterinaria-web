@@ -54,4 +54,9 @@ public class DuenoServiceImpl implements DuenoService {
     public void cambiarEstado(Integer id, String estado) {
         duenoRepository.cambiarEstado(id, estado);
     }
+
+    @Override
+    public void eliminar(Integer id) {
+        duenoRepository.eliminar(id);
+    }
 }

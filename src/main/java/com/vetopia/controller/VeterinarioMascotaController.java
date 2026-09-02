@@ -43,6 +43,7 @@ import com.vetopia.service.TratamientoService;
  * - GET /clientes/editar?id=N  -> carga el dueño y muestra el mismo form
  * - POST /clientes/guardar     -> crea o actualiza dueño
  * - GET /clientes/desactivar?id-> alterna Activo/Inactivo del dueño
+ * - GET /clientes/eliminar?id= -> borra el dueño y sus mascotas (cascada)
  */
 @Controller
 @RequestMapping("/veterinario/mascotas")
@@ -104,11 +105,21 @@ public class VeterinarioMascotaController {
      * del formulario coinciden con los atributos, th:field los genera).
      * Si el id llega null es creación (estado inicial "Activo"); si llega
      * con valor, el repositorio actualiza el registro existente.
+     *
+     * Guardia de la relación Dueno 1 -- 0..* Mascota: si la mascota llega
+     * sin dueño (duenoId null) no se guarda, pues quedaría huérfana y no
+     * aparecería en el portal de ningún cliente; se regresa al formulario.
      */
     @PostMapping("/guardar-mascota")
     public String guardarMascota(@ModelAttribute Mascota mascota) {
         if (mascota.getId() == null) {
             mascota.setEstado("Activo");
+        }
+        if (mascota.getDuenoId() == null) {
+            log.warn("Guardado rechazado: la mascota \"" + mascota.getNombre() + "\" no tiene dueño asignado.");
+            return mascota.getId() != null
+                    ? "redirect:/veterinario/mascotas/editar-mascota?id=" + mascota.getId()
+                    : "redirect:/veterinario/mascotas/registrar-mascota";
         }
         log.info(mascota.getId() + " - " + mascota.getNombre() + " (duenoId=" + mascota.getDuenoId() + ")");
         mascotaService.guardar(mascota);
@@ -215,6 +226,26 @@ public class VeterinarioMascotaController {
             duenoService.cambiarEstado(id, nuevoEstado);
             log.info(dueno.getNombre() + " -> " + nuevoEstado);
         }
+        return "redirect:/veterinario/mascotas/clientes";
+    }
+
+    /**
+     * Atiende GET /veterinario/mascotas/clientes/eliminar?id=N: borra
+     * definitivamente al dueño (borrado físico, a diferencia del borrado
+     * lógico de desactivar). La eliminación es en cascada: primero se
+     * retiran las mascotas del dueño para no dejar registros huérfanos y
+     * luego se elimina el dueño. Redirige al listado de clientes.
+     *
+     * URL: http://localhost:8080/veterinario/mascotas/clientes/eliminar?id=3
+     */
+    @GetMapping("/clientes/eliminar")
+    public String eliminarCliente(@RequestParam("id") Integer id) {
+        for (Mascota mascota : mascotaService.listarMascotasPorDueno(id)) {
+            mascotaService.eliminar(mascota.getId());
+            log.info("Mascota eliminada en cascada: " + mascota.getNombre() + " (duenoId=" + id + ")");
+        }
+        duenoService.eliminar(id);
+        log.info("Dueño eliminado: id=" + id);
         return "redirect:/veterinario/mascotas/clientes";
     }
 

@@ -60,11 +60,18 @@ public class DuenoRepositoryImpl implements DuenoRepository {
         }
     }
 
+    /**
+     * Busca un dueño por su correo y contraseña (credenciales de inicio
+     * de sesión). Solo se aceptan los dueños con estado "Activo": un
+     * cliente desactivado por el veterinario no puede iniciar sesión.
+     * Devuelve null si no existe coincidencia.
+     */
     @Override
     public Dueno searchByCorreoYContrasena(String correo, String contrasena) {
         return tablaDuenos.values().stream()
                 .filter(d -> d.getCorreo() != null && d.getCorreo().equalsIgnoreCase(correo)
-                        && d.getContrasena() != null && d.getContrasena().equals(contrasena))
+                        && d.getContrasena() != null && d.getContrasena().equals(contrasena)
+                        && "Activo".equalsIgnoreCase(d.getEstado()))
                 .findFirst()
                 .orElse(null);
     }
@@ -75,5 +82,15 @@ public class DuenoRepositoryImpl implements DuenoRepository {
         if (dueno != null) {
             dueno.setEstado(estado);
         }
+    }
+
+    /**
+     * Elimina el registro del dueño del HashMap (borrado físico, a
+     * diferencia de cambiarEstado que realiza un borrado lógico). Si el
+     * id no existe, remove() no altera la "tabla".
+     */
+    @Override
+    public void eliminar(Integer id) {
+        tablaDuenos.remove(id);
     }
 }

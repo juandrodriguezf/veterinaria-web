@@ -36,6 +36,9 @@ public interface MascotaService {
      */
     void cambiarEstado(Integer id, String estado);
 
+    /** Elimina definitivamente una mascota por su id (borrado físico). */
+    void eliminar(Integer id);
+
     /**
      * Lista solo las mascotas que pertenecen al dueño indicado
      * (relación Dueno 1 -- 0..* Mascota del diagrama de clases).
