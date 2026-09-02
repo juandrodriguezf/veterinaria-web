@@ -20,7 +20,7 @@
         <!-- Navigation Links (Desktop) -->
         <div class="hidden md:flex gap-8">
             <a aria-current="page" class="text-white font-bold border-b-2 border-white pb-1 hover:text-primary transition-colors duration-200" href="#" style="color: rgb(127, 255, 212); text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px; border-color: rgb(127, 255, 212);">Pacientes</a>
-            <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Clientes</a>
+            <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" th:href="@{/veterinario/mascotas/clientes}">Clientes</a>
             <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Citas</a>
             <a class="text-gray-300 font-body-md text-body-md hover:text-primary transition-colors duration-200" href="#">Tratamientos</a>
         </div>
@@ -37,7 +37,7 @@
                     CG
                 </div>
             </div>
-            <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2" href="#">
+            <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2" th:href="@{/login}">
                 Logout
             </a>
             <!-- Mobile Menu Toggle (simplified for layout) -->
@@ -62,8 +62,15 @@
     <section class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
         <div class="flex items-center justify-between gap-4 p-stack-lg border-b border-surface-container-high">
             <h2 class="font-headline-lg text-headline-lg text-on-surface">Listado de mascotas</h2>
-            <span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant"
-                  th:text="${#lists.size(mascotas) == 1} ? '1 mascota registrada' : ${#lists.size(mascotas)} + ' mascotas registradas'"></span>
+            <div class="flex items-center gap-4">
+                <span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant"
+                      th:text="${#lists.size(mascotas) == 1} ? '1 mascota registrada' : ${#lists.size(mascotas)} + ' mascotas registradas'"></span>
+                <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
+                   th:href="@{/veterinario/mascotas/registrar-mascota}">
+                    Agregar mascota
+                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">pets</span>
+                </a>
+            </div>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full min-w-[720px] text-left">
@@ -112,12 +119,26 @@
                     <td class="px-6 py-4 font-body-md text-body-md text-on-surface" th:text="${mascota.obtenerEdadDescripcion()}"></td>
                     <td class="px-6 py-4 font-body-md text-body-md text-on-surface" th:text="${mascota.sexo}"></td>
                     <td class="px-6 py-4">
-                        <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
-                           th:aria-label="'Consultar ficha clínica de ' + ${mascota.nombre}"
-                           th:href="@{/veterinario/mascotas/ficha(id=${mascota.id})}">
-                            Ver ficha
-                            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
-                        </a>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
+                               th:aria-label="'Consultar ficha clínica de ' + ${mascota.nombre}"
+                               th:href="@{/veterinario/mascotas/ficha(id=${mascota.id})}">
+                                Ver ficha
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
+                            </a>
+                            <a class="inline-flex items-center gap-2 rounded-full bg-secondary-container px-4 py-2 font-button text-button uppercase text-on-secondary-container transition-colors hover:bg-secondary hover:text-on-secondary"
+                               th:href="@{/veterinario/mascotas/editar-mascota(id=${mascota.id})}">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">edit</span>
+                                Editar
+                            </a>
+                            <a class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-button text-button uppercase transition-colors"
+                               th:classappend="${mascota.estado == 'Activo'} ? 'bg-error-container text-on-error-container hover:bg-error hover:text-on-error' : 'bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary'"
+                               th:href="@{/veterinario/mascotas/desactivar-mascota(id=${mascota.id})}">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;"
+                                      th:text="${mascota.estado == 'Activo'} ? 'pets' : 'emergency_home'"></span>
+                                <span th:text="${mascota.estado == 'Activo'} ? 'Desactivar' : 'Activar'"></span>
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 </tbody>

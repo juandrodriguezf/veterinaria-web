@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.service.DuenoService;
 import com.vetopia.service.MascotaService;
 
 /**
@@ -22,6 +24,10 @@ import com.vetopia.service.MascotaService;
  * El controller delega la lógica de negocio en el Service (MascotaService)
  * y solo retorna los nombres de las vistas que Thymeleaf renderiza.
  * Flujo estricto: Controller -> Service -> Repository.
+ *
+ * La identidad del cliente llega como parámetro de consulta idUsuario
+ * (el login redirige a /cliente/mascotas?idUsuario=N).
+ * 
  */
 @Controller
 @RequestMapping("/cliente/mascotas")
@@ -31,34 +37,64 @@ public class ClienteMascotaController {
     @Autowired
     private MascotaService mascotaService;
 
+    /** Servicio de dueños (para resolver el cliente logueado). */
+    @Autowired
+    private DuenoService duenoService;
+
     /**
-     * Atiende GET /cliente/mascotas: listado de mascotas del cliente
-     * ordenadas alfabéticamente por nombre.
+     * Atiende GET /cliente/mascotas?idUsuario=N: listado de las mascotas
+     * del cliente identificado (relación Dueno 1 -- 0..* Mascota). Si no
+     * llega idUsuario se regresa al login.
      *
-     * URL para visualizar: http://localhost:8080/cliente/mascotas
+     * URL para visualizar: http://localhost:8080/cliente/mascotas?idUsuario=1
      * Vista: src/main/resources/templates/principal-cliente.html
      */
     @GetMapping
-    public String listarMascotas(Model model) {
-        model.addAttribute("mascotas", mascotaService.listarMascotas());
+    public String listarMascotas(@RequestParam(name = "idUsuario", required = false) Integer idUsuario,
+                                 Model model) {
+        if (idUsuario == null) {
+            return "redirect:/login";
+        }
+        Dueno dueno = duenoService.obtenerDuenoPorId(idUsuario);
+        if (dueno == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("dueno", dueno);
+        model.addAttribute("idUsuario", idUsuario);
+        model.addAttribute("mascotas", mascotaService.listarMascotasPorDueno(idUsuario));
         return "principal-cliente";
     }
 
     /**
-     * Atiende GET /cliente/mascotas/detalle?id=N: vista de detalle de una
-     * mascota. El id llega como parámetro de consulta.
+     * Atiende GET /cliente/mascotas/detalle?id=N&idUsuario=M: vista de
+     * detalle de una mascota propia. Valida que la mascota pertenezca al
+     * cliente identificado (aislamiento de datos entre clientes).
      *
-     * URL para visualizar: http://localhost:8080/cliente/mascotas/detalle?id=2
+     * URL para visualizar: http://localhost:8080/cliente/mascotas/detalle?id=2&idUsuario=1
      * Vista: src/main/resources/templates/cliente/detalle-mascota.html
      */
     @GetMapping("/detalle")
-    public String verDetalle(@RequestParam(name = "id", required = false) Integer id, Model model) {
+    public String verDetalle(@RequestParam(name = "id", required = false) Integer id,
+                             @RequestParam(name = "idUsuario", required = false) Integer idUsuario,
+                             Model model) {
+        if (idUsuario == null) {
+            return "redirect:/login";
+        }
+        Dueno dueno = duenoService.obtenerDuenoPorId(idUsuario);
+        if (dueno == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("dueno", dueno);
+        model.addAttribute("idUsuario", idUsuario);
+
         try {
             Mascota mascota = mascotaService.obtenerMascotaPorId(id);
             if (mascota == null) {
                 model.addAttribute("mensajeError",
                         "No encontramos ninguna mascota registrada con el identificador \""
                                 + (id == null ? "" : id) + "\".");
+            } else if (!idUsuario.equals(mascota.getDuenoId())) {
+                model.addAttribute("mensajeError", "Esta mascota no está registrada a tu nombre.");
             } else {
                 model.addAttribute("mascota", mascota);
             }
@@ -71,7 +107,7 @@ public class ClienteMascotaController {
 
     /**
      * Maneja ids no numéricos (id=abc) en el portal del cliente: Spring
-     * no puede convertirlos a Integer y lanzaria un 400; en su lugar se
+     * no puede convertirlos a Integer y lanzaría un 400; en su lugar se
      * renderiza el panel "Mascota no encontrada" con un mensaje amigable.
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)

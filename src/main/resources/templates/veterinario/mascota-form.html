@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<!--
+    Vista Thymeleaf .
+    URLs:
+      http://localhost:8080/veterinario/mascotas/registrar-mascota  (crear)
+      http://localhost:8080/veterinario/mascotas/editar-mascota?id=N  (editar)
+    Controlador: VeterinarioMascotaController.mostrarFormularioCrear() / editarMascota()
+    
+    th:object en el <form> y th:field="*{campo}" en cada input; el mismo
+    formulario sirve para crear (id null) y editar (id precargado).
+    El select de dueño materializa la relación Dueno 1 -- 0..* Mascota.
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragmentos-portal :: head"></div>
+    <title>Vetopia - Formulario de Mascota</title>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+        <a href="/" class="flex items-center">
+            <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-8 w-auto object-contain"/>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+            <a href="/veterinario/mascotas" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1">Pacientes</a>
+            <a href="/veterinario/mascotas/clientes" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Clientes</a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Tratamientos</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/login" class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2">
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-1">
+    <div class="max-w-container-max mx-auto px-gutter py-stack-lg">
+        <!-- Título y subtítulo -->
+        <div class="mb-stack-lg">
+            <h1 class="text-headline-xl font-headline-xl text-on-surface mb-1"
+                th:text="${mascota.id != null} ? 'Editar Mascota' : 'Registrar Nueva Mascota'"></h1>
+            <p class="text-body-lg font-body-lg text-on-surface-variant">Completar los detalles de la mascota</p>
+        </div>
+
+        <!-- Formulario: th:object vincula la Mascota del modelo  -->
+        <form th:object="${mascota}" th:action="@{/veterinario/mascotas/guardar-mascota}" method="post"
+              class="flex flex-col gap-stack-lg">
+            <!-- Id oculto: null en creación, precargado en edición -->
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-outline-variant">
+                <div class="border-b border-surface-container-highest pb-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-5 h-5 bg-primary rounded-full"></div>
+                        <h2 class="text-headline-lg font-headline-lg text-on-surface">Información de la Mascota</h2>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- Nombre y Especie -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label for="nombre" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Nombre mascota</label>
+                            <input th:field="*{nombre}" id="nombre" type="text"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g. Max"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="especie" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Especie</label>
+                            <select th:field="*{especie}" id="especie"
+                                    class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Seleccionar especie</option>
+                                <option value="Perro">Perro</option>
+                                <option value="Gato">Gato</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Raza y Sexo -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label for="raza" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Raza</label>
+                            <input th:field="*{raza}" id="raza" type="text"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g. Golden Retriever"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="sexo" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Sexo</label>
+                            <select th:field="*{sexo}" id="sexo"
+                                    class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Seleccionar sexo</option>
+                                <option value="Macho">Macho</option>
+                                <option value="Hembra">Hembra</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Edad y Peso -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label for="edad" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Edad (Años)</label>
+                            <input th:field="*{edad}" id="edad" type="number" step="0.1" min="0"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g. 2"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="pesoKg" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Peso (kg)</label>
+                            <input th:field="*{pesoKg}" id="pesoKg" type="number" step="0.1" min="0"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g. 15.5"/>
+                        </div>
+                    </div>
+
+                    <!-- Color e Imagen -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                            <label for="color" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Color / Pelaje</label>
+                            <input th:field="*{color}" id="color" type="text"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g. Dorado"/>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label for="imagen" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">URL de Imagen</label>
+                            <input th:field="*{imagen}" id="imagen" type="text"
+                                   class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="https://..."/>
+                        </div>
+                    </div>
+
+                    <!-- Dueño: relación Dueno 1 -- 0..* Mascota -->
+                    <div class="flex flex-col gap-2">
+                        <label for="duenoId" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Dueño</label>
+                        <select th:field="*{duenoId}" id="duenoId"
+                                class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">Seleccionar dueño</option>
+                            <option th:each="d : ${duenos}" th:value="${d.id}" th:text="${d.nombre} + ' (' + ${d.cedula} + ')'"></option>
+                        </select>
+                    </div>
+
+                    <!-- Estado (solo visible al editar; al crear el controller asigna "Activo") -->
+                    <div class="flex flex-col gap-2" th:if="${mascota.id != null}">
+                        <label for="estado" class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Estado</label>
+                        <select th:field="*{estado}" id="estado"
+                                class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-outline-variant">
+                <a href="/veterinario/mascotas" class="px-6 py-3 rounded-full border border-outline text-on-surface font-button text-button uppercase hover:bg-surface-container-high transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-full bg-primary-container px-8 py-3 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary">
+                    <span class="material-symbols-outlined text-lg">save</span>
+                    <span th:text="${mascota.id != null} ? 'Actualizar Mascota' : 'Registrar Mascota'"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="fragmentos-portal :: footer"></footer>
+</body>
+</html>

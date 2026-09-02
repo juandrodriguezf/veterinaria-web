@@ -56,18 +56,21 @@ public class MascotaRepositoryImpl implements MascotaRepository {
     }
 
     /**
-     * Guarda la mascota asignándole el siguiente id disponible.
-     * Se calcula el id máximo existente + 1 para evitar colisiones
-     * cuando los registros no están contiguos, y se asigna al objeto
-     * antes de insertarlo en el mapa.
+     * Guarda la mascota en el HashMap. Si el objeto ya trae id (viene del
+     * formulario de edición) se actualiza el registro existente; si no,
+     * se le asigna el siguiente id disponible .
      */
     @Override
     public void save(Mascota mascota) {
-        int lastId = tablaMascotas.keySet().stream()
-                .max(Integer::compareTo)
-                .orElse(0);
-        mascota.setId(lastId + 1);
-        tablaMascotas.put(mascota.getId(), mascota);
+        if (mascota.getId() != null) {
+            tablaMascotas.put(mascota.getId(), mascota);
+        } else {
+            int lastId = tablaMascotas.keySet().stream()
+                    .max(Integer::compareTo)
+                    .orElse(0);
+            mascota.setId(lastId + 1);
+            tablaMascotas.put(mascota.getId(), mascota);
+        }
     }
 
     /**

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<!--
+    Vista Thymeleaf .
+    URL: http://localhost:8080/veterinario/mascotas/clientes
+    Controlador: VeterinarioMascotaController.listarClientes()  [GET /veterinario/mascotas/clientes]
+-->
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragmentos-portal :: head"></div>
+    <title>Vetopia - Gestión de Clientes</title>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar del Portal del Veterinario -->
+<nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+        <a href="/" class="flex items-center">
+            <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-8 w-auto object-contain"/>
+        </a>
+        <div class="hidden md:flex items-center gap-8">
+            <a href="/veterinario/mascotas" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Pacientes</a>
+            <a href="/veterinario/mascotas/clientes" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1">Clientes</a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
+            <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Tratamientos</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/login" class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-button text-button uppercase tracking-wider items-center gap-2">
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg">
+    <!-- Encabezado de la sección -->
+    <section class="mb-stack-lg">
+        <h1 class="mb-2 font-headline-xl text-headline-xl text-on-surface">Gestión de Clientes</h1>
+        <p class="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">
+            Administra los dueños de mascotas registrados en Vetopia.
+        </p>
+    </section>
+
+    <!-- Tarjeta contenedora del listado -->
+    <section class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+        <div class="flex items-center justify-between gap-4 p-stack-lg border-b border-surface-container-high">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface">Listado de clientes</h2>
+            <div class="flex items-center gap-4">
+                <span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant"
+                      th:text="${#lists.size(duenos) == 1} ? '1 cliente registrado' : ${#lists.size(duenos)} + ' clientes registrados'"></span>
+                <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
+                   th:href="@{/veterinario/mascotas/clientes/crear}">
+                    Agregar cliente
+                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person_add</span>
+                </a>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px] text-left">
+                <thead>
+                <tr class="bg-surface-container-low uppercase">
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Nombre</th>
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Cédula</th>
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Correo</th>
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Celular</th>
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Estado</th>
+                    <th class="px-6 py-4 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant" scope="col">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Estado vacío cuando el repositorio no devuelve registros -->
+                <tr th:if="${#lists.isEmpty(duenos)}">
+                    <td class="px-6 py-16 text-center" colspan="6">
+                        <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-outline-variant" style="font-variation-settings: 'FILL' 0;">people</span>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant">Aún no hay clientes registrados.</p>
+                    </td>
+                </tr>
+                <!-- Una fila por cada dueño entregado por la capa Service -->
+                <tr class="border-b border-surface-container-high transition-colors last:border-0 hover:bg-surface-container-low"
+                    th:each="dueno : ${duenos}">
+                    <td class="px-6 py-4 font-label-md text-label-md text-on-surface" th:text="${dueno.nombre}"></td>
+                    <td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant" th:text="${dueno.cedula}"></td>
+                    <td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant" th:text="${dueno.correo}"></td>
+                    <td class="px-6 py-4 font-body-md text-body-md text-on-surface-variant" th:text="${dueno.celular}"></td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center rounded-full px-3 py-1 font-label-md text-label-md uppercase tracking-widest"
+                              th:classappend="${dueno.estado == 'Activo'} ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container-high text-outline'"
+                              th:text="${dueno.estado}"></span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <a class="inline-flex items-center gap-2 rounded-full bg-secondary-container px-4 py-2 font-button text-button uppercase text-on-secondary-container transition-colors hover:bg-secondary hover:text-on-secondary"
+                               th:href="@{/veterinario/mascotas/clientes/editar(id=${dueno.id})}">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">edit</span>
+                                Editar
+                            </a>
+                            <a class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-button text-button uppercase transition-colors"
+                               th:classappend="${dueno.estado == 'Activo'} ? 'bg-error-container text-on-error-container hover:bg-error hover:text-on-error' : 'bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary'"
+                               th:href="@{/veterinario/mascotas/clientes/desactivar(id=${dueno.id})}">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;"
+                                      th:text="${dueno.estado == 'Activo'} ? 'person_off' : 'person'"></span>
+                                <span th:text="${dueno.estado == 'Activo'} ? 'Desactivar' : 'Activar'"></span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<!-- Footer del portal -->
+<footer th:replace="fragmentos-portal :: footer"></footer>
+</body>
+</html>

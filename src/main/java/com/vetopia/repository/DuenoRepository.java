@@ -30,4 +30,7 @@ public interface DuenoRepository {
      * inicio de sesión). Devuelve null si no existe coincidencia.
      */
     Dueno searchByCorreoYContrasena(String correo, String contrasena);
+
+    /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
+    void cambiarEstado(Integer id, String estado);
 }

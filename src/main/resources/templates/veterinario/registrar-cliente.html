@@ -17,7 +17,7 @@
             <!-- Enlaces de navegación -->
             <div class="hidden md:flex items-center gap-8">
                 <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Pacientes</a>
-                <a href="/veterinario/mascotas/registrar-cliente" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1 shadow-[0px_2px_4px_rgba(0,0,0,0.30)]">Clientes</a>
+                <a th:href="@{/veterinario/mascotas/clientes}" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1 shadow-[0px_2px_4px_rgba(0,0,0,0.30)]">Clientes</a>
                 <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
                 <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Tratamientos</a>
             </div>
@@ -32,9 +32,9 @@
                     <span class="text-on-primary-container font-bold text-body-md">CG</span>
                 </div>
                 </div>
-                <button class="px-6 py-3 rounded-full border border-gray-600 text-white font-button text-button uppercase hover:bg-white/5 transition-colors">
+                <a class="px-6 py-3 rounded-full border border-gray-600 text-white font-button text-button uppercase hover:bg-white/5 transition-colors" th:href="@{/login}">
                     Logout
-                </button>
+                </a>
             </div>
         </div>
     </nav>

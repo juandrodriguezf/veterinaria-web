@@ -43,18 +43,21 @@ public class DuenoRepositoryImpl implements DuenoRepository {
     }
 
     /**
-     * Guarda el dueño asignándole el siguiente id disponible.
-     * Se calcula el id máximo existente + 1 para evitar colisiones
-     * cuando los registros no están contiguos, y se asigna al objeto
-     * antes de insertarlo en el mapa.
+     * Guarda el dueño en el HashMap. Si el objeto ya trae id (viene del
+     * formulario de edición) se actualiza el registro existente; si no,
+     * se le asigna el siguiente id disponible .
      */
     @Override
     public void save(Dueno dueno) {
-        int lastId = tablaDuenos.keySet().stream()
-                .max(Integer::compareTo)
-                .orElse(0);
-        dueno.setId(lastId + 1);
-        tablaDuenos.put(dueno.getId(), dueno);
+        if (dueno.getId() != null) {
+            tablaDuenos.put(dueno.getId(), dueno);
+        } else {
+            int lastId = tablaDuenos.keySet().stream()
+                    .max(Integer::compareTo)
+                    .orElse(0);
+            dueno.setId(lastId + 1);
+            tablaDuenos.put(dueno.getId(), dueno);
+        }
     }
 
     @Override
@@ -64,5 +67,13 @@ public class DuenoRepositoryImpl implements DuenoRepository {
                         && d.getContrasena() != null && d.getContrasena().equals(contrasena))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public void cambiarEstado(Integer id, String estado) {
+        Dueno dueno = tablaDuenos.get(id);
+        if (dueno != null) {
+            dueno.setEstado(estado);
+        }
     }
 }

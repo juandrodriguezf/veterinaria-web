@@ -16,7 +16,7 @@
         <!-- Logo y nombre del portal -->
             <a class="flex items-center gap-3" th:href="@{/}">
                 <img alt="Vetopia Logo" class="h-10 w-auto object-contain" th:src="@{/images/logo_Vetopia.png}"/>
-            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300">Portal Veterinario</span>
+            <span class="hidden sm:block font-label-md text-label-md uppercase tracking-widest text-gray-300" th:text="${dueno.nombre}"></span>
         </a>
         <!-- Navegación del portal -->
         <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
@@ -33,7 +33,7 @@
 <main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-stack-lg">
     <!-- Encabezado de la sección -->
     <section class="mb-stack-lg">
-        <h1 class="mb-2 font-headline-xl text-headline-xl text-on-surface">Mascotas A Cargo</h1>
+        <h1 class="mb-2 font-headline-xl text-headline-xl text-on-surface">Mis Mascotas</h1>
         <p class="max-w-3xl font-body-lg text-body-lg text-on-surface-variant">
             Consulta la información de tus mascotas registradas en Vetopia. Selecciona una mascota para ver su perfil completo.
         </p>
@@ -96,7 +96,7 @@
                     <td class="px-6 py-4">
                         <a class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2.5 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
                            th:aria-label="'Consultar detalles de ' + ${mascota.nombre}"
-                           th:href="@{/cliente/mascotas/detalle(id=${mascota.id})}">
+                           th:href="@{/cliente/mascotas/detalle(id=${mascota.id}, idUsuario=${idUsuario})}">
                             Ver detalles
                             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
                         </a>

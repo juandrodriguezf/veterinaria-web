@@ -62,7 +62,8 @@ public class HomeController {
                 return "redirect:/";
             case "CLIENTE":
             default:
-                return "redirect:/cliente/mascotas";
+                // El id del dueño viaja en la URL (@RequestParam del portal cliente).
+                return "redirect:/cliente/mascotas?idUsuario=" + resultado.id();
         }
     }
 }

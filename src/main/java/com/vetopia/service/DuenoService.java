@@ -23,4 +23,7 @@ public interface DuenoService {
 
     /** Busca un dueño por correo y contraseña (para login). */
     Dueno obtenerPorCorreoYContrasena(String correo, String contrasena);
+
+    /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
+    void cambiarEstado(Integer id, String estado);
 }

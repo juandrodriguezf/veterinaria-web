@@ -1,5 +1,6 @@
 package com.vetopia.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,21 @@ public class MascotaServiceImpl implements MascotaService {
     @Override
     public void cambiarEstado(Integer id, String estado) {
         mascotaRepository.cambiarEstado(id, estado);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Recorre las mascotas del repositorio y conserva las del dueño
+     * indicado .
+     */
+    @Override
+    public List<Mascota> listarMascotasPorDueno(Integer duenoId) {
+        List<Mascota> resultado = new ArrayList<>();
+        for (Mascota mascota : mascotaRepository.searchAll()) {
+            if (duenoId.equals(mascota.getDuenoId())) {
+                resultado.add(mascota);
+            }
+        }
+        return resultado;
     }
 }

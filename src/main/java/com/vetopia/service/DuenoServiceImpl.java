@@ -49,4 +49,9 @@ public class DuenoServiceImpl implements DuenoService {
     public Dueno obtenerPorCorreoYContrasena(String correo, String contrasena) {
         return duenoRepository.searchByCorreoYContrasena(correo, contrasena);
     }
+
+    @Override
+    public void cambiarEstado(Integer id, String estado) {
+        duenoRepository.cambiarEstado(id, estado);
+    }
 }
