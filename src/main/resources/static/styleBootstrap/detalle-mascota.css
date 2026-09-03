@@ -1,0 +1,227 @@
+/* ==========================================================================
+   Vetopia - Estilos Bootstrap para Detalle de Mascota
+   Carpeta: static/styleBootstrap/
+   ========================================================================== */
+
+:root {
+    --vetopia-primary: #006c52;
+    --vetopia-primary-hover: #00513d;
+    --vetopia-primary-container: #7fffd4;
+    --vetopia-on-primary-container: #00513d;
+    --vetopia-secondary: #58605f;
+    --vetopia-secondary-container: #d9e1df;
+    --vetopia-on-secondary-container: #404847;
+    --vetopia-surface: #f7f9fb;
+    --vetopia-surface-card: #ffffff;
+    --vetopia-surface-container-high: #e6e8ea;
+    --vetopia-border: #e0e3e5;
+    --vetopia-text: #191c1e;
+    --vetopia-text-muted: #58605f;
+    --vetopia-dark-bg: #0f1115;
+    --vetopia-card-radius: 1rem;
+    --vetopia-font-family: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body.vetopia-portal {
+    font-family: var(--vetopia-font-family);
+    background-color: var(--vetopia-surface);
+    color: var(--vetopia-text);
+    min-height: 100vh;
+}
+
+/* --------------------------------------------------------------------------
+   Top Navigation Bar (Header)
+   -------------------------------------------------------------------------- */
+.vetopia-header {
+    background-color: var(--vetopia-dark-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.portal-brand-text {
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: #cbd5e1;
+}
+
+.nav-portal-link {
+    color: #94a3b8;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-portal-link:hover {
+    color: #79f9ce;
+}
+
+.nav-logout-link {
+    color: #94a3b8;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-logout-link:hover {
+    color: #f87171;
+}
+
+/* --------------------------------------------------------------------------
+   Navegación de retorno (Volver a Mis Mascotas)
+   -------------------------------------------------------------------------- */
+.btn-back {
+    color: var(--vetopia-secondary);
+    font-size: 0.825rem;
+    letter-spacing: 0.08em;
+    transition: color 0.2s ease-in-out;
+}
+
+.btn-back:hover {
+    color: var(--vetopia-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Tarjetas de contenido y detalle
+   -------------------------------------------------------------------------- */
+.detail-card {
+    background-color: var(--vetopia-surface-card);
+    border: 1px solid var(--vetopia-border);
+    border-radius: var(--vetopia-card-radius);
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.detail-img-box {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background-color: var(--vetopia-surface-container-high);
+}
+
+.detail-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-photo-placeholder {
+    color: #6d7a73;
+}
+
+.patient-badge-id {
+    color: var(--vetopia-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.pet-title {
+    font-family: 'Hanken Grotesk', var(--vetopia-font-family);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--vetopia-text);
+}
+
+@media (max-width: 767.98px) {
+    .pet-title {
+        font-size: 2rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Badges / Chips
+   -------------------------------------------------------------------------- */
+.chip-badge {
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+}
+
+.chip-species {
+    background-color: var(--vetopia-primary-container);
+    color: var(--vetopia-on-primary-container);
+}
+
+.chip-sex {
+    background-color: var(--vetopia-secondary-container);
+    color: var(--vetopia-on-secondary-container);
+}
+
+.pet-subtitle {
+    font-size: 1.1rem;
+    color: var(--vetopia-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Lista de datos (Edad, Sexo, Peso, etc.)
+   -------------------------------------------------------------------------- */
+.data-group-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--vetopia-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.data-group-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--vetopia-text);
+}
+
+/* --------------------------------------------------------------------------
+   Panel Mascota No Encontrada
+   -------------------------------------------------------------------------- */
+.not-found-icon-box {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: var(--vetopia-surface-container-high);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary-pill {
+    background-color: var(--vetopia-primary-container);
+    color: var(--vetopia-on-primary-container);
+    border: none;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1.75rem;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-pill:hover {
+    background-color: var(--vetopia-primary);
+    color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.vetopia-footer {
+    background-color: var(--vetopia-dark-bg);
+    color: #ffffff;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vetopia-footer-link {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    transition: color 0.2s ease-in-out;
+}
+
+.vetopia-footer-link:hover {
+    color: #79f9ce;
+}
+
+.vetopia-copyright {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+}
+
