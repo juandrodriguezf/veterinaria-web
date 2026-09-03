@@ -38,7 +38,7 @@
         </a>
         <!-- Navegación del portal -->
         <nav class="d-flex align-items-center gap-3 gap-md-4 text-uppercase fw-semibold small">
-            <a class="d-none d-sm-inline text-decoration-none nav-portal-link" th:href="@{/cliente/mascotas}">Mascotas</a>
+            <a class="d-none d-sm-inline text-decoration-none nav-portal-link" th:href="@{/cliente/mascotas(idUsuario=${idUsuario})}">Mascotas</a>
             <a class="d-none d-sm-inline text-decoration-none nav-portal-link" href="#">Citas</a>
             <a class="d-flex align-items-center gap-1 text-decoration-none nav-logout-link" th:href="@{/login}">
                 <span class="material-symbols-outlined" style="font-size: 20px;">logout</span>
@@ -52,7 +52,7 @@
     <!-- Navegación de regreso al listado -->
     <section class="mb-4">
         <a class="btn-back d-inline-flex align-items-center gap-2 text-decoration-none text-uppercase fw-bold"
-           th:href="@{/cliente/mascotas}">
+           th:href="@{/cliente/mascotas(idUsuario=${idUsuario})}">
             <span class="material-symbols-outlined" style="font-size: 20px;">arrow_back</span>
             Volver a Mis Mascotas
         </a>
@@ -142,7 +142,7 @@
            th:text="${mensajeError} ?: 'No encontramos ninguna mascota registrada.'"></p>
         <div>
             <a class="btn-primary-pill text-uppercase"
-               th:href="@{/cliente/mascotas}">
+               th:href="@{/cliente/mascotas(idUsuario=${idUsuario})}">
                 Ver mis mascotas
                 <span class="material-symbols-outlined" style="font-size: 16px;">arrow_forward</span>
             </a>
