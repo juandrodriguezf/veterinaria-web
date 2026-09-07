@@ -5,6 +5,10 @@ target/
 # Logs
 *.log
 
+# Base de datos H2 (archivos binarios generados al ejecutar)
+mydatabase*
+*.trace.db
+
 # IDEs
 .idea/
 *.iml
