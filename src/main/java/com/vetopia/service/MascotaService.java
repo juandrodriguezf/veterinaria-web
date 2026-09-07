@@ -31,6 +31,30 @@ public interface MascotaService {
     void guardar(Mascota mascota);
 
     /**
+     * Guarda la mascota aplicando las reglas de negocio: asigna el estado
+     * inicial "Activo" cuando es un registro nuevo y exige un dueño
+     * asignado para no dejar registros huérfanos. Lanza
+     * IllegalArgumentException si no llegan datos y
+     * IllegalStateException si la mascota queda sin dueño.
+     */
+    void guardarValidada(Mascota mascota);
+
+    /**
+     * Obtiene la mascota con el id indicado y valida que pertenezca al
+     * dueño dado (aislamiento de datos del portal del cliente). Lanza
+     * IllegalArgumentException si el id es inválido o la mascota no
+     * existe, y IllegalStateException si la mascota es de otro dueño.
+     */
+    Mascota obtenerPropia(Integer id, Integer duenoId);
+
+    /**
+     * Alterna el estado de la mascota (Activo <-> Inactivo, el borrado
+     * lógico del diagrama de clases) y devuelve el nuevo estado; null si
+     * la mascota no existe.
+     */
+    String alternarEstado(Integer id);
+
+    /**
      * Cambia el estado (Activo/Inactivo) de una mascota por su id.
      * Usado por el veterinario para dar de alta o de baja una mascota.
      */

@@ -24,6 +24,27 @@ public interface DuenoService {
     /** Busca un dueño por correo y contraseña (para login). */
     Dueno obtenerPorCorreoYContrasena(String correo, String contrasena);
 
+    /**
+     * Obtiene el dueño con el id indicado y valida que esté "Activo"
+     * (misma política del login: un cliente desactivado no ingresa al
+     * portal). Lanza IllegalArgumentException si el id es inválido y
+     * IllegalStateException si el dueño no existe o está inactivo.
+     */
+    Dueno obtenerActivo(Integer id);
+
+    /**
+     * Alterna el estado del dueño (Activo <-> Inactivo, el borrado
+     * lógico del diagrama de clases) y devuelve el nuevo estado; null si
+     * el dueño no existe.
+     */
+    String alternarEstado(Integer id);
+
+    /**
+     * Elimina el dueño y, en cascada, sus mascotas (borrado físico),
+     * para no dejar registros huérfanos en el portal del cliente.
+     */
+    void eliminarEnCascada(Integer id);
+
     /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
     void cambiarEstado(Integer id, String estado);
 

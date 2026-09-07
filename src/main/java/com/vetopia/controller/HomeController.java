@@ -40,30 +40,34 @@ public class HomeController {
 
     /**
      * Atiende POST /login: procesa las credenciales enviadas por el
-     * formulario (correo y contraseña). El service busca en las tres
-     * tablas (Veterinario, Administrador, Dueño) y se redirige al panel
-     * correspondiente según el rol. Si las credenciales no coinciden en
-     * ninguna tabla se vuelve al login mostrando un mensaje de error.
+     * formulario (correo y contraseña) y delega en el service, que lanza
+     * IllegalArgumentException cuando faltan datos o no hay coincidencia;
+     * el controller atrapa la excepción y regresa al login mostrando su
+     * mensaje. Si las credenciales son válidas se redirige al panel
+     * correspondiente según el rol.
      */
     @PostMapping("/login")
     public String iniciarSesion(@RequestParam("username") String username,
                                 @RequestParam("password") String password,
                                 Model model) {
-        ResultadoLogin resultado = loginService.autenticar(username, password);
-        if (resultado == null) {
-            model.addAttribute("mensajeError", "Correo o contraseña incorrectos. Verifica tus credenciales.");
+        try {
+            ResultadoLogin resultado = loginService.autenticar(username, password);
+            switch (resultado.getRol()) {
+                case "VETERINARIO":
+                    return "redirect:/veterinario/mascotas";
+                case "ADMINISTRADOR":
+                    return "redirect:/";
+                case "CLIENTE":
+                default:
+                    // El id del dueño viaja en la URL (@RequestParam del portal cliente).
+                    return "redirect:/cliente/mascotas?idUsuario=" + resultado.getId();
+            }
+        } catch (IllegalArgumentException excepcion) {
+            // El service comunica la causa exacta en su mensaje (datos
+            // incompletos o credenciales sin coincidencia); el controller
+            // lo muestra tal cual en el formulario de login.
+            model.addAttribute("mensajeError", excepcion.getMessage());
             return "login/login";
-        }
-
-        switch (resultado.getRol()) {
-            case "VETERINARIO":
-                return "redirect:/veterinario/mascotas";
-            case "ADMINISTRADOR":
-                return "redirect:/";
-            case "CLIENTE":
-            default:
-                // El id del dueño viaja en la URL (@RequestParam del portal cliente).
-                return "redirect:/cliente/mascotas?idUsuario=" + resultado.getId();
         }
     }
 }

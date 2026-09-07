@@ -52,6 +52,11 @@
                     <p class="text-body-lg font-body-lg text-on-surface-variant mt-1">Portal Veterinario / Registro Clínico</p>
                 </div>
 
+                <!-- Aviso del service cuando la asignación no se pudo aplicar -->
+                <div th:if="${mensajeError}" class="mb-6 p-4 rounded-xl border border-red-700 bg-red-900/40 text-red-300">
+                    <p class="text-body-md font-body-md" th:text="${mensajeError}"></p>
+                </div>
+
                 <!-- Tarjeta del formulario -->
                 <form class="bg-surface-container-lowest p-6 md:p-10 rounded-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-surface-container-highest" th:action="@{/veterinario/mascotas/asignar-tratamiento}" method="post">
                     <!-- Veterinario Responsable -->

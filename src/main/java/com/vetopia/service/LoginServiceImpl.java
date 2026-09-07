@@ -38,10 +38,14 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResultadoLogin autenticar(String correo, String contrasena) {
+        // Credenciales incompletas: no tiene sentido consultar las tablas
+        // y el mensaje indica qué le falta al usuario.
         if (correo == null || correo.isBlank() || contrasena == null || contrasena.isBlank()) {
-            return null;
+            throw new IllegalArgumentException("Ingresa tu correo y tu contraseña para continuar.");
         }
 
+        // Se consulta cada "tabla" en orden hasta encontrar la coincidencia;
+        // el primero que responde define el rol y el panel de destino.
         Veterinario veterinario = veterinarioService.obtenerPorCorreoYContrasena(correo, contrasena);
         if (veterinario != null) {
             return new ResultadoLogin(ROL_VETERINARIO, veterinario.getId());
@@ -57,6 +61,8 @@ public class LoginServiceImpl implements LoginService {
             return new ResultadoLogin(ROL_CLIENTE, dueno.getId());
         }
 
-        return null;
+        // Ninguna tabla reconoció la combinación: la excepción lleva el
+        // mensaje que el formulario de login debe mostrar.
+        throw new IllegalArgumentException("Correo o contraseña incorrectos. Verifica tus credenciales.");
     }
 }

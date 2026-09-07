@@ -41,9 +41,12 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public Mascota obtenerMascotaPorId(Integer id) {
+        // Entrada inválida: sin id no hay nada que buscar en el repositorio.
         if (id == null) {
             throw new IllegalArgumentException("No se especificó el identificador de la mascota.");
         }
+        // Los id válidos son positivos: cero o negativos solo llegan por
+        // manipulación manual de la URL.
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
@@ -70,6 +73,74 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
+     * Aplica la regla de negocio del borrado lógico: el estado nuevo es
+     * el opuesto al actual (Activo <-> Inactivo).
+     */
+    @Override
+    public String alternarEstado(Integer id) {
+        // El id inválido lo detecta obtenerMascotaPorId con su excepción;
+        // si el id es válido pero la mascota no existe, no hay nada que
+        // alternar y se devuelve null.
+        Mascota mascota = obtenerMascotaPorId(id);
+        if (mascota == null) {
+            return null;
+        }
+        String nuevoEstado = "Inactivo".equals(mascota.getEstado()) ? "Activo" : "Inactivo";
+        cambiarEstado(id, nuevoEstado);
+        return nuevoEstado;
+    }
+
+    /**
+     * {@inheritDoc}
+     * Centraliza aquí la regla de guardado: el estado inicial de una
+     * mascota nueva es "Activo" y toda mascota requiere dueño, pues sin
+     * él quedaría huérfana y no aparecería en el portal de ningún cliente.
+     */
+    @Override
+    public void guardarValidada(Mascota mascota) {
+        // Datos ausentes: el formulario debió enviar la mascota completa.
+        if (mascota == null) {
+            throw new IllegalArgumentException("No se recibieron los datos de la mascota.");
+        }
+        // Regla del diagrama de clases: toda mascota nueva nace "Activa".
+        if (mascota.getId() == null) {
+            mascota.setEstado("Activo");
+        }
+        // Regla de la relación Dueno 1 -- 0..* Mascota: sin dueño la
+        // mascota quedaría huérfana; se rechaza el guardado.
+        if (mascota.getDuenoId() == null) {
+            throw new IllegalStateException("La mascota \"" + mascota.getNombre()
+                    + "\" debe tener un dueño asignado.");
+        }
+        guardar(mascota);
+    }
+
+    /**
+     * {@inheritDoc}
+     * Además del id, valida la pertenencia de la mascota al dueño para
+     * aislar los datos entre clientes del portal.
+     */
+    @Override
+    public Mascota obtenerPropia(Integer id, Integer duenoId) {
+        // Sin dueño no se puede validar la pertenencia de la mascota.
+        if (duenoId == null) {
+            throw new IllegalArgumentException("No se especificó el dueño de la mascota.");
+        }
+        Mascota mascota = obtenerMascotaPorId(id);
+        if (mascota == null) {
+            throw new IllegalArgumentException("No encontramos ninguna mascota registrada con el identificador \""
+                    + (id == null ? "" : id) + "\".");
+        }
+        // Aislamiento de datos: cada cliente solo consulta sus propias
+        // mascotas, aunque conozca los id de las demás.
+        if (!duenoId.equals(mascota.getDuenoId())) {
+            throw new IllegalStateException("Esta mascota no está registrada a tu nombre.");
+        }
+        return mascota;
+    }
+
+    /**
+     * {@inheritDoc}
      * Delega en el repositorio, que retira el registro del HashMap.
      */
     @Override
@@ -84,6 +155,11 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public List<Mascota> listarMascotasPorDueno(Integer duenoId) {
+        // Sin dueño la consulta no tiene sentido y produciría un
+        // NullPointerException al comparar; se comunica como dato inválido.
+        if (duenoId == null) {
+            throw new IllegalArgumentException("No se especificó el dueño de la consulta.");
+        }
         List<Mascota> resultado = new ArrayList<>();
         for (Mascota mascota : mascotaRepository.searchAll()) {
             if (duenoId.equals(mascota.getDuenoId())) {

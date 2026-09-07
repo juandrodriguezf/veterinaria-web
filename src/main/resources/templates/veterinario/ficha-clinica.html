@@ -3,12 +3,12 @@
 <!--
     Vista Thymeleaf (NO funciona con Go Live: se renderiza en el servidor).
     URL: http://localhost:8080/veterinario/mascotas/ficha?id={id}   (ejemplo: ?id=2)
-    Controlador: VeterinarioMascotaController.verFichaClinica(...)  [GET /veterinario/mascotas/ficha]
+    Controlador: PortalController.verFichaClinica(...)  [GET /veterinario/mascotas/ficha]
 -->
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="fragmentos-portal :: head"></div>
-    <title th:text="'Ficha Clínica: ' + ${mascota.nombre} + ' - Vetopia'">Vetopia - Ficha Clínica</title>
+    <title th:text="${mascota != null} ? 'Ficha Clínica: ' + ${mascota.nombre} + ' - Vetopia' : 'Vetopia - Ficha Clínica'">Vetopia - Ficha Clínica</title>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
 <!-- TopNavBar (Transactional/Onboarding - Suppressed Navigation Shell) -->
