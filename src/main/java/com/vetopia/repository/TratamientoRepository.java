@@ -1,27 +1,25 @@
 package com.vetopia.repository;
 
-import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.vetopia.entities.Tratamiento;
 
 /**
- * Único punto de acceso a los datos de tratamientos. Define las operaciones
- * de persistencia que la capa Service puede utilizar sin exponer detalles
- * de la fuente de datos (por ahora HashMap en memoria).
+ * REPOSITORIO - Tratamiento
+ * Operaciones estándar heredadas de JpaRepository (findAll, findById,
+ * save...) más la consulta derivada por mascota, que soporta el borrado
+ * en cascada desde el service.
  */
-public interface TratamientoRepository {
-
-    /** Devuelve todos los tratamientos registrados. */
-    Collection<Tratamiento> searchAll();
+@Repository
+public interface TratamientoRepository extends JpaRepository<Tratamiento, Integer> {
 
     /**
-     * Busca un tratamiento por su identificador dentro del HashMap.
+     * Tratamientos aplicados a una mascota: soporta que el service los
+     * retire antes de eliminar la mascota y no huérfana nada (la FK
+     * tratamiento.mascota lo exige).
      */
-    Tratamiento searchById(Integer id);
-
-    /**
-     * Guarda (persiste) un tratamiento en el HashMap asignándole
-     * automáticamente el siguiente id disponible.
-     */
-    void save(Tratamiento tratamiento);
+    List<Tratamiento> findByMascotaId(Integer mascotaId);
 }

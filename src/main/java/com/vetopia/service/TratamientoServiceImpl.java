@@ -10,6 +10,8 @@ import com.vetopia.entities.Tratamiento;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 
+import jakarta.transaction.Transactional;
+
 /**
  * CAPA SERVICIO - Implementación de TratamientoService
  * Contiene la lógica de negocio. La anotación @Service registra la clase
@@ -36,7 +38,20 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     @Override
     public List<Tratamiento> listarTratamientos() {
-        return List.copyOf(tratamientoRepository.searchAll());
+        return List.copyOf(tratamientoRepository.findAll());
+    }
+
+    /**
+     * {@inheritDoc}
+     * Consulta derivada findByMascotaId + borrado uno a uno: el mismo
+     * patrón del ejemplo para borrar por capas desde el service.
+     */
+    @Override
+    @Transactional
+    public void eliminarPorMascota(Integer mascotaId) {
+        for (Tratamiento tratamiento : tratamientoRepository.findByMascotaId(mascotaId)) {
+            tratamientoRepository.delete(tratamiento);
+        }
     }
 
     @Override
@@ -47,7 +62,7 @@ public class TratamientoServiceImpl implements TratamientoService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return tratamientoRepository.searchById(id);
+        return tratamientoRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -74,7 +89,7 @@ public class TratamientoServiceImpl implements TratamientoService {
         }
         // Mientras el proyecto no maneje sesión, el veterinario responsable
         // queda fijo (id 1), igual que en la versión anterior del controlador.
-        tratamiento.setVeterinario(veterinarioRepository.searchById(1));
+        tratamiento.setVeterinario(veterinarioRepository.findById(1).orElse(null));
         if (tratamiento.getVeterinario() == null) {
             throw new IllegalStateException("No se encontró el veterinario responsable del tratamiento.");
         }

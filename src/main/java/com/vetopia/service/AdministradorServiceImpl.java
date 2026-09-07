@@ -26,7 +26,7 @@ public class AdministradorServiceImpl implements AdministradorService {
 
     @Override
     public List<Administrador> listarAdministradores() {
-        return List.copyOf(administradorRepository.searchAll());
+        return List.copyOf(administradorRepository.findAll());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class AdministradorServiceImpl implements AdministradorService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return administradorRepository.searchById(id);
+        return administradorRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class AdministradorServiceImpl implements AdministradorService {
 
     @Override
     public Administrador obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        return administradorRepository.searchByCorreoYContrasena(correo, contrasena);
+        return administradorRepository.findByCorreoIgnoreCaseAndContrasena(correo, contrasena);
     }
 }

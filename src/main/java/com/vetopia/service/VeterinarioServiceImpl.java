@@ -26,7 +26,7 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
     @Override
     public List<Veterinario> listarVeterinarios() {
-        return List.copyOf(veterinarioRepository.searchAll());
+        return List.copyOf(veterinarioRepository.findAll());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return veterinarioRepository.searchById(id);
+        return veterinarioRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
     @Override
     public Veterinario obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        return veterinarioRepository.searchByCorreoYContrasena(correo, contrasena);
+        return veterinarioRepository.findByCorreoIgnoreCaseAndContrasena(correo, contrasena);
     }
 }

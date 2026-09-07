@@ -26,7 +26,7 @@ public class DrogaServiceImpl implements DrogaService {
 
     @Override
     public List<Droga> listarDrogas() {
-        return List.copyOf(drogaRepository.searchAll());
+        return List.copyOf(drogaRepository.findAll());
     }
 
     @Override
@@ -37,7 +37,7 @@ public class DrogaServiceImpl implements DrogaService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return drogaRepository.searchById(id);
+        return drogaRepository.findById(id).orElse(null);
     }
 
     @Override

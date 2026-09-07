@@ -1,44 +1,28 @@
 package com.vetopia.repository;
 
-import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.vetopia.entities.Mascota;
 
 /**
- * Único punto de acceso a los datos de mascotas. Define las operaciones
- * de persistencia que la capa Service puede utilizar sin exponer detalles
- * de la fuente de datos (por ahora HashMap en memoria).
+ * REPOSITORIO - Mascota
+ * Spring Data JPA genera automáticamente todas las operaciones estándar
+ * (findAll, findById, save, deleteById, count...) extendiendo
+ * JpaRepository. Las consultas por atributos se declaran por nombre de
+ * método (findBy...) o con consultas JPQL, y Spring las implementa en
+ * tiempo de ejecución.
+ *
+ * La clave de la entidad es Integer (asegura = tipo del id autogenerado).
  */
-public interface MascotaRepository {
+@Repository
+public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
 
     /**
-     * Devuelve todas las mascotas registradas en la "tabla" mascotas
-     * almacenada en un HashMap.
+     * Mascotas de un dueño (Dueno 1 -- 0..* Mascota). Spring Data recorre
+     * la ruta mascota.dueno.id desde el nombre del método.
      */
-    Collection<Mascota> searchAll();
-
-    /**
-     * Busca una mascota por su identificador dentro del HashMap.
-     */
-    Mascota searchById(Integer id);
-
-    /**
-     * Guarda (persiste) una mascota en el HashMap asignándole
-     * automáticamente el siguiente id disponible.
-     */
-    void save(Mascota mascota);
-
-    /**
-     * Cambia el estado de una mascota (Activo/Inactivo) según su id.
-     *
-     * @param id     identificador de la mascota
-     * @param estado nuevo estado ("Activo" o "Inactivo")
-     */
-    void cambiarEstado(Integer id, String estado);
-
-    /**
-     * Elimina definitivamente la mascota identificada (borrado físico del
-     * HashMap). Si el id no existe, no se realiza ningún cambio.
-     */
-    void eliminar(Integer id);
+    List<Mascota> findByDuenoId(Integer duenoId);
 }

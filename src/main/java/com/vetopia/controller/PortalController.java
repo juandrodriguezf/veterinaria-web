@@ -56,8 +56,6 @@ import com.vetopia.service.TratamientoService;
  * - POST /veterinario/mascotas/clientes/guardar     -> crea o actualiza
  * - GET  /veterinario/mascotas/clientes/desactivar  -> alterna estado
  * - GET  /veterinario/mascotas/clientes/eliminar?id -> borra en cascada
- * - GET  /veterinario/mascotas/registrar-cliente    -> flujo original
- * - POST /veterinario/mascotas/registrar-cliente    -> flujo original
  * - GET  /veterinario/mascotas/asignar-tratamiento  -> form tratamiento
  * - POST /veterinario/mascotas/asignar-tratamiento  -> asigna y descuenta
  * - GET  /veterinario/mascotas/ficha?id=N           -> ficha clínica
@@ -85,9 +83,9 @@ public class PortalController {
     @Autowired
     private DrogaService drogaService;
 
-    // =====================================================================
+    
     // PORTAL DEL CLIENTE (plantillas en templates/ y templates/cliente/)
-    // =====================================================================
+    
 
     /**
      * Atiende GET /cliente/mascotas?idUsuario=N: listado de las mascotas
@@ -149,9 +147,9 @@ public class PortalController {
         return "cliente/detalle-mascota";
     }
 
-    // =====================================================================
+    
     // PORTAL DEL VETERINARIO (plantillas en templates/veterinario/)
-    // =====================================================================
+    
 
     /**
      * Atiende GET /veterinario/mascotas: listado de mascotas a cargo
@@ -299,9 +297,17 @@ public class PortalController {
      * que el cliente pueda iniciar sesión).
      */
     @PostMapping("/veterinario/mascotas/clientes/guardar")
-    public String guardarCliente(@ModelAttribute Dueno dueno) {
+    public String guardarCliente(@ModelAttribute Dueno dueno, Model model) {
         log.info(dueno.getId() + " - " + dueno.getNombre());
-        duenoService.guardar(dueno);
+        try {
+            duenoService.guardar(dueno);
+        } catch (IllegalArgumentException | IllegalStateException excepcion) {
+            // Save con datos repetidos (correo/cédula UNIQUE): el aviso
+            // regresa al formulario con lo capturado para que el
+            // veterinario corrija, sin perder lo que ya había escrito.
+            model.addAttribute("mensajeError", excepcion.getMessage());
+            return "veterinario/cliente-form";
+        }
         return "redirect:/veterinario/mascotas/clientes";
     }
 
@@ -344,26 +350,6 @@ public class PortalController {
             log.warn(excepcion.getMessage());
         }
         return "redirect:/veterinario/mascotas/clientes";
-    }
-
-    /**
-     * Atiende GET /veterinario/mascotas/registrar-cliente: formulario del
-     * flujo original para registrar un nuevo cliente.
-     */
-    @GetMapping("/veterinario/mascotas/registrar-cliente")
-    public String registrarCliente(Model model) {
-        model.addAttribute("dueno", new Dueno());
-        return "veterinario/registrar-cliente";
-    }
-
-    /**
-     * Atiende POST /veterinario/mascotas/registrar-cliente: guarda el
-     * cliente del flujo original y continúa al registro de su mascota.
-     */
-    @PostMapping("/veterinario/mascotas/registrar-cliente")
-    public String guardarClienteFlujoOriginal(@ModelAttribute Dueno dueno) {
-        duenoService.guardar(dueno);
-        return "redirect:/veterinario/mascotas/registrar-mascota";
     }
 
     /**

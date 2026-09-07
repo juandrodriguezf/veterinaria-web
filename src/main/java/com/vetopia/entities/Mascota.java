@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -93,11 +92,11 @@ public class Mascota {
     /**
      * Dueño que posee la mascota (relación Dueno 1 -- 0..* Mascota).
      * Toda mascota requiere dueño (regla del service); si el dueño se
-     * elimina, la base de datos elimina en cascada sus mascotas.
+     * elimina, el service retira antes sus mascotas (borrado en cascada
+     * por capas, como en el ejemplo del docente).
      */
     @ManyToOne
     @JoinColumn(name = "dueno_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Dueno dueno;
 
     /**

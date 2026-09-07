@@ -1,6 +1,5 @@
 package com.vetopia.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Mascota;
 import com.vetopia.repository.MascotaRepository;
+
+import jakarta.transaction.Transactional;
 
 /**
  * CAPA SERVICIO - Implementación de MascotaService
@@ -26,6 +27,10 @@ public class MascotaServiceImpl implements MascotaService {
     @Autowired
     private MascotaRepository mascotaRepository;
 
+    /** Servicio de tratamientos (se retiran antes de eliminar la mascota). */
+    @Autowired
+    private TratamientoService tratamientoService;
+
     /**
      * {@inheritDoc}
      * El repositorio entrega una Lista con los valores del HashMap
@@ -33,7 +38,7 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public List<Mascota> listarMascotas() {
-        return List.copyOf(mascotaRepository.searchAll());
+        return List.copyOf(mascotaRepository.findAll());
     }
 
     /**
@@ -50,12 +55,13 @@ public class MascotaServiceImpl implements MascotaService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return mascotaRepository.searchById(id);
+        return mascotaRepository.findById(id).orElse(null);
     }
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que asigna el siguiente id disponible.
+     * Spring Data JPA asigna el id automáticamente al insertar y hace
+     * merge al actualizar (id presente).
      */
     @Override
     public void guardar(Mascota mascota) {
@@ -64,11 +70,16 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que actualiza el estado de la mascota.
+     * Con JpaRepository el cambio de estado es cargar, mutar y guardar:
+     * Hibernate genera el UPDATE de la fila correspondiente.
      */
     @Override
     public void cambiarEstado(Integer id, String estado) {
-        mascotaRepository.cambiarEstado(id, estado);
+        Mascota mascota = mascotaRepository.findById(id).orElse(null);
+        if (mascota != null) {
+            mascota.setEstado(estado);
+            mascotaRepository.save(mascota);
+        }
     }
 
     /**
@@ -143,17 +154,25 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que retira el registro del HashMap.
+     * Borra por capas: primero los tratamientos de la mascota (listado
+     * derivado + delete uno a uno) y después la mascota, para que la FK
+     * tratamiento.mascota no rechace el borrado (mismo patrón del
+     * ejemplo: el service se encarga de la cascada, no el DDL).
      */
     @Override
+    @Transactional
     public void eliminar(Integer id) {
-        mascotaRepository.eliminar(id);
+        if (id == null) {
+            throw new IllegalArgumentException("No se especificó el identificador de la mascota.");
+        }
+        tratamientoService.eliminarPorMascota(id);
+        mascotaRepository.deleteById(id);
     }
 
     /**
      * {@inheritDoc}
-     * Recorre las mascotas del repositorio y conserva las del dueño
-     * indicado .
+     * La consulta derivada findByDuenoId resuelve la ruta
+     * mascota.dueno.id y conserva solo las mascotas del dueño indicado.
      */
     @Override
     public List<Mascota> listarMascotasPorDueno(Integer duenoId) {
@@ -162,12 +181,6 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la consulta.");
         }
-        List<Mascota> resultado = new ArrayList<>();
-        for (Mascota mascota : mascotaRepository.searchAll()) {
-            if (mascota.getDueno() != null && duenoId.equals(mascota.getDueno().getId())) {
-                resultado.add(mascota);
-            }
-        }
-        return resultado;
+        return mascotaRepository.findByDuenoId(duenoId);
     }
 }

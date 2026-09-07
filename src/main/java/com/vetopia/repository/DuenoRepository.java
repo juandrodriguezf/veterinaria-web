@@ -1,42 +1,38 @@
 package com.vetopia.repository;
 
-import java.util.Collection;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.vetopia.entities.Dueno;
 
 /**
- * Único punto de acceso a los datos de dueños. Define las operaciones de
- * persistencia que la capa Service puede utilizar sin exponer detalles de
- * la fuente de datos (por ahora HashMap en memoria).
+ * REPOSITORIO - Dueno
+ * Operaciones estándar heredadas de JpaRepository (Spring Data genera su
+ * implementación) más consultas derivadas por nombre de propiedad.
  */
-public interface DuenoRepository {
-
-    /** Devuelve todos los dueños registrados. */
-    Collection<Dueno> searchAll();
+@Repository
+public interface DuenoRepository extends JpaRepository<Dueno, Integer> {
 
     /**
-     * Busca un dueño por su identificador dentro del HashMap.
+     * Cliente por sus credenciales y activo: solo los dueños con estado
+     * "Activo" pueden iniciar sesión (un cliente desactivado por el
+     * veterinario no puede usar el portal). Spring Data traduce el nombre
+     * del método a la consulta (el correo se compara sin importar
+     * mayúsculas/minúsculas).
      */
-    Dueno searchById(Integer id);
+    Dueno findByCorreoIgnoreCaseAndContrasenaAndEstado(String correo,
+                                                        String contrasena,
+                                                        String estado);
 
     /**
-     * Guarda (persiste) un dueño en el HashMap asignándole
-     * automáticamente el siguiente id disponible.
+     * Cliente por correo: soporta la validación de unicidad en
+     * el service (un correo no puede repetirse entre clientes).
      */
-    void save(Dueno dueno);
+    Dueno findByCorreoIgnoreCase(String correo);
 
     /**
-     * Busca un dueño por su correo y contraseña (credenciales de
-     * inicio de sesión). Devuelve null si no existe coincidencia.
+     * Cliente por cédula: soporta la validación de unicidad en
+     * el service (una cédula no puede repetirse).
      */
-    Dueno searchByCorreoYContrasena(String correo, String contrasena);
-
-    /** Cambia el estado (Activo/Inactivo) de un dueño por su id. */
-    void cambiarEstado(Integer id, String estado);
-
-    /**
-     * Elimina definitivamente al dueño identificado (borrado físico del
-     * HashMap). Si el id no existe, no se realiza ningún cambio.
-     */
-    void eliminar(Integer id);
+    Dueno findByCedula(String cedula);
 }

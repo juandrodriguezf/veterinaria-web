@@ -2,8 +2,7 @@ package com.vetopia.entities;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,12 +51,10 @@ public class Tratamiento {
 
     /**
      * Mascota que recibe el tratamiento (Mascota 1 -- 0..* Tratamiento).
-     * Si la mascota se elimina, la base de datos elimina en cascada sus
-     * tratamientos.
+     * Si la mascota se elimina, el service retira antes sus tratamientos.
      */
     @ManyToOne
     @JoinColumn(name = "mascota_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Mascota mascota;
 
     /**

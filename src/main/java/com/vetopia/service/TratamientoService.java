@@ -23,6 +23,12 @@ public interface TratamientoService {
     void guardar(Tratamiento tratamiento);
 
     /**
+     * Retira los tratamientos aplicados a una mascota. La usa el borrado
+     * en cascada para que la mascota no deje referencias huérfanas.
+     */
+    void eliminarPorMascota(Integer mascotaId);
+
+    /**
      * Registra la asignación del tratamiento aplicando las reglas de
      * negocio: exige mascota y medicamento, descuenta una unidad del
      * inventario de la droga y devuelve la droga actualizada para la
