@@ -391,20 +391,14 @@ public class PortalController {
     /**
      * Atiende GET /veterinario/mascotas/ficha?id=N: ficha clínica de una
      * mascota para el portal del veterinario. El service lanza si el id
-     * es inválido; si no existe la mascota, el panel informativo se
-     * muestra con el mensaje por defecto de la vista.
+     * es inválido (se muestra el panel informativo) y si el id válido no
+     * existe lanza RecursoNoEncontradoException, que el manejador global
+     * traduce en la página de error.
      */
     @GetMapping("/veterinario/mascotas/ficha")
     public String verFichaClinica(@RequestParam(name = "id", required = false) Integer id, Model model) {
         try {
-            Mascota mascota = mascotaService.obtenerMascotaPorId(id);
-            if (mascota == null) {
-                model.addAttribute("mensajeError",
-                        "No encontramos ninguna mascota registrada con el identificador \""
-                                + (id == null ? "" : id) + "\".");
-            } else {
-                model.addAttribute("mascota", mascota);
-            }
+            model.addAttribute("mascota", mascotaService.obtenerMascotaPorId(id));
         } catch (IllegalArgumentException excepcion) {
             // Id nulo o fuera de rango: el service aporta el mensaje y
             // la ficha lo presenta en su panel informativo.

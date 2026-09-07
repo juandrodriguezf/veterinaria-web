@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Droga;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.DrogaRepository;
 
 /**
@@ -37,7 +38,9 @@ public class DrogaServiceImpl implements DrogaService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return drogaRepository.findById(id).orElse(null);
+        return drogaRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún medicamento registrado con el identificador \"" + id + "\"."));
     }
 
     @Override

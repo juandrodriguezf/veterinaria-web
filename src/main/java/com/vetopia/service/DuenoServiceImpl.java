@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.DuenoRepository;
 
 import jakarta.transaction.Transactional;
@@ -47,7 +48,11 @@ public class DuenoServiceImpl implements DuenoService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return duenoRepository.findById(id).orElse(null);
+        // Si el id válido no existe en la base, el manejo global de
+        // errores presenta la página amable con la causa exacta.
+        return duenoRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún cliente registrado con el identificador \"" + id + "\"."));
     }
 
     @Override
@@ -94,11 +99,11 @@ public class DuenoServiceImpl implements DuenoService {
      */
     @Override
     public void cambiarEstado(Integer id, String estado) {
-        Dueno dueno = duenoRepository.findById(id).orElse(null);
-        if (dueno != null) {
-            dueno.setEstado(estado);
-            duenoRepository.save(dueno);
-        }
+        Dueno dueno = duenoRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún cliente registrado con el identificador \"" + id + "\"."));
+        dueno.setEstado(estado);
+        duenoRepository.save(dueno);
     }
 
     /**
@@ -121,10 +126,6 @@ public class DuenoServiceImpl implements DuenoService {
     @Override
     public Dueno obtenerActivo(Integer id) {
         Dueno dueno = obtenerDuenoPorId(id);
-        // Un id válido que no está en la "tabla" no puede entrar al portal.
-        if (dueno == null) {
-            throw new IllegalStateException("El cliente indicado no existe.");
-        }
         // Misma política del login: un cliente desactivado por el
         // veterinario no usa el portal, aunque conozca sus propias URLs.
         if (!"Activo".equals(dueno.getEstado())) {
@@ -140,12 +141,9 @@ public class DuenoServiceImpl implements DuenoService {
      */
     @Override
     public String alternarEstado(Integer id) {
-        // El id inválido lo detecta obtenerDuenoPorId con su excepción;
-        // si el id es válido pero el dueño no existe, se devuelve null.
+        // El id inválido o inexistente lo detecta obtenerDuenoPorId con
+        // su excepción; la página de error comunica la causa.
         Dueno dueno = obtenerDuenoPorId(id);
-        if (dueno == null) {
-            return null;
-        }
         String nuevoEstado = "Inactivo".equals(dueno.getEstado()) ? "Activo" : "Inactivo";
         cambiarEstado(id, nuevoEstado);
         return nuevoEstado;

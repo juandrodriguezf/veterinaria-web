@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 
@@ -62,7 +63,11 @@ public class TratamientoServiceImpl implements TratamientoService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return tratamientoRepository.findById(id).orElse(null);
+        // Si el id válido no existe en la base, el manejo global de
+        // errores presenta la página amable con la causa exacta.
+        return tratamientoRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún tratamiento registrado con el identificador \"" + id + "\"."));
     }
 
     @Override

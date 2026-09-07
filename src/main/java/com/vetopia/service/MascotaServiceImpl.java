@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Mascota;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.MascotaRepository;
 
 import jakarta.transaction.Transactional;
@@ -33,8 +34,8 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * El repositorio entrega una Lista con los valores del HashMap
-     * (id -> Mascota); aquí se convierte a lista para que la vista la reciba.
+     * El repositorio entrega todas las filas de la tabla mascotas;
+     * se recibe como lista inmutable para que la vista no la altere.
      */
     @Override
     public List<Mascota> listarMascotas() {
@@ -55,7 +56,11 @@ public class MascotaServiceImpl implements MascotaService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return mascotaRepository.findById(id).orElse(null);
+        // Si el id válido no existe en la base, el manejo global de
+        // errores presenta la página amable con la causa exacta.
+        return mascotaRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ninguna mascota registrada con el identificador \"" + id + "\"."));
     }
 
     /**
@@ -75,11 +80,11 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public void cambiarEstado(Integer id, String estado) {
-        Mascota mascota = mascotaRepository.findById(id).orElse(null);
-        if (mascota != null) {
-            mascota.setEstado(estado);
-            mascotaRepository.save(mascota);
-        }
+        Mascota mascota = mascotaRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ninguna mascota registrada con el identificador \"" + id + "\"."));
+        mascota.setEstado(estado);
+        mascotaRepository.save(mascota);
     }
 
     /**
@@ -89,13 +94,9 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public String alternarEstado(Integer id) {
-        // El id inválido lo detecta obtenerMascotaPorId con su excepción;
-        // si el id es válido pero la mascota no existe, no hay nada que
-        // alternar y se devuelve null.
+        // El id inválido o inexistente lo detecta obtenerMascotaPorId
+        // con su excepción; la página de error comunica la causa.
         Mascota mascota = obtenerMascotaPorId(id);
-        if (mascota == null) {
-            return null;
-        }
         String nuevoEstado = "Inactivo".equals(mascota.getEstado()) ? "Activo" : "Inactivo";
         cambiarEstado(id, nuevoEstado);
         return nuevoEstado;
@@ -139,11 +140,9 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la mascota.");
         }
+        // Si el id es válido pero la mascota no existe, obtenerMascotaPorId
+        // ya lanzó la excepción con el mensaje exacto.
         Mascota mascota = obtenerMascotaPorId(id);
-        if (mascota == null) {
-            throw new IllegalArgumentException("No encontramos ninguna mascota registrada con el identificador \""
-                    + (id == null ? "" : id) + "\".");
-        }
         // Aislamiento de datos: cada cliente solo consulta sus propias
         // mascotas, aunque conozca los id de las demás.
         if (!duenoId.equals(mascota.getDueno().getId())) {

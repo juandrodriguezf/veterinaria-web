@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vetopia · Página no encontrada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+    <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+        <div class="h-16 flex items-center px-6">
+            <a th:href="@{/}" class="font-headline-md text-headline-md text-primary font-bold tracking-wide">Vetopia</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center px-4 py-16">
+        <div class="w-full max-w-lg text-center">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-error-container text-on-error-container flex items-center justify-center text-4xl">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </div>
+            <h1 class="font-headline-xl text-headline-xl text-on-surface mb-3">Página no encontrada</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-8"
+               th:if="${mensaje}" th:text="${mensaje}">
+                Nada coincide con tu búsqueda.
+            </p>
+            <div class="flex items-center justify-center gap-3">
+                <a th:href="@{/}"
+                   class="inline-flex px-6 py-3 rounded-full bg-primary text-on-primary font-button text-button uppercase tracking-wider hover:opacity-90 transition-opacity">
+                    Volver al inicio
+                </a>
+                <a th:href="@{/login}"
+                   class="inline-flex px-6 py-3 rounded-full border border-gray-400 text-on-surface font-button text-button uppercase tracking-wider hover:bg-surface-variant transition-colors">
+                    Iniciar sesión
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
