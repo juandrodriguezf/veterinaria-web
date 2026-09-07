@@ -20,3 +20,7 @@ mydatabase*
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Diagramas: solo los SVG renderizados entran al repo (no los scripts)
+docs/diagrams/*.puml
+docs/diagrams/*.txt

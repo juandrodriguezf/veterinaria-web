@@ -10,10 +10,10 @@ Construida con **Spring Boot** siguiendo el patrón de diseño de capas:
 
 ```
 Controller  ->  Service  ->  Repository
-(@Controller)   (@Service)   (@Repository, HashMap en memoria)
+(@Controller)   (@Service)   (interfaces JpaRepository)
 ```
 
-Cada capa se comunica únicamente con la capa inferior y las dependencias se gestionan con inyección por `@Autowired`, de modo que Spring crea e inyecta automáticamente las instancias de cada clase.
+Cada capa se comunica únicamente con la capa inferior y las dependencias se gestionan con inyección de dependencias de Spring (constructor en `DataLoader`, `@Autowired` en el resto). La persistencia es real: **Spring Data JPA 100% con queries derivadas** (sin JPQL) sobre **H2**, siguiendo los patrones del material del curso (`7.JPA_avanzado`).
 
 ## Funcionalidades
 
@@ -23,16 +23,27 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 - **Dueño obligatorio al registrar una mascota**: validado en el formulario y nuevamente en el servidor.
 - **Asignación de tratamientos** con medicamentos del inventario y descuento de existencias.
 - **Portal del cliente**: cada dueño ve únicamente **sus** mascotas, con su nombre en el encabezado.
-- **Control de acceso por estado**: los clientes desactivados **no pueden iniciar sesión** hasta ser reactivados.
+- **Página amable de errores**: los recursos inexistentes y los errores inesperados aterrizan en `error.html` con su causa (`errors/GlobalExceptionHandler`, `@ControllerAdvice`).
 
 ## Tecnologías
 
 - Java 21
 - Spring Boot 3.5.4 (Web + Thymeleaf)
+- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL)
 - Lombok
 - Tailwind CSS (vía CDN) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
 - Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
-- Persistencia simulada en memoria (`HashMap`) precargada con datos de ejemplo; al conectar una base de datos real solo cambia la implementación del repositorio.
+- `DataLoader` (`CommandLineRunner`) siembra datos de prueba al arrancar si la base está vacía (50 clientes, 100 perros generados con `Random(41)`, semilla del ejemplo del curso)
+- Manejo de errores con `errors/GlobalExceptionHandler` sobre `templates/error.html`
+
+## Datos de prueba
+
+Al arrancar con la base vacía, `DataLoader` siembra:
+
+- **53 clientes** (los 3 credenciales de demostración + 50 generados, cadencia de 1 inactivo cada 10)
+- **103 mascotas**: Max, Luna y Rocky + 100 perros generados (edades 0.3–12 años, pesos 2–45 kg, 8 enfermedades de ejemplo, cadencia de 1 inactiva cada 9)
+- 3 drogas del inventario, 3 veterinarios y 3 administradores
+- 3 tratamientos de ejemplo conectando mascota × droga × veterinario
 
 ## Requisitos
 
@@ -55,6 +66,7 @@ Luego abre en el navegador:
 | `http://localhost:8080/veterinario/mascotas/clientes` | Portal del veterinario: listado de dueños |
 | `http://localhost:8080/veterinario/mascotas/ficha?id=1` | Ficha clínica de la mascota con id 1 |
 | `http://localhost:8080/cliente/mascotas?idUsuario=1` | Portal del cliente: mascotas del dueño con id 1 |
+| `http://localhost:8080/veterinario/mascotas/ficha?id=9999` | Página amable de error (recurso inexistente) |
 
 ## Credenciales de demostración
 
@@ -68,27 +80,32 @@ Luego abre en el navegador:
 
 ## Diagrama de clases
 
-El modelo de dominio del negocio está documentado en [`docs/diagrams/class-diagram.svg`](docs/diagrams/class-diagram.svg) (script PlantUML en [`docs/diagrams/script-class-diagram.txt`](docs/diagrams/script-class-diagram.txt)): `Veterinario`, `Dueno`, `Mascota`, `Tratamiento`, `Droga` y `Administrador`, con sus relaciones y operaciones.
+El modelo de dominio del negocio está documentado en [`docs/diagrams/class-diagram.svg`](docs/diagrams/class-diagram.svg): `Veterinario`, `Dueno`, `Mascota`, `Tratamiento`, `Droga` y `Administrador`, con sus relaciones y operaciones.
+
+## Diagrama E/R
+
+Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `mascota_id`, `droga_id`, `veterinario_id`) y las columnas con los mismos límites de las anotaciones `@Column` de las entidades JPA.
 
 ## Estructura del proyecto
 
 ```
 Vetopia/
-├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Lombok, Thymeleaf)
-├── docs/                                    # Logo, paleta de colores y diagrama de clases
+├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, JPA, H2, Lombok, Thymeleaf)
+├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
+    │   ├── DataLoader.java                  # Siembra datos de prueba al arranque (CommandLineRunner)
     │   ├── controller/
     │   │   ├── HomeController.java          # Raíz "/" y login "/login"
-    │   │   ├── VeterinarioMascotaController.java  # @Controller + @RequestMapping("/veterinario/mascotas")
-    │   │   └── ClienteMascotaController.java      # @Controller + @RequestMapping("/cliente/mascotas")
+    │   │   └── PortalController.java        # Portales de veterinario y cliente (una sola clase)
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
-    │   ├── repository/                      # Contratos DAO e implementaciones con HashMap
-    │   └── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
+    │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
+    │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
+    │   └── errors/                          # RecursoNoEncontradoException + GlobalExceptionHandler (@ControllerAdvice)
     └── resources/
         ├── application.properties
-        ├── templates/                       # Vistas Thymeleaf (landing, login, veterinario, cliente)
+        ├── templates/                       # Vistas Thymeleaf (landing, login, veterinario, cliente, error)
         └── static/                          # CSS, JS e imágenes del landing
 ```
 
