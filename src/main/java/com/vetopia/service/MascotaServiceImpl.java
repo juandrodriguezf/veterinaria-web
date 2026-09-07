@@ -107,8 +107,10 @@ public class MascotaServiceImpl implements MascotaService {
             mascota.setEstado("Activo");
         }
         // Regla de la relación Dueno 1 -- 0..* Mascota: sin dueño la
-        // mascota quedaría huérfana; se rechaza el guardado.
-        if (mascota.getDuenoId() == null) {
+        // mascota quedaría huérfana; se rechaza el guardado. El
+        // formulario envía un "shell" con solo el id del dueño, que
+        // basta para navegar la relación mientras se resuelve por id.
+        if (mascota.getDueno() == null || mascota.getDueno().getId() == null) {
             throw new IllegalStateException("La mascota \"" + mascota.getNombre()
                     + "\" debe tener un dueño asignado.");
         }
@@ -133,7 +135,7 @@ public class MascotaServiceImpl implements MascotaService {
         }
         // Aislamiento de datos: cada cliente solo consulta sus propias
         // mascotas, aunque conozca los id de las demás.
-        if (!duenoId.equals(mascota.getDuenoId())) {
+        if (!duenoId.equals(mascota.getDueno().getId())) {
             throw new IllegalStateException("Esta mascota no está registrada a tu nombre.");
         }
         return mascota;
@@ -162,7 +164,7 @@ public class MascotaServiceImpl implements MascotaService {
         }
         List<Mascota> resultado = new ArrayList<>();
         for (Mascota mascota : mascotaRepository.searchAll()) {
-            if (duenoId.equals(mascota.getDuenoId())) {
+            if (mascota.getDueno() != null && duenoId.equals(mascota.getDueno().getId())) {
                 resultado.add(mascota);
             }
         }

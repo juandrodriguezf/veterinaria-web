@@ -27,9 +27,12 @@ public class DuenoRepositoryImpl implements DuenoRepository {
      * Precarga registros de ejemplo de dueños.
      */
     public DuenoRepositoryImpl() {
-        tablaDuenos.put(1, new Dueno(1, "1020304050", "Ana Rodríguez", "ana@correo.com", "dueño123", "3001234567", "Activo"));
-        tablaDuenos.put(2, new Dueno(2, "1020304051", "Pedro Gómez", "pedro@correo.com", "dueño123", "3007654321", "Activo"));
-        tablaDuenos.put(3, new Dueno(3, "1020304052", "María López", "maria@correo.com", "dueño123", "3010001111", "Inactivo"));
+        tablaDuenos.put(1, Dueno.builder().id(1).cedula("1020304050").nombre("Ana Rodríguez")
+                .correo("ana@correo.com").contrasena("dueño123").celular("3001234567").estado("Activo").build());
+        tablaDuenos.put(2, Dueno.builder().id(2).cedula("1020304051").nombre("Pedro Gómez")
+                .correo("pedro@correo.com").contrasena("dueño123").celular("3007654321").estado("Activo").build());
+        tablaDuenos.put(3, Dueno.builder().id(3).cedula("1020304052").nombre("María López")
+                .correo("maria@correo.com").contrasena("dueño123").celular("3010001111").estado("Inactivo").build());
     }
 
     @Override

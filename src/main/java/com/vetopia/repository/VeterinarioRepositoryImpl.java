@@ -27,9 +27,18 @@ public class VeterinarioRepositoryImpl implements VeterinarioRepository {
      * Precarga registros de ejemplo de veterinarios.
      */
     public VeterinarioRepositoryImpl() {
-        tablaVeterinarios.put(1, new Veterinario(1, "1002003001", "vet123", "carlos.gutierrez@vetopia.com", "Medicina General", 0, "Carlos Gutiérrez", "Activo", "https://example.com/foto-carlos.jpg"));
-        tablaVeterinarios.put(2, new Veterinario(2, "1002003002", "vet123", "laura.mendez@vetopia.com", "Cirugía", 0, "Laura Méndez", "Activo", null));
-        tablaVeterinarios.put(3, new Veterinario(3, "1002003003", "vet123", "jorge.santana@vetopia.com", "Dermatología", 0, "Jorge Santana", "Inactivo", null));
+        tablaVeterinarios.put(1, Veterinario.builder().id(1).cedula("1002003001").contrasena("vet123")
+                .correo("carlos.gutierrez@vetopia.com").especialidad("Medicina General")
+                .numeroAtenciones(0).nombre("Carlos Gutiérrez").estado("Activo")
+                .urlFoto("https://example.com/foto-carlos.jpg").build());
+        tablaVeterinarios.put(2, Veterinario.builder().id(2).cedula("1002003002").contrasena("vet123")
+                .correo("laura.mendez@vetopia.com").especialidad("Cirugía")
+                .numeroAtenciones(0).nombre("Laura Méndez").estado("Activo")
+                .build());
+        tablaVeterinarios.put(3, Veterinario.builder().id(3).cedula("1002003003").contrasena("vet123")
+                .correo("jorge.santana@vetopia.com").especialidad("Dermatología")
+                .numeroAtenciones(0).nombre("Jorge Santana").estado("Inactivo")
+                .build());
     }
 
     @Override

@@ -77,7 +77,7 @@
                             <div class="flex flex-col gap-1">
                                 <label class="font-body-md text-body-md text-on-surface">Selector de Mascota</label>
                                 <div class="relative">
-                                    <select name="mascotaId" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                    <select name="mascota.id" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
                                         <option value="">Seleccionar paciente activo...</option>
                                         <option th:each="mascota : ${mascotas}" th:value="${mascota.id}" th:text="${mascota.nombre}"></option>
                                     </select>
@@ -102,7 +102,7 @@
                         <div class="flex flex-col gap-1">
                             <label class="font-body-md text-body-md text-on-surface">Medicamento / Droga</label>
                             <div class="relative">
-                                <select name="drogaId" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
+                                <select name="droga.id" class="w-full appearance-none px-3 py-2 bg-white text-on-surface border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent pr-10">
                                     <option value="">Seleccionar medicamento...</option>
                                     <option th:each="droga : ${drogas}" th:value="${droga.id}" th:text="${droga.nombre}"></option>
                                 </select>

@@ -27,9 +27,12 @@ public class AdministradorRepositoryImpl implements AdministradorRepository {
      * Precarga registros de ejemplo de administradores.
      */
     public AdministradorRepositoryImpl() {
-        tablaAdministradores.put(1, new Administrador(1, "1000000001", "admin@vetopia.com", "admin123", "Dirección Vetopia"));
-        tablaAdministradores.put(2, new Administrador(2, "1000000002", "gerencia@vetopia.com", "gerencia123", "Gerencia General"));
-        tablaAdministradores.put(3, new Administrador(3, "1000000003", "finanzas@vetopia.com", "finanzas123", "Finanzas"));
+        tablaAdministradores.put(1, Administrador.builder().id(1).cedula("1000000001")
+                .correo("admin@vetopia.com").contrasena("admin123").nombre("Dirección Vetopia").build());
+        tablaAdministradores.put(2, Administrador.builder().id(2).cedula("1000000002")
+                .correo("gerencia@vetopia.com").contrasena("gerencia123").nombre("Gerencia General").build());
+        tablaAdministradores.put(3, Administrador.builder().id(3).cedula("1000000003")
+                .correo("finanzas@vetopia.com").contrasena("finanzas123").nombre("Finanzas").build());
     }
 
     @Override

@@ -27,9 +27,12 @@ public class DrogaRepositoryImpl implements DrogaRepository {
      * Precarga registros de ejemplo de medicamentos.
      */
     public DrogaRepositoryImpl() {
-        tablaDrogas.put(1, new Droga(1, "Amoxicilina", 8000.0, 15000.0, 100, 0));
-        tablaDrogas.put(2, new Droga(2, "Ivermectina", 12000.0, 22000.0, 50, 0));
-        tablaDrogas.put(3, new Droga(3, "Metronidazol", 6000.0, 11000.0, 75, 0));
+        tablaDrogas.put(1, Droga.builder().id(1).nombre("Amoxicilina")
+                .precioCompra(8000.0).precioVenta(15000.0).unidadesDisponibles(100).unidadesVendidas(0).build());
+        tablaDrogas.put(2, Droga.builder().id(2).nombre("Ivermectina")
+                .precioCompra(12000.0).precioVenta(22000.0).unidadesDisponibles(50).unidadesVendidas(0).build());
+        tablaDrogas.put(3, Droga.builder().id(3).nombre("Metronidazol")
+                .precioCompra(6000.0).precioVenta(11000.0).unidadesDisponibles(75).unidadesVendidas(0).build());
     }
 
     @Override

@@ -2,9 +2,24 @@ package com.vetopia.entities;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * ENTIDAD - Tratamiento
@@ -12,41 +27,54 @@ import lombok.NoArgsConstructor;
  * lógica de acceso a datos ni de presentación, solo el estado y las reglas
  * propias de la entidad.
  *
- * Lombok genera automáticamente getters/setters (@Data), el constructor
- * vacío (@NoArgsConstructor) y el constructor con todos los atributos
- * (@AllArgsConstructor), eliminando el código boilerplate.
- *
- * Según el diagrama de clases (docs/diagrams/script-class-diagram.txt),
- * el tratamiento está asociado a una mascota y a una droga, y expone
- * operaciones (crear, consultarDetalle) que se implementarán en la capa
- * de servicio.
+ * Es la "tabla intermedia" del modelo: conecta Mascota, Droga y
+ * Veterinario mediante relaciones ManyToOne (equivalente a la tabla de
+ * unión del ejemplo del curso). Hibernate genera la tabla "tratamientos".
  */
-@Data
+@Entity
+@Table(name = "tratamientos")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@ToString(exclude = {"mascota", "droga", "veterinario"})
 public class Tratamiento {
 
-    /** Identificador único del tratamiento. */
+    /** Identificador único del tratamiento (autogenerado por la base de datos). */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     /** Fecha en que se aplicó el tratamiento. */
+    @Column(nullable = false)
     private LocalDate fecha;
 
     /**
-     * Identificador de la mascota que recibe el tratamiento
-     * (llave foránea a Mascota).
+     * Mascota que recibe el tratamiento (Mascota 1 -- 0..* Tratamiento).
+     * Si la mascota se elimina, la base de datos elimina en cascada sus
+     * tratamientos.
      */
-    private Integer mascotaId;
+    @ManyToOne
+    @JoinColumn(name = "mascota_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Mascota mascota;
 
     /**
-     * Identificador de la droga utilizada en el tratamiento
-     * (llave foránea a Droga).
+     * Droga utilizada en el tratamiento (Tratamiento 0..* -- 1 Droga).
+     * Sin cascada: el historial clínico no debe borrarse si se retira
+     * una droga del inventario.
      */
-    private Integer drogaId;
+    @ManyToOne
+    @JoinColumn(name = "droga_id", nullable = false)
+    private Droga droga;
 
     /**
-     * Identificador del veterinario que realizó el tratamiento
-     * (llave foránea a Veterinario).
+     * Veterinario que realizó el tratamiento (Veterinario 1 -- 0..*
+     * Tratamiento). Sin cascada: el historial sobrevive a los cambios
+     * de personal.
      */
-    private Integer veterinarioId;
+    @ManyToOne
+    @JoinColumn(name = "veterinario_id", nullable = false)
+    private Veterinario veterinario;
 }

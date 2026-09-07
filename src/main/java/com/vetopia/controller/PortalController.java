@@ -193,7 +193,7 @@ public class PortalController {
     public String guardarMascota(@ModelAttribute Mascota mascota) {
         try {
             mascotaService.guardarValidada(mascota);
-            log.info(mascota.getId() + " - " + mascota.getNombre() + " (duenoId=" + mascota.getDuenoId() + ")");
+            log.info(mascota.getId() + " - " + mascota.getNombre() + " (duenoId=" + mascota.getDueno().getId() + ")");
             return "redirect:/veterinario/mascotas";
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // El service rechazó el guardado (mascota sin dueño o sin
@@ -391,7 +391,7 @@ public class PortalController {
             model.addAttribute("unidadesDescontadas", 1);
             model.addAttribute("medicamentoNombre", droga.getNombre());
             model.addAttribute("stockRestante", droga.getUnidadesDisponibles());
-            model.addAttribute("mascotaId", tratamiento.getMascotaId());
+            model.addAttribute("mascotaId", tratamiento.getMascota().getId());
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // El service valida mascota, medicamento y stock: si algo
             // falla, el mensaje regresa al formulario para que el

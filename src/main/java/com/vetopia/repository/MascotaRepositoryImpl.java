@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 
 /**
@@ -32,12 +33,30 @@ public class MascotaRepositoryImpl implements MascotaRepository {
      * correspondiente de DuenoRepositoryImpl.
      */
     public MascotaRepositoryImpl() {
-        tablaMascotas.put(1, new Mascota(1, "Max", "Perro", "Doberman",
-                5.0, "Macho", "https://imgs.search.brave.com/8AIQQXIiiwAhhRKhD87lE0EUhLc7Irg8eiwpgIx1x7U/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/My8yNy8xOC8xMi9s/dW5hLTEyODMzNTZf/NjQwLmpwZw", 32.0, "Negro", LocalDate.parse("2026-01-12"), 1, "Activo"));
-        tablaMascotas.put(2, new Mascota(2, "Luna", "Gato", "Siamés",
-                3.0, "Hembra", "https://imgs.search.brave.com/lyQdUI6O4tK7o734zlUOxuFLdw-1kUFmZssTDwlkam0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU0/MjEyMDY2L2VzL2Zv/dG8vZ2F0by1zaWFt/JUMzJUE5cy5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9ZV9V/WDktSU5fZ3VPQWhw/bUxVYk40VGktWVBj/LU92c3hWQXJUOWpn/MWxVWT0", 4.2, "Blanco y café", LocalDate.parse("2026-02-03"), 2, "Activo"));
-        tablaMascotas.put(3, new Mascota(3, "Rocky", "Perro", "Bulldog Francés",
-                0.6, "Macho", "https://imgs.search.brave.com/SpvOGsBrp_Lq8prflOD7fsZ5TRntmOqrUHvFvtSrWzg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90aHVt/YnMuZHJlYW1zdGlt/ZS5jb20vYi9zZW50/YWRhLWdyaXMtZGVs/LXBlcnJpdG8tZG9n/by1mcmFuYyVDMyVB/OXMtYWlzbGFkYS0x/MDE3NTU1MzAuanBn", 7.5, "Gris atigrado", LocalDate.parse("2025-11-20"), 3, "Activo"));
+        tablaMascotas.put(1, Mascota.builder()
+                .id(1).nombre("Max").especie("Perro").raza("Doberman")
+                .edad(5.0).sexo("Macho")
+                .imagen("https://imgs.search.brave.com/8AIQQXIiiwAhhRKhD87lE0EUhLc7Irg8eiwpgIx1x7U/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8w/My8yNy8xOC8xMi9s/dW5hLTEyODMzNTZf/NjQwLmpwZw")
+                .pesoKg(32.0).color("Negro").fechaIngreso(LocalDate.parse("2026-01-12"))
+                .enfermedad("Control de rutina y vacunación")
+                .dueno(Dueno.builder().id(1).build()).estado("Activo")
+                .build());
+        tablaMascotas.put(2, Mascota.builder()
+                .id(2).nombre("Luna").especie("Gato").raza("Siamés")
+                .edad(3.0).sexo("Hembra")
+                .imagen("https://imgs.search.brave.com/lyQdUI6O4tK7o734zlUOxuFLdw-1kUFmZssTDwlkam0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU0/MjEyMDY2L2VzL2Zv/dG8vZ2F0by1zaWFt/JUMzJUE5cy5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9ZV9V/WDktSU5fZ3VPQWhw/bUxVYk40VGktWVBj/LU92c3hWQXJUOWpn/MWxVWT0")
+                .pesoKg(4.2).color("Blanco y café").fechaIngreso(LocalDate.parse("2026-02-03"))
+                .enfermedad("Infección respiratoria leve")
+                .dueno(Dueno.builder().id(2).build()).estado("Activo")
+                .build());
+        tablaMascotas.put(3, Mascota.builder()
+                .id(3).nombre("Rocky").especie("Perro").raza("Bulldog Francés")
+                .edad(0.6).sexo("Macho")
+                .imagen("https://imgs.search.brave.com/SpvOGsBrp_Lq8prflOD7fsZ5TRntmOqrUHvFvtSrWzg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90aHVt/YnMuZHJlYW1zdGlt/ZS5jb20vYi9zZW50/YWRhLWdyaXMtZGVs/LXBlcnJpdG8tZG9n/by1mcmFuYyVDMyVB/OXMtYWlzbGFkYS0x/MDE3NTU1MzAuanBn")
+                .pesoKg(7.5).color("Gris atigrado").fechaIngreso(LocalDate.parse("2025-11-20"))
+                .enfermedad("Desparasitación")
+                .dueno(Dueno.builder().id(3).build()).estado("Activo")
+                .build());
     }
 
     /**

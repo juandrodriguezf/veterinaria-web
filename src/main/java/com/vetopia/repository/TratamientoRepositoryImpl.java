@@ -8,7 +8,10 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.vetopia.entities.Droga;
+import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.Veterinario;
 
 /**
  * Simula la persistencia de tratamientos usando un HashMap
@@ -30,9 +33,24 @@ public class TratamientoRepositoryImpl implements TratamientoRepository {
      * y al veterinario que lo realizó (veterinarioId).
      */
     public TratamientoRepositoryImpl() {
-        tablaTratamientos.put(1, new Tratamiento(1, LocalDate.parse("2026-08-10"), 2, 1, 1));
-        tablaTratamientos.put(2, new Tratamiento(2, LocalDate.parse("2026-08-15"), 1, 2, 2));
-        tablaTratamientos.put(3, new Tratamiento(3, LocalDate.parse("2026-08-20"), 3, 3, 3));
+        tablaTratamientos.put(1, Tratamiento.builder()
+                .id(1).fecha(LocalDate.parse("2026-08-10"))
+                .mascota(Mascota.builder().id(2).build())
+                .droga(Droga.builder().id(1).build())
+                .veterinario(Veterinario.builder().id(1).build())
+                .build());
+        tablaTratamientos.put(2, Tratamiento.builder()
+                .id(2).fecha(LocalDate.parse("2026-08-15"))
+                .mascota(Mascota.builder().id(1).build())
+                .droga(Droga.builder().id(2).build())
+                .veterinario(Veterinario.builder().id(2).build())
+                .build());
+        tablaTratamientos.put(3, Tratamiento.builder()
+                .id(3).fecha(LocalDate.parse("2026-08-20"))
+                .mascota(Mascota.builder().id(3).build())
+                .droga(Droga.builder().id(3).build())
+                .veterinario(Veterinario.builder().id(3).build())
+                .build());
     }
 
     @Override
