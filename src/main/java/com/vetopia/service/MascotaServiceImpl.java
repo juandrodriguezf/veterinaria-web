@@ -1,13 +1,15 @@
 package com.vetopia.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Mascota;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.MascotaRepository;
+
+import jakarta.transaction.Transactional;
 
 /**
  * CAPA SERVICIO - Implementación de MascotaService
@@ -26,14 +28,18 @@ public class MascotaServiceImpl implements MascotaService {
     @Autowired
     private MascotaRepository mascotaRepository;
 
+    /** Servicio de tratamientos (se retiran antes de eliminar la mascota). */
+    @Autowired
+    private TratamientoService tratamientoService;
+
     /**
      * {@inheritDoc}
-     * El repositorio entrega una Lista con los valores del HashMap
-     * (id -> Mascota); aquí se convierte a lista para que la vista la reciba.
+     * El repositorio entrega todas las filas de la tabla mascotas;
+     * se recibe como lista inmutable para que la vista no la altere.
      */
     @Override
     public List<Mascota> listarMascotas() {
-        return List.copyOf(mascotaRepository.searchAll());
+        return List.copyOf(mascotaRepository.findAll());
     }
 
     /**
@@ -50,12 +56,17 @@ public class MascotaServiceImpl implements MascotaService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return mascotaRepository.searchById(id);
+        // Si el id válido no existe en la base, el manejo global de
+        // errores presenta la página amable con la causa exacta.
+        return mascotaRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ninguna mascota registrada con el identificador \"" + id + "\"."));
     }
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que asigna el siguiente id disponible.
+     * Spring Data JPA asigna el id automáticamente al insertar y hace
+     * merge al actualizar (id presente).
      */
     @Override
     public void guardar(Mascota mascota) {
@@ -64,11 +75,16 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que actualiza el estado de la mascota.
+     * Con JpaRepository el cambio de estado es cargar, mutar y guardar:
+     * Hibernate genera el UPDATE de la fila correspondiente.
      */
     @Override
     public void cambiarEstado(Integer id, String estado) {
-        mascotaRepository.cambiarEstado(id, estado);
+        Mascota mascota = mascotaRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ninguna mascota registrada con el identificador \"" + id + "\"."));
+        mascota.setEstado(estado);
+        mascotaRepository.save(mascota);
     }
 
     /**
@@ -78,13 +94,9 @@ public class MascotaServiceImpl implements MascotaService {
      */
     @Override
     public String alternarEstado(Integer id) {
-        // El id inválido lo detecta obtenerMascotaPorId con su excepción;
-        // si el id es válido pero la mascota no existe, no hay nada que
-        // alternar y se devuelve null.
+        // El id inválido o inexistente lo detecta obtenerMascotaPorId
+        // con su excepción; la página de error comunica la causa.
         Mascota mascota = obtenerMascotaPorId(id);
-        if (mascota == null) {
-            return null;
-        }
         String nuevoEstado = "Inactivo".equals(mascota.getEstado()) ? "Activo" : "Inactivo";
         cambiarEstado(id, nuevoEstado);
         return nuevoEstado;
@@ -107,8 +119,10 @@ public class MascotaServiceImpl implements MascotaService {
             mascota.setEstado("Activo");
         }
         // Regla de la relación Dueno 1 -- 0..* Mascota: sin dueño la
-        // mascota quedaría huérfana; se rechaza el guardado.
-        if (mascota.getDuenoId() == null) {
+        // mascota quedaría huérfana; se rechaza el guardado. El
+        // formulario envía un "shell" con solo el id del dueño, que
+        // basta para navegar la relación mientras se resuelve por id.
+        if (mascota.getDueno() == null || mascota.getDueno().getId() == null) {
             throw new IllegalStateException("La mascota \"" + mascota.getNombre()
                     + "\" debe tener un dueño asignado.");
         }
@@ -126,14 +140,12 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la mascota.");
         }
+        // Si el id es válido pero la mascota no existe, obtenerMascotaPorId
+        // ya lanzó la excepción con el mensaje exacto.
         Mascota mascota = obtenerMascotaPorId(id);
-        if (mascota == null) {
-            throw new IllegalArgumentException("No encontramos ninguna mascota registrada con el identificador \""
-                    + (id == null ? "" : id) + "\".");
-        }
         // Aislamiento de datos: cada cliente solo consulta sus propias
         // mascotas, aunque conozca los id de las demás.
-        if (!duenoId.equals(mascota.getDuenoId())) {
+        if (!duenoId.equals(mascota.getDueno().getId())) {
             throw new IllegalStateException("Esta mascota no está registrada a tu nombre.");
         }
         return mascota;
@@ -141,17 +153,25 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Delega en el repositorio, que retira el registro del HashMap.
+     * Borra por capas: primero los tratamientos de la mascota (listado
+     * derivado + delete uno a uno) y después la mascota, para que la FK
+     * tratamiento.mascota no rechace el borrado (mismo patrón del
+     * ejemplo: el service se encarga de la cascada, no el DDL).
      */
     @Override
+    @Transactional
     public void eliminar(Integer id) {
-        mascotaRepository.eliminar(id);
+        if (id == null) {
+            throw new IllegalArgumentException("No se especificó el identificador de la mascota.");
+        }
+        tratamientoService.eliminarPorMascota(id);
+        mascotaRepository.deleteById(id);
     }
 
     /**
      * {@inheritDoc}
-     * Recorre las mascotas del repositorio y conserva las del dueño
-     * indicado .
+     * La consulta derivada findByDuenoId resuelve la ruta
+     * mascota.dueno.id y conserva solo las mascotas del dueño indicado.
      */
     @Override
     public List<Mascota> listarMascotasPorDueno(Integer duenoId) {
@@ -160,12 +180,6 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la consulta.");
         }
-        List<Mascota> resultado = new ArrayList<>();
-        for (Mascota mascota : mascotaRepository.searchAll()) {
-            if (duenoId.equals(mascota.getDuenoId())) {
-                resultado.add(mascota);
-            }
-        }
-        return resultado;
+        return mascotaRepository.findByDuenoId(duenoId);
     }
 }

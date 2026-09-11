@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Veterinario;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.VeterinarioRepository;
 
 /**
@@ -26,7 +27,7 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
     @Override
     public List<Veterinario> listarVeterinarios() {
-        return List.copyOf(veterinarioRepository.searchAll());
+        return List.copyOf(veterinarioRepository.findAll());
     }
 
     @Override
@@ -37,7 +38,9 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return veterinarioRepository.searchById(id);
+        return veterinarioRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún veterinario registrado con el identificador \"" + id + "\"."));
     }
 
     @Override
@@ -47,6 +50,6 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
     @Override
     public Veterinario obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        return veterinarioRepository.searchByCorreoYContrasena(correo, contrasena);
+        return veterinarioRepository.findByCorreoIgnoreCaseAndContrasena(correo, contrasena);
     }
 }

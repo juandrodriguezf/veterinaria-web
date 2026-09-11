@@ -1,33 +1,19 @@
 package com.vetopia.repository;
 
-import java.util.Collection;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.vetopia.entities.Veterinario;
 
 /**
- * Único punto de acceso a los datos de veterinarios. Define las
- * operaciones de persistencia que la capa Service puede utilizar sin
- * exponer detalles de la fuente de datos (por ahora HashMap en memoria).
+ * REPOSITORIO - Veterinario
+ * Operaciones estándar heredadas de JpaRepository más consultas derivadas
+ * por nombre de propiedad (los veterinarios entran sin filtro de estado:
+ * se controla el acceso por la capa de servicio).
  */
-public interface VeterinarioRepository {
+@Repository
+public interface VeterinarioRepository extends JpaRepository<Veterinario, Integer> {
 
-    /** Devuelve todos los veterinarios registrados. */
-    Collection<Veterinario> searchAll();
-
-    /**
-     * Busca un veterinario por su identificador dentro del HashMap.
-     */
-    Veterinario searchById(Integer id);
-
-    /**
-     * Guarda (persiste) un veterinario en el HashMap asignándole
-     * automáticamente el siguiente id disponible.
-     */
-    void save(Veterinario veterinario);
-
-    /**
-     * Busca un veterinario por su correo y contraseña (credenciales de
-     * inicio de sesión). Devuelve null si no existe coincidencia.
-     */
-    Veterinario searchByCorreoYContrasena(String correo, String contrasena);
+    /** Veterinario cuyas credenciales coinciden, o null si no existe. */
+    Veterinario findByCorreoIgnoreCaseAndContrasena(String correo, String contrasena);
 }

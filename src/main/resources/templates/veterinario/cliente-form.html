@@ -41,6 +41,11 @@
             <p class="text-body-lg font-body-lg text-on-surface-variant">Completar los detalles del cliente</p>
         </div>
 
+        <!-- Aviso del service cuando el cliente no se pudo guardar -->
+        <div th:if="${mensajeError}" class="mb-6 p-4 rounded-xl border border-red-700 bg-red-900/40 text-red-300">
+            <p class="text-body-md font-body-md" th:text="${mensajeError}"></p>
+        </div>
+
         <!-- Formulario: th:object vincula el Dueno del modelo -->
         <form th:object="${dueno}" th:action="@{/veterinario/mascotas/clientes/guardar}" method="post"
               class="flex flex-col gap-stack-lg">

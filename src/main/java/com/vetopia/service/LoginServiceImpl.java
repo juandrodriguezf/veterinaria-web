@@ -44,7 +44,7 @@ public class LoginServiceImpl implements LoginService {
             throw new IllegalArgumentException("Ingresa tu correo y tu contraseña para continuar.");
         }
 
-        // Se consulta cada "tabla" en orden hasta encontrar la coincidencia;
+        // Se consulta cada repositorio en orden hasta encontrar la coincidencia;
         // el primero que responde define el rol y el panel de destino.
         Veterinario veterinario = veterinarioService.obtenerPorCorreoYContrasena(correo, contrasena);
         if (veterinario != null) {

@@ -56,8 +56,6 @@ import com.vetopia.service.TratamientoService;
  * - POST /veterinario/mascotas/clientes/guardar     -> crea o actualiza
  * - GET  /veterinario/mascotas/clientes/desactivar  -> alterna estado
  * - GET  /veterinario/mascotas/clientes/eliminar?id -> borra en cascada
- * - GET  /veterinario/mascotas/registrar-cliente    -> flujo original
- * - POST /veterinario/mascotas/registrar-cliente    -> flujo original
  * - GET  /veterinario/mascotas/asignar-tratamiento  -> form tratamiento
  * - POST /veterinario/mascotas/asignar-tratamiento  -> asigna y descuenta
  * - GET  /veterinario/mascotas/ficha?id=N           -> ficha clínica
@@ -85,9 +83,9 @@ public class PortalController {
     @Autowired
     private DrogaService drogaService;
 
-    // =====================================================================
+    
     // PORTAL DEL CLIENTE (plantillas en templates/ y templates/cliente/)
-    // =====================================================================
+    
 
     /**
      * Atiende GET /cliente/mascotas?idUsuario=N: listado de las mascotas
@@ -149,9 +147,9 @@ public class PortalController {
         return "cliente/detalle-mascota";
     }
 
-    // =====================================================================
+    
     // PORTAL DEL VETERINARIO (plantillas en templates/veterinario/)
-    // =====================================================================
+    
 
     /**
      * Atiende GET /veterinario/mascotas: listado de mascotas a cargo
@@ -193,7 +191,7 @@ public class PortalController {
     public String guardarMascota(@ModelAttribute Mascota mascota) {
         try {
             mascotaService.guardarValidada(mascota);
-            log.info(mascota.getId() + " - " + mascota.getNombre() + " (duenoId=" + mascota.getDuenoId() + ")");
+            log.info(mascota.getId() + " - " + mascota.getNombre() + " (duenoId=" + mascota.getDueno().getId() + ")");
             return "redirect:/veterinario/mascotas";
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // El service rechazó el guardado (mascota sin dueño o sin
@@ -299,9 +297,17 @@ public class PortalController {
      * que el cliente pueda iniciar sesión).
      */
     @PostMapping("/veterinario/mascotas/clientes/guardar")
-    public String guardarCliente(@ModelAttribute Dueno dueno) {
+    public String guardarCliente(@ModelAttribute Dueno dueno, Model model) {
         log.info(dueno.getId() + " - " + dueno.getNombre());
-        duenoService.guardar(dueno);
+        try {
+            duenoService.guardar(dueno);
+        } catch (IllegalArgumentException | IllegalStateException excepcion) {
+            // Save con datos repetidos (correo/cédula UNIQUE): el aviso
+            // regresa al formulario con lo capturado para que el
+            // veterinario corrija, sin perder lo que ya había escrito.
+            model.addAttribute("mensajeError", excepcion.getMessage());
+            return "veterinario/cliente-form";
+        }
         return "redirect:/veterinario/mascotas/clientes";
     }
 
@@ -347,26 +353,6 @@ public class PortalController {
     }
 
     /**
-     * Atiende GET /veterinario/mascotas/registrar-cliente: formulario del
-     * flujo original para registrar un nuevo cliente.
-     */
-    @GetMapping("/veterinario/mascotas/registrar-cliente")
-    public String registrarCliente(Model model) {
-        model.addAttribute("dueno", new Dueno());
-        return "veterinario/registrar-cliente";
-    }
-
-    /**
-     * Atiende POST /veterinario/mascotas/registrar-cliente: guarda el
-     * cliente del flujo original y continúa al registro de su mascota.
-     */
-    @PostMapping("/veterinario/mascotas/registrar-cliente")
-    public String guardarClienteFlujoOriginal(@ModelAttribute Dueno dueno) {
-        duenoService.guardar(dueno);
-        return "redirect:/veterinario/mascotas/registrar-mascota";
-    }
-
-    /**
      * Atiende GET /veterinario/mascotas/asignar-tratamiento: formulario
      * del veterinario para asignar un tratamiento/medicamento a una mascota.
      */
@@ -391,7 +377,7 @@ public class PortalController {
             model.addAttribute("unidadesDescontadas", 1);
             model.addAttribute("medicamentoNombre", droga.getNombre());
             model.addAttribute("stockRestante", droga.getUnidadesDisponibles());
-            model.addAttribute("mascotaId", tratamiento.getMascotaId());
+            model.addAttribute("mascotaId", tratamiento.getMascota().getId());
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // El service valida mascota, medicamento y stock: si algo
             // falla, el mensaje regresa al formulario para que el
@@ -405,20 +391,14 @@ public class PortalController {
     /**
      * Atiende GET /veterinario/mascotas/ficha?id=N: ficha clínica de una
      * mascota para el portal del veterinario. El service lanza si el id
-     * es inválido; si no existe la mascota, el panel informativo se
-     * muestra con el mensaje por defecto de la vista.
+     * es inválido (se muestra el panel informativo) y si el id válido no
+     * existe lanza RecursoNoEncontradoException, que el manejador global
+     * traduce en la página de error.
      */
     @GetMapping("/veterinario/mascotas/ficha")
     public String verFichaClinica(@RequestParam(name = "id", required = false) Integer id, Model model) {
         try {
-            Mascota mascota = mascotaService.obtenerMascotaPorId(id);
-            if (mascota == null) {
-                model.addAttribute("mensajeError",
-                        "No encontramos ninguna mascota registrada con el identificador \""
-                                + (id == null ? "" : id) + "\".");
-            } else {
-                model.addAttribute("mascota", mascota);
-            }
+            model.addAttribute("mascota", mascotaService.obtenerMascotaPorId(id));
         } catch (IllegalArgumentException excepcion) {
             // Id nulo o fuera de rango: el service aporta el mensaje y
             // la ficha lo presenta en su panel informativo.

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Administrador;
+import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.AdministradorRepository;
 
 /**
@@ -26,7 +27,7 @@ public class AdministradorServiceImpl implements AdministradorService {
 
     @Override
     public List<Administrador> listarAdministradores() {
-        return List.copyOf(administradorRepository.searchAll());
+        return List.copyOf(administradorRepository.findAll());
     }
 
     @Override
@@ -37,7 +38,9 @@ public class AdministradorServiceImpl implements AdministradorService {
         if (id <= 0) {
             throw new IllegalArgumentException("El identificador \"" + id + "\" no es válido.");
         }
-        return administradorRepository.searchById(id);
+        return administradorRepository.findById(id).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún administrador registrado con el identificador \"" + id + "\"."));
     }
 
     @Override
@@ -47,6 +50,6 @@ public class AdministradorServiceImpl implements AdministradorService {
 
     @Override
     public Administrador obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        return administradorRepository.searchByCorreoYContrasena(correo, contrasena);
+        return administradorRepository.findByCorreoIgnoreCaseAndContrasena(correo, contrasena);
     }
 }
