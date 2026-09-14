@@ -86,6 +86,27 @@ El modelo de dominio del negocio está documentado en [`docs/diagrams/class-diag
 
 Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `mascota_id`, `droga_id`, `veterinario_id` y la opcional `administrador_id`), las columnas conservan los mismos límites de las anotaciones `@Column` de las entidades JPA y la nulabilidad de cada una se señala como `«NOT NULL»` (obligatoria) u `«NULL»` (admite nulo).
 
+## Mockups (Figma)
+
+Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma.com/design/EUzRoGpnaSxhlcG9x3kk0s/Vetopia?node-id=0-1).
+
+| Pantalla en Figma | Ruta / plantilla en la app | Estado |
+|---|---|---|
+| Landing Page | `/` → `landing/index.html` | Implementada |
+| Log In | `/login` → `login/login.html` | Implementada |
+| Principal Cliente | `/cliente/mascotas?idUsuario=…` → `principal-cliente.html` | Implementada |
+| Detalle mascota Cliente | `/cliente/mascotas/detalle` → `cliente/detalle-mascota.html` | Implementada |
+| Mascotas a Cargo | `/veterinario/mascotas` → `veterinario/mascotas-cargo.html` | Implementada |
+| Ficha Clínica | `/veterinario/mascotas/ficha` → `veterinario/ficha-clinica.html` | Implementada |
+| Registrar Nuevo Cliente (paso 1) | `/veterinario/mascotas/clientes/crear` → `veterinario/cliente-form.html` | Implementada |
+| Section 2: Pet Information (paso 2) | `/veterinario/mascotas/registrar-mascota` → `veterinario/mascota-form.html` | Implementada |
+| Asignar Nuevo Tratamiento | `/veterinario/mascotas/asignar-tratamiento` → `veterinario/asignar-tratamiento.html` | Implementada |
+| Tratamiento Aplicado (modal) | misma ruta → `veterinario/tratamiento-confirmacion.html` | Implementada |
+| Dashboard Administrativo | — | Futura |
+| Gestión Veterinarios | — | Futura |
+
+Las dos pantallas de administrador del prototipo quedan fuera del alcance de la Entrega 1: hoy el inicio de sesión con rol administrador redirige al landing. El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
+
 ## Estructura del proyecto
 
 ```
