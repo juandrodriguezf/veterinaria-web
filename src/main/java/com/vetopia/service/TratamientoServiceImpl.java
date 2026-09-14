@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Droga;
+import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.Veterinario;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 
@@ -36,6 +39,10 @@ public class TratamientoServiceImpl implements TratamientoService {
     /** Repositorio de veterinarios (resuelve al responsable del tratamiento). */
     @Autowired
     private VeterinarioRepository veterinarioRepository;
+
+    /** Repositorio de mascotas (verifica que la mascota esté activa). */
+    @Autowired
+    private MascotaRepository mascotaRepository;
 
     @Override
     public List<Tratamiento> listarTratamientos() {
@@ -77,9 +84,15 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     /**
      * {@inheritDoc}
-     * El veterinario responsable se resuelve desde el repositorio.
+     * El veterinario responsable se resuelve desde el repositorio y la
+     * operación es transaccional: el registro del tratamiento, el
+     * descuento del inventario y el contador de atenciones del
+     * veterinario se confirman juntos o no se confirma ninguno, para que
+     * no quede una asignación sin su descuento de stock ni una atención
+     * sin registrar.
      */
     @Override
+    @Transactional
     public Droga asignar(Tratamiento tratamiento) {
         // Una asignación sin mascota no tiene sentido clínico ni a quién
         // cobrarse en la ficha. El formulario envía un "shell" con solo
@@ -88,6 +101,16 @@ public class TratamientoServiceImpl implements TratamientoService {
                 || tratamiento.getMascota().getId() == null) {
             throw new IllegalArgumentException("La asignación debe indicar la mascota a tratar.");
         }
+        // La mascota debe existir y estar activa: la regla de negocio solo
+        // permite dar tratamiento a mascotas hospitalizadas (activas).
+        Mascota mascota = mascotaRepository.findById(tratamiento.getMascota().getId()).orElseThrow(
+                () -> new RecursoNoEncontradoException("No encontramos ninguna mascota registrada con el identificador \""
+                        + tratamiento.getMascota().getId() + "\"."));
+        if (!"Activo".equals(mascota.getEstado())) {
+            throw new IllegalStateException("La mascota \"" + mascota.getNombre()
+                    + "\" está inactiva: solo se puede dar tratamiento a mascotas activas.");
+        }
+        tratamiento.setMascota(mascota);
         // Sin medicamento no hay inventario que descontar.
         if (tratamiento.getDroga() == null || tratamiento.getDroga().getId() == null) {
             throw new IllegalArgumentException("La asignación debe indicar el medicamento.");
@@ -99,10 +122,6 @@ public class TratamientoServiceImpl implements TratamientoService {
             throw new IllegalStateException("No se encontró el veterinario responsable del tratamiento.");
         }
         Droga droga = drogaService.obtenerDrogaPorId(tratamiento.getDroga().getId());
-        // El medicamento debe existir en el inventario para poder descontar.
-        if (droga == null) {
-            throw new IllegalStateException("El medicamento indicado no existe en el inventario.");
-        }
         // Regla de inventario: cada tratamiento consume exactamente una
         // unidad; sin stock la asignación se rechaza y no se registra.
         int unidadesDescontadas = 1;
@@ -115,6 +134,13 @@ public class TratamientoServiceImpl implements TratamientoService {
         guardar(tratamiento);
         droga.setUnidadesDisponibles(stockRestante);
         drogaService.guardar(droga);
+        // Cada tratamiento aplicado cuenta como una atención del
+        // veterinario responsable: se acumula en su contador dentro de la
+        // misma transacción (Veterinario.numeroAtenciones del diagrama).
+        Veterinario veterinario = tratamiento.getVeterinario();
+        veterinario.setNumeroAtenciones(
+                (veterinario.getNumeroAtenciones() == null ? 0 : veterinario.getNumeroAtenciones()) + 1);
+        veterinarioRepository.save(veterinario);
         return droga;
     }
 }

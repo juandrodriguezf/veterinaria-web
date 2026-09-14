@@ -182,4 +182,50 @@ public class MascotaServiceImpl implements MascotaService {
         }
         return mascotaRepository.findByDuenoId(duenoId);
     }
+
+    /**
+     * {@inheritDoc}
+     * Búsqueda por coincidencia exacta del nombre sin distinguir
+     * mayúsculas/minúsculas (findByNombreIgnoreCase: la consulta derivada
+     * del ejemplo del curso más el IgnoreCase que el proyecto ya usa en
+     * credenciales). Cuando el término llega nulo o vacío se delega al
+     * listado completo (un solo endpoint para listado y búsqueda).
+     */
+    @Override
+    public List<Mascota> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return listarMascotas();
+        }
+        return mascotaRepository.findByNombreIgnoreCase(nombre.trim());
+    }
+
+    /**
+     * {@inheritDoc}
+     * La relación con el dueño se resuelve con findByDuenoId (consulta
+     * derivada simple, como en el ejemplo del curso) y sobre ese listado
+     * se compara el nombre exacto sin distinguir mayúsculas en memoria;
+     * no se usa una consulta compuesta. Si el término está vacío cae al
+     * listado del dueño.
+     */
+    @Override
+    public List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre) {
+        List<Mascota> delDueno = listarMascotasPorDueno(duenoId);
+        if (nombre == null || nombre.isBlank()) {
+            return delDueno;
+        }
+        String termino = nombre.trim();
+        return delDueno.stream()
+                .filter(mascota -> termino.equalsIgnoreCase(mascota.getNombre()))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     * La consulta derivada findByEstado traduce el estado de negocio a
+     * la columna estado de la tabla.
+     */
+    @Override
+    public List<Mascota> listarMascotasActivas() {
+        return List.copyOf(mascotaRepository.findByEstado("Activo"));
+    }
 }

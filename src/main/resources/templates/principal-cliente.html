@@ -39,6 +39,31 @@
         </p>
     </section>
 
+    <!-- Filtro de búsqueda por nombre (AC21: buscar mascota por nombre).
+         El form usa GET y conserva el idUsuario en un campo oculto para
+         que el controller pueda validar la identidad del cliente. -->
+    <section class="mb-stack-md">
+        <form class="flex items-center gap-3" th:action="@{/cliente/mascotas}" method="get">
+            <input name="idUsuario" th:value="${idUsuario}" type="hidden"/>
+            <div class="relative flex-1 max-w-sm">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+                <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline rounded focus:outline-none focus:ring-2 focus:ring-primary text-on-surface"
+                       name="nombre"
+                       placeholder="Buscar por nombre..."
+                       th:value="${nombre}"
+                       type="text"/>
+            </div>
+            <button class="inline-flex items-center gap-2 rounded-full bg-primary-container px-5 py-2 font-button text-button uppercase text-on-primary-container transition-colors hover:bg-primary hover:text-on-primary"
+                    type="submit">
+                Buscar
+            </button>
+            <a class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-button text-button uppercase transition-colors text-on-surface-variant hover:text-on-surface"
+               th:href="@{/cliente/mascotas(idUsuario=${idUsuario})}">
+                Limpiar
+            </a>
+        </form>
+    </section>
+
     <!-- Tarjeta contenedora del listado. El controlador ClienteMascotaController pidió
          los datos al Service y este al Repository; aquí solo se renderizan. -->
     <section class="bg-surface-container-lowest rounded-DEFAULT border border-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
@@ -64,8 +89,12 @@
                 <!-- Estado vacío cuando el repositorio no devuelve registros -->
                 <tr th:if="${#lists.isEmpty(mascotas)}">
                     <td class="px-6 py-16 text-center" colspan="7">
-                        <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-outline-variant" style="font-variation-settings: 'FILL' 0;">pets</span>
-                        <p class="font-body-lg text-body-lg text-on-surface-variant">Aún no tienes mascotas registradas.</p>
+                        <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-outline-variant" style="font-variation-settings: 'FILL' 0;"
+                              th:text="${nombre != null && !nombre.isBlank()} ? 'search_off' : 'pets'"></span>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant"
+                           th:if="${nombre != null && !nombre.isBlank()}">No se encontraron mascotas con el nombre "<span th:text="${nombre}"></span>".</p>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant"
+                           th:unless="${nombre != null && !nombre.isBlank()}">Aún no tienes mascotas registradas.</p>
                     </td>
                 </tr>
                 <!-- Una fila por cada mascota entregada por la capa Service -->

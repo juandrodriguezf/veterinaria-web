@@ -57,11 +57,38 @@ public class ClienteController {
     @GetMapping("/cliente/mascotas")
     public String listarMascotasCliente(@RequestParam(name = "idUsuario", required = false) Integer idUsuario,
                                         Model model) {
+        return mostrarMascotasCliente(idUsuario, null, model);
+    }
+
+    /**
+     * Atiende GET /cliente/mascotas?idUsuario=N&nombre=X: búsqueda de las
+     * mascotas del cliente por nombre (AC21). Misma ruta del listado con
+     * el parámetro nombre, patrón del material del curso (un handler por
+     * caso, igual que buscarEstudiantesPorNombre con params = "nombre").
+     *
+     * URL para visualizar: http://localhost:8080/cliente/mascotas?idUsuario=1&nombre=Max
+     * Vista: src/main/resources/templates/principal-cliente.html
+     */
+    @GetMapping(value = "/cliente/mascotas", params = "nombre")
+    public String buscarMascotasCliente(@RequestParam(name = "idUsuario", required = false) Integer idUsuario,
+                                        @RequestParam("nombre") String nombre,
+                                        Model model) {
+        return mostrarMascotasCliente(idUsuario, nombre, model);
+    }
+
+    /**
+     * Resuelve el listado del portal del cliente para los dos handlers
+     * anteriores: valida la identidad del cliente y deja en el modelo las
+     * mascotas (todas o filtradas por nombre, según llegue el término).
+     * Sin identidad válida no hay nada que mostrar y se regresa al login.
+     */
+    private String mostrarMascotasCliente(Integer idUsuario, String nombre, Model model) {
         try {
             Dueno dueno = duenoService.obtenerActivo(idUsuario);
             model.addAttribute("dueno", dueno);
             model.addAttribute("idUsuario", idUsuario);
-            model.addAttribute("mascotas", mascotaService.listarMascotasPorDueno(idUsuario));
+            model.addAttribute("mascotas", mascotaService.buscarPorDuenoYNombre(idUsuario, nombre));
+            model.addAttribute("nombre", nombre);
             return "principal-cliente";
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // Sin idUsuario, con id inválido o con un cliente inactivo no

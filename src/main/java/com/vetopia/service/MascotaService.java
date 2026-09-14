@@ -68,4 +68,30 @@ public interface MascotaService {
      * (relación Dueno 1 -- 0..* Mascota del diagrama de clases).
      */
     List<Mascota> listarMascotasPorDueno(Integer duenoId);
+
+    /**
+     * Busca mascotas cuyo nombre coincida exactamente con el término dado,
+     * sin distinguir mayúsculas/minúsculas (AC21). Si el término es nulo
+     * o vacío, devuelve el listado completo para que el mismo endpoint
+     * sirva búsqueda y listado, igual que el findByNombre del ejemplo del
+     * curso más el IgnoreCase que el proyecto ya usa en credenciales.
+     */
+    List<Mascota> buscarPorNombre(String nombre);
+
+    /**
+     * Busca mascotas de un dueño cuyo nombre coincida exactamente con el
+     * término dado, sin distinguir mayúsculas/minúsculas (AC21, portal del
+     * cliente). La relación se resuelve en el service (findByDuenoId) y el
+     * nombre se compara en memoria, de la misma forma en que el ejemplo
+     * del curso resuelve la relación fuera del nombre del método. Si el
+     * término es nulo o vacío, cae al listado de mascotas del dueño.
+     */
+    List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre);
+
+    /**
+     * Lista únicamente las mascotas activas, es decir, las que están
+     * hospitalizadas. Regla de negocio: solo se puede dar tratamiento a
+     * mascotas activas.
+     */
+    List<Mascota> listarMascotasActivas();
 }
