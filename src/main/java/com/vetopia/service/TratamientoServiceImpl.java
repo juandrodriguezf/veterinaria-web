@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.Veterinario;
 import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
@@ -84,9 +85,11 @@ public class TratamientoServiceImpl implements TratamientoService {
     /**
      * {@inheritDoc}
      * El veterinario responsable se resuelve desde el repositorio y la
-     * operación es transaccional: el registro del tratamiento y el
-     * descuento del inventario se confirman juntos o no se confirma
-     * ninguno, para que no quede una asignación sin su descuento de stock.
+     * operación es transaccional: el registro del tratamiento, el
+     * descuento del inventario y el contador de atenciones del
+     * veterinario se confirman juntos o no se confirma ninguno, para que
+     * no quede una asignación sin su descuento de stock ni una atención
+     * sin registrar.
      */
     @Override
     @Transactional
@@ -131,6 +134,13 @@ public class TratamientoServiceImpl implements TratamientoService {
         guardar(tratamiento);
         droga.setUnidadesDisponibles(stockRestante);
         drogaService.guardar(droga);
+        // Cada tratamiento aplicado cuenta como una atención del
+        // veterinario responsable: se acumula en su contador dentro de la
+        // misma transacción (Veterinario.numeroAtenciones del diagrama).
+        Veterinario veterinario = tratamiento.getVeterinario();
+        veterinario.setNumeroAtenciones(
+                (veterinario.getNumeroAtenciones() == null ? 0 : veterinario.getNumeroAtenciones()) + 1);
+        veterinarioRepository.save(veterinario);
         return droga;
     }
 }
