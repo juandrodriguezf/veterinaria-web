@@ -107,15 +107,21 @@ public class DataLoader implements CommandLineRunner {
                 .dueno(maria).estado("Activo")
                 .build());
 
-        // ---- Drogas del inventario ----
+        // ---- Drogas del inventario (5 para cumplir el estándar de
+        // al menos 5 objetos por tabla) ----
         drogaRepository.save(Droga.builder().nombre("Amoxicilina")
                 .precioCompra(8000.0).precioVenta(15000.0).unidadesDisponibles(100).unidadesVendidas(0).build());
         drogaRepository.save(Droga.builder().nombre("Ivermectina")
                 .precioCompra(12000.0).precioVenta(22000.0).unidadesDisponibles(50).unidadesVendidas(0).build());
         drogaRepository.save(Droga.builder().nombre("Metronidazol")
                 .precioCompra(6000.0).precioVenta(11000.0).unidadesDisponibles(75).unidadesVendidas(0).build());
+        drogaRepository.save(Droga.builder().nombre("Rimadyl")
+                .precioCompra(10000.0).precioVenta(18000.0).unidadesDisponibles(60).unidadesVendidas(0).build());
+        drogaRepository.save(Droga.builder().nombre("Doxiciclina")
+                .precioCompra(9000.0).precioVenta(16000.0).unidadesDisponibles(60).unidadesVendidas(0).build());
 
-        // ---- Veterinarios (administrador queda null por ahora) ----
+        // ---- Veterinarios (5 activos para cumplir el estándar de
+        // al menos 5 objetos por tabla) ----
         sembrarVeterinarios();
         Veterinario carlos = veterinarioRepository.findById(1).orElseThrow();
         Veterinario laura = veterinarioRepository.findById(2).orElseThrow();
@@ -125,10 +131,23 @@ public class DataLoader implements CommandLineRunner {
         List<Mascota> mascotasGeneradas = generarMascotas(duenos);
         mascotaRepository.saveAll(mascotasGeneradas);
 
-        // ---- Tratamientos (tabla intermedia con entidades reales) ----
+        // ---- Tratamientos (tabla intermedia con entidades reales;
+        // 5 en total para cumplir el estándar de al menos 5 por tabla) ----
         Mascota luna = mascotaRepository.findById(2).orElseThrow();
         Mascota max = mascotaRepository.findById(1).orElseThrow();
         Mascota rocky = mascotaRepository.findById(3).orElseThrow();
+        veterinarioRepository.findById(4).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
+                .fecha(LocalDate.parse("2026-08-25"))
+                .mascota(luna)
+                .droga(drogaRepository.findById(4).orElseThrow())
+                .veterinario(veterinario)
+                .build()));
+        veterinarioRepository.findById(5).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
+                .fecha(LocalDate.parse("2026-08-27"))
+                .mascota(max)
+                .droga(drogaRepository.findById(5).orElseThrow())
+                .veterinario(veterinario)
+                .build()));
         tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-10"))
                 .mascota(luna)
@@ -148,17 +167,22 @@ public class DataLoader implements CommandLineRunner {
                 .veterinario(jorge)
                 .build());
 
-        // Administradores al final (no dependen de nadie).
+        // Administradores al final (no dependen de nadie; 5 para cumplir
+        // el estándar de al menos 5 objetos por tabla).
         administradorRepository.save(Administrador.builder().cedula("1000000001")
                 .correo("admin@vetopia.com").contrasena("admin123").nombre("Dirección Vetopia").build());
         administradorRepository.save(Administrador.builder().cedula("1000000002")
                 .correo("gerencia@vetopia.com").contrasena("gerencia123").nombre("Gerencia General").build());
         administradorRepository.save(Administrador.builder().cedula("1000000003")
                 .correo("finanzas@vetopia.com").contrasena("finanzas123").nombre("Finanzas").build());
+        administradorRepository.save(Administrador.builder().cedula("1000000004")
+                .correo("inventario@vetopia.com").contrasena("inventario123").nombre("Control de Inventario").build());
+        administradorRepository.save(Administrador.builder().cedula("1000000005")
+                .correo("calidad@vetopia.com").contrasena("calidad123").nombre("Auditoría Clínica").build());
     }
 
     /**
-     * Siembra los tres veterinarios del equipo.
+     * Siembra los cinco veterinarios activos del equipo.
      */
     private void sembrarVeterinarios() {
         veterinarioRepository.save(Veterinario.builder().cedula("1002003001").contrasena("vet123")
@@ -171,7 +195,15 @@ public class DataLoader implements CommandLineRunner {
                 .build());
         veterinarioRepository.save(Veterinario.builder().cedula("1002003003").contrasena("vet123")
                 .correo("jorge.santana@vetopia.com").especialidad("Dermatología")
-                .numeroAtenciones(0).nombre("Jorge Santana").estado("Inactivo")
+                .numeroAtenciones(0).nombre("Jorge Santana").estado("Activo")
+                .build());
+        veterinarioRepository.save(Veterinario.builder().cedula("1002003004").contrasena("vet123")
+                .correo("sofia.rincon@vetopia.com").especialidad("Odontología")
+                .numeroAtenciones(0).nombre("Sofía Rincón").estado("Activo")
+                .urlFoto("https://example.com/foto-sofia.jpg").build());
+        veterinarioRepository.save(Veterinario.builder().cedula("1002003005").contrasena("vet123")
+                .correo("diego.paredes@vetopia.com").especialidad("Nutrición")
+                .numeroAtenciones(0).nombre("Diego Paredes").estado("Activo")
                 .build());
     }
 
