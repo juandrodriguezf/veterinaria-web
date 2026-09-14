@@ -27,9 +27,9 @@
                     <span class="material-symbols-outlined text-2xl">notifications</span>
                 </button>
                 <div class="flex items-center gap-3">
-                    <span class="text-white font-label-md text-label-md uppercase tracking-widest hidden sm:inline">Carlos Gómez</span>
+                    <span class="text-white font-label-md text-label-md uppercase tracking-widest hidden sm:inline" th:text="${nombreVeterinario}">Carlos Gómez</span>
                     <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
-                        <span class="text-on-primary-container font-bold text-body-md">CG</span>
+                        <span class="text-on-primary-container font-bold text-body-md">V</span>
                     </div>
                 </div>
                 <a class="px-6 py-3 rounded-full border border-gray-600 text-white font-button text-button uppercase hover:bg-white/5 transition-colors" th:href="@{/login}">
@@ -63,7 +63,7 @@
                     <div class="flex items-center justify-between p-4 bg-surface-container-low rounded-full border border-surface-container-highest">
                         <div>
                             <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">VETERINARIO RESPONSABLE</span>
-                            <p class="font-body-md text-body-md text-on-surface font-semibold">Dr. Carlos Ruiz</p>
+                            <p class="font-body-md text-body-md text-on-surface font-semibold" th:text="${nombreVeterinario}">Dr. Carlos Ruiz</p>
                         </div>
                         <div class="p-2 bg-primary-container/30 rounded-full">
                             <span class="material-symbols-outlined text-primary text-xl">verified</span>
