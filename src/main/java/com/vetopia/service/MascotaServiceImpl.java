@@ -185,29 +185,38 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Cuando el término llega nulo o vacío se delega al listado completo
-     * (misma firma del ejemplo del curso: un solo endpoint para listado
-     * y búsqueda).
+     * Búsqueda por coincidencia exacta del nombre sin distinguir
+     * mayúsculas/minúsculas (findByNombreIgnoreCase: la consulta derivada
+     * del ejemplo del curso más el IgnoreCase que el proyecto ya usa en
+     * credenciales). Cuando el término llega nulo o vacío se delega al
+     * listado completo (un solo endpoint para listado y búsqueda).
      */
     @Override
     public List<Mascota> buscarPorNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             return listarMascotas();
         }
-        return mascotaRepository.findByNombreContainingIgnoreCase(nombre.trim());
+        return mascotaRepository.findByNombreIgnoreCase(nombre.trim());
     }
 
     /**
      * {@inheritDoc}
-     * Mismo patrón: si el término está vacío cae al listado acotado al
-     * dueño; de lo contrario aplica la consulta derivada compuesta.
+     * La relación con el dueño se resuelve con findByDuenoId (consulta
+     * derivada simple, como en el ejemplo del curso) y sobre ese listado
+     * se compara el nombre exacto sin distinguir mayúsculas en memoria;
+     * no se usa una consulta compuesta. Si el término está vacío cae al
+     * listado del dueño.
      */
     @Override
     public List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre) {
+        List<Mascota> delDueno = listarMascotasPorDueno(duenoId);
         if (nombre == null || nombre.isBlank()) {
-            return listarMascotasPorDueno(duenoId);
+            return delDueno;
         }
-        return mascotaRepository.findByDuenoIdAndNombreContainingIgnoreCase(duenoId, nombre.trim());
+        String termino = nombre.trim();
+        return delDueno.stream()
+                .filter(mascota -> termino.equalsIgnoreCase(mascota.getNombre()))
+                .toList();
     }
 
     /**

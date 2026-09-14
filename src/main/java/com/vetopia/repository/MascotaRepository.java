@@ -27,16 +27,13 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     List<Mascota> findByDuenoId(Integer duenoId);
 
     /**
-     * Búsqueda de mascotas por nombre sin distinguir mayúsculas/minúsculas
-     * (AC21: poder buscar una mascota por su nombre).
+     * Mascotas cuyo nombre coincide exactamente con el término buscado,
+     * sin distinguir mayúsculas/minúsculas (AC21: poder buscar una mascota
+     * por su nombre). Es la consulta derivada del ejemplo del curso
+     * (StudentRepository.findByNombre) más la palabra clave IgnoreCase,
+     * que el proyecto ya usa en las consultas de credenciales.
      */
-    List<Mascota> findByNombreContainingIgnoreCase(String nombre);
-
-    /**
-     * Búsqueda de mascotas por nombre dentro de las que pertenecen a un
-     * dueño específico (usado en el portal del cliente).
-     */
-    List<Mascota> findByDuenoIdAndNombreContainingIgnoreCase(Integer duenoId, String nombre);
+    List<Mascota> findByNombreIgnoreCase(String nombre);
 
     /**
      * Mascotas que se encuentran en un estado determinado. Se usa para
