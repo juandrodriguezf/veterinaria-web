@@ -31,7 +31,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 - Spring Boot 3.5.4 (Web + Thymeleaf)
 - **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL)
 - Lombok
-- Tailwind CSS (vía CDN) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
+- Tailwind CSS compilado a hojas de estilo propias (`static/css/tailwind-landing.css` y `tailwind-portal.css`) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
 - Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
 - `DataLoader` (`CommandLineRunner`) siembra datos de prueba al arrancar si la base está vacía (50 clientes, 100 perros generados con `Random(41)`, semilla del ejemplo del curso)
 - Manejo de errores con `errors/GlobalExceptionHandler` sobre `templates/error.html`
@@ -98,7 +98,8 @@ Vetopia/
     │   ├── DataLoader.java                  # Siembra datos de prueba al arranque (CommandLineRunner)
     │   ├── controller/
     │   │   ├── HomeController.java          # Raíz "/" y login "/login"
-    │   │   └── PortalController.java        # Portales de veterinario y cliente (una sola clase)
+    │   │   ├── VeterinarioController.java   # Portal del veterinario (mascotas, dueños, tratamientos)
+    │   │   └── ClienteController.java       # Portal del cliente (mascotas visible solo de su dueño)
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
     │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
     │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
