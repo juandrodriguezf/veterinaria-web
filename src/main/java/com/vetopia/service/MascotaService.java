@@ -82,4 +82,11 @@ public interface MascotaService {
      * al listado de mascotas del dueño.
      */
     List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre);
+
+    /**
+     * Lista únicamente las mascotas activas, es decir, las que están
+     * hospitalizadas. Regla de negocio: solo se puede dar tratamiento a
+     * mascotas activas.
+     */
+    List<Mascota> listarMascotasActivas();
 }

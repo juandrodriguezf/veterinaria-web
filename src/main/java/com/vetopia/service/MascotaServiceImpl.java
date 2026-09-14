@@ -209,4 +209,14 @@ public class MascotaServiceImpl implements MascotaService {
         }
         return mascotaRepository.findByDuenoIdAndNombreContainingIgnoreCase(duenoId, nombre.trim());
     }
+
+    /**
+     * {@inheritDoc}
+     * La consulta derivada findByEstado traduce el estado de negocio a
+     * la columna estado de la tabla.
+     */
+    @Override
+    public List<Mascota> listarMascotasActivas() {
+        return List.copyOf(mascotaRepository.findByEstado("Activo"));
+    }
 }

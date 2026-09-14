@@ -99,16 +99,48 @@ public class VeterinarioController {
     }
 
     /**
+     * Deja en el modelo todo lo que el formulario de tratamiento necesita
+     * para renderizarse: el selector de pacientes activos, el inventario
+     * de medicamentos, la fecha por defecto y el responsable del portal.
+     * Lo usan tanto la apertura del formulario como el regreso tras un
+     * rechazo del service, para que el veterinario siempre pueda corregir
+     * y reintentar sobre el formulario completo.
+     */
+    private void cargarFormularioTratamiento(Model model) {
+        // Solo se ofrecen pacientes activos: la regla de negocio impide
+        // dar tratamiento a mascotas que no están hospitalizadas.
+        model.addAttribute("mascotas", mascotaService.listarMascotasActivas());
+        model.addAttribute("drogas", drogaService.listarDrogas());
+        // La fecha por defecto del formulario es el día actual.
+        model.addAttribute("fechaHoy", LocalDate.now());
+        cargarNombreVeterinario(model);
+    }
+
+    /**
      * Atiende GET /veterinario/mascotas: listado de mascotas a cargo
-     * del veterinario, con filtro opcional por nombre (AC21).
+     * del veterinario.
      *
      * URL: http://localhost:8080/veterinario/mascotas
      * Vista: src/main/resources/templates/veterinario/mascotas-cargo.html
      */
     @GetMapping("/veterinario/mascotas")
-    public String listarMascotasVeterinario(
-            @RequestParam(name = "nombre", required = false) String nombre,
-            Model model) {
+    public String listarMascotasVeterinario(Model model) {
+        model.addAttribute("mascotas", mascotaService.listarMascotas());
+        cargarNombreVeterinario(model);
+        return "veterinario/mascotas-cargo";
+    }
+
+    /**
+     * Atiende GET /veterinario/mascotas?nombre=X: búsqueda de mascotas por
+     * nombre (AC21). Es la misma ruta del listado con el parámetro nombre,
+     * patrón del material del curso (un handler por caso, igual que
+     * buscarEstudiantesPorNombre con @GetMapping(params = "nombre")).
+     *
+     * URL: http://localhost:8080/veterinario/mascotas?nombre=Luna
+     * Vista: src/main/resources/templates/veterinario/mascotas-cargo.html
+     */
+    @GetMapping(value = "/veterinario/mascotas", params = "nombre")
+    public String buscarMascotasVeterinario(@RequestParam("nombre") String nombre, Model model) {
         model.addAttribute("mascotas", mascotaService.buscarPorNombre(nombre));
         model.addAttribute("nombre", nombre);
         cargarNombreVeterinario(model);
@@ -310,12 +342,8 @@ public class VeterinarioController {
      */
     @GetMapping("/veterinario/mascotas/asignar-tratamiento")
     public String asignarTratamiento(Model model) {
-        model.addAttribute("mascotas", mascotaService.listarMascotas());
-        model.addAttribute("drogas", drogaService.listarDrogas());
         model.addAttribute("tratamiento", new Tratamiento());
-        // La fecha por defecto del formulario es el día actual.
-        model.addAttribute("fechaHoy", LocalDate.now());
-        cargarNombreVeterinario(model);
+        cargarFormularioTratamiento(model);
         return "veterinario/asignar-tratamiento";
     }
 
@@ -335,10 +363,11 @@ public class VeterinarioController {
             model.addAttribute("mascotaId", tratamiento.getMascota().getId());
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // El service valida mascota, medicamento y stock: si algo
-            // falla, el mensaje regresa al formulario para que el
-            // veterinario lo vea y corrija.
+            // falla, el mensaje regresa al formulario y el formulario se
+            // repuebla (pacientes activos, inventario y fecha) para que
+            // el veterinario corrija y reintente sin recargar la página.
             model.addAttribute("mensajeError", excepcion.getMessage());
-            cargarNombreVeterinario(model);
+            cargarFormularioTratamiento(model);
             return "veterinario/asignar-tratamiento";
         }
         cargarNombreVeterinario(model);

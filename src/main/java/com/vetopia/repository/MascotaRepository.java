@@ -37,4 +37,11 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
      * dueño específico (usado en el portal del cliente).
      */
     List<Mascota> findByDuenoIdAndNombreContainingIgnoreCase(Integer duenoId, String nombre);
+
+    /**
+     * Mascotas que se encuentran en un estado determinado. Se usa para
+     * ofrecer únicamente pacientes activos al asignar un tratamiento,
+     * pues solo las mascotas hospitalizadas (activas) pueden recibirlo.
+     */
+    List<Mascota> findByEstado(String estado);
 }
