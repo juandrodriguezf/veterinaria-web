@@ -20,7 +20,7 @@
         </a>
         <!-- Navegación del portal -->
         <nav class="flex items-center gap-6 md:gap-8 font-label-md text-label-md uppercase tracking-widest">
-            <a class="font-bold text-primary-fixed border-b-2 border-primary-fixed pb-1" href="#">Mascotas</a>
+            <a class="font-bold text-primary-fixed border-b-2 border-primary-fixed pb-1" th:href="@{/cliente/mascotas(idUsuario=${idUsuario})}">Mascotas</a>
             <a class="hidden sm:inline text-gray-300 hover:text-primary-fixed transition-colors" href="#">Citas</a>
             <a class="flex items-center gap-2 text-gray-300 hover:text-error transition-colors" th:href="@{/login}">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>

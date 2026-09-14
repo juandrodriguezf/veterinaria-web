@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDate;
+
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
@@ -308,6 +310,8 @@ public class VeterinarioController {
         model.addAttribute("mascotas", mascotaService.listarMascotas());
         model.addAttribute("drogas", drogaService.listarDrogas());
         model.addAttribute("tratamiento", new Tratamiento());
+        // La fecha por defecto del formulario es el día actual.
+        model.addAttribute("fechaHoy", LocalDate.now());
         cargarNombreVeterinario(model);
         return "veterinario/asignar-tratamiento";
     }
