@@ -73,12 +73,23 @@ public class DuenoServiceImpl implements DuenoService {
             throw new IllegalArgumentException(
                 "Ya existe un cliente con la cédula \"" + dueno.getCedula() + "\".");
         }
-        // Un cliente creado por el veterinario arranca Activo con una clave
-        // provisional (puede cambiarla después en "editar cliente"). Cubre
-        // al flujo original de registro, cuyo formulario no pide estos
-        // campos, y evita la violación de columnas NOT NULL.
+        // Política de contraseñas: en edición, dejar el campo en blanco
+        // significa "conservar la clave actual" (el formulario no la
+        // devuelve, se envía vacía); en creación se asigna una clave
+        // provisional. Cubre al flujo original de registro, cuyo
+        // formulario no pide estos campos, y evita violar la columna
+        // NOT NULL.
         if (dueno.getContrasena() == null || dueno.getContrasena().isBlank()) {
-            dueno.setContrasena("vetopia123");
+            if (dueno.getId() != null) {
+                Dueno actual = duenoRepository.findById(dueno.getId()).orElse(null);
+                if (actual == null) {
+                    throw new RecursoNoEncontradoException(
+                            "No encontramos ningún cliente registrado con el identificador \"" + dueno.getId() + "\".");
+                }
+                dueno.setContrasena(actual.getContrasena());
+            } else {
+                dueno.setContrasena("vetopia123");
+            }
         }
         if (dueno.getEstado() == null || dueno.getEstado().isBlank()) {
             dueno.setEstado("Activo");

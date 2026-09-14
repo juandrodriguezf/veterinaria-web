@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDate;
+
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.Veterinario;
 import com.vetopia.service.DrogaService;
 import com.vetopia.service.DuenoService;
 import com.vetopia.service.MascotaService;
 import com.vetopia.service.TratamientoService;
+import com.vetopia.service.VeterinarioService;
 
 /**
  * CONTROLLER (Portal del veterinario)
@@ -74,9 +78,25 @@ public class VeterinarioController {
     @Autowired
     private TratamientoService tratamientoService;
 
+    /** Servicio de veterinarios (identidad del responsable en las vistas). */
+    @Autowired
+    private VeterinarioService veterinarioService;
+
     /** Servicio de drogas (medicamentos del inventario). */
     @Autowired
     private DrogaService drogaService;
+
+    /**
+     * Deja en el modelo el nombre del veterinario que las vistas del
+     * portal presentan como responsable del portal. Mientras el proyecto
+     * no maneje sesión, es el veterinario fijo (id 1), igual que usa el
+     * service de tratamientos al registrar la asignación en la ficha.
+     */
+    private void cargarNombreVeterinario(Model model) {
+        Veterinario veterinario = veterinarioService.obtenerVeterinarioPorId(1);
+        model.addAttribute("nombreVeterinario",
+                veterinario != null ? veterinario.getNombre() : "Veterinario");
+    }
 
     /**
      * Atiende GET /veterinario/mascotas: listado de mascotas a cargo
@@ -88,6 +108,7 @@ public class VeterinarioController {
     @GetMapping("/veterinario/mascotas")
     public String listarMascotasVeterinario(Model model) {
         model.addAttribute("mascotas", mascotaService.listarMascotas());
+        cargarNombreVeterinario(model);
         return "veterinario/mascotas-cargo";
     }
 
@@ -146,6 +167,7 @@ public class VeterinarioController {
             // Id inválido (ausente, cero o negativo): la ficha muestra
             // su panel informativo con la causa exacta.
             model.addAttribute("mensajeError", excepcion.getMessage());
+            cargarNombreVeterinario(model);
             return "veterinario/ficha-clinica";
         }
         model.addAttribute("duenos", duenoService.listarDuenos());
@@ -288,6 +310,9 @@ public class VeterinarioController {
         model.addAttribute("mascotas", mascotaService.listarMascotas());
         model.addAttribute("drogas", drogaService.listarDrogas());
         model.addAttribute("tratamiento", new Tratamiento());
+        // La fecha por defecto del formulario es el día actual.
+        model.addAttribute("fechaHoy", LocalDate.now());
+        cargarNombreVeterinario(model);
         return "veterinario/asignar-tratamiento";
     }
 
@@ -310,8 +335,10 @@ public class VeterinarioController {
             // falla, el mensaje regresa al formulario para que el
             // veterinario lo vea y corrija.
             model.addAttribute("mensajeError", excepcion.getMessage());
+            cargarNombreVeterinario(model);
             return "veterinario/asignar-tratamiento";
         }
+        cargarNombreVeterinario(model);
         return "veterinario/tratamiento-confirmacion";
     }
 
@@ -331,6 +358,7 @@ public class VeterinarioController {
             // la ficha lo presenta en su panel informativo.
             model.addAttribute("mensajeError", excepcion.getMessage());
         }
+        cargarNombreVeterinario(model);
         return "veterinario/ficha-clinica";
     }
 
@@ -355,6 +383,7 @@ public class VeterinarioController {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public String idNoNumerico(Model modelo) {
         modelo.addAttribute("mensajeError", "El identificador suministrado no es válido.");
+        cargarNombreVeterinario(modelo);
         return "veterinario/ficha-clinica";
     }
 }

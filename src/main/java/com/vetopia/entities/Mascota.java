@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -109,9 +110,11 @@ public class Mascota {
     /**
      * Tratamientos que ha recibido la mascota (lado inverso de la
      * relación Mascota 1 -- 0..* Tratamiento; la FK vive en
-     * Tratamiento.mascota).
+     * Tratamiento.mascota). Se ordenan por fecha ascendente para que
+     * el historial médico siempre se presente en orden cronológico.
      */
     @OneToMany(mappedBy = "mascota")
+    @OrderBy("fecha ASC")
     @Builder.Default
     private List<Tratamiento> tratamientos = new ArrayList<>();
 

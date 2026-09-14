@@ -21,7 +21,6 @@
         <div class="hidden md:flex items-center gap-8">
             <a href="/veterinario/mascotas" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Pacientes</a>
             <a href="/veterinario/mascotas/clientes" class="text-primary font-body-md text-body-md font-bold border-b-2 border-primary pb-1">Clientes</a>
-            <a href="#" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Citas</a>
             <a th:href="@{/veterinario/mascotas/asignar-tratamiento}" class="text-gray-400 hover:text-primary transition-colors font-body-md text-body-md">Tratamientos</a>
         </div>
         <div class="flex items-center gap-4">
@@ -90,6 +89,9 @@
                             <input th:field="*{contrasena}" id="contrasena" type="password"
                                    class="w-full px-4 py-3 bg-background rounded border border-outline-variant text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                    placeholder="Credencial para el login del cliente"/>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">
+                                Al editar, si deja este campo vacío se conserva la contraseña actual.
+                            </p>
                         </div>
                     </div>
 
