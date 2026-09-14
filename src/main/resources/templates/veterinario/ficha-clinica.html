@@ -148,19 +148,22 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
                 <div>
                     <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Nombre</dt>
-                    <dd class="font-body-lg text-body-lg font-semibold text-on-surface break-words">Carlos Gómez</dd>
+                    <dd class="font-body-lg text-body-lg font-semibold text-on-surface break-words"
+                        th:text="${mascota.dueno.nombre}">Carlos Gómez</dd>
                 </div>
                 <div>
                     <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Teléfono</dt>
-                    <dd class="font-body-lg text-body-lg font-semibold text-on-surface break-words">+57 300 123 4567</dd>
+                    <dd class="font-body-lg text-body-lg font-semibold text-on-surface break-words"
+                        th:text="${mascota.dueno.celular}">+57 300 123 4567</dd>
                 </div>
                 <div>
                     <dt class="mb-1 font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Email</dt>
-                    <dd class="font-body-lg text-body-lg text-on-surface break-words">carlos.gomez@example.com</dd>
+                    <dd class="font-body-lg text-body-lg text-on-surface break-words"
+                        th:text="${mascota.dueno.correo}">carlos.gomez@example.com</dd>
                 </div>
             </div>
             <a class="mt-6 inline-flex w-full items-center justify-center rounded-full border border-outline px-8 py-2 font-button text-button uppercase tracking-widest text-on-surface transition-colors hover:bg-surface-container-low"
-               href="#">
+               th:href="@{/veterinario/mascotas/clientes}">
                 Ver Perfil Completo
             </a>
         </div>
