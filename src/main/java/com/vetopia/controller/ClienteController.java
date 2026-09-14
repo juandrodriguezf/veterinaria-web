@@ -46,22 +46,25 @@ public class ClienteController {
 
     /**
      * Atiende GET /cliente/mascotas?idUsuario=N: listado de las mascotas
-     * del cliente identificado (relación Dueno 1 -- 0..* Mascota). El
-     * service valida la identidad (obtenerActivo lanza si el id falta,
-     * es inválido o el cliente está inactivo); el controller atrapa la
-     * excepción y regresa al login.
+     * del cliente identificado (relación Dueno 1 -- 0..* Mascota), con
+     * filtro opcional por nombre (AC21). El service valida la identidad
+     * (obtenerActivo lanza si el id falta, es inválido o el cliente
+     * está inactivo); el controller atrapa la excepción y regresa al
+     * login.
      *
      * URL para visualizar: http://localhost:8080/cliente/mascotas?idUsuario=1
      * Vista: src/main/resources/templates/principal-cliente.html
      */
     @GetMapping("/cliente/mascotas")
     public String listarMascotasCliente(@RequestParam(name = "idUsuario", required = false) Integer idUsuario,
+                                        @RequestParam(name = "nombre", required = false) String nombre,
                                         Model model) {
         try {
             Dueno dueno = duenoService.obtenerActivo(idUsuario);
             model.addAttribute("dueno", dueno);
             model.addAttribute("idUsuario", idUsuario);
-            model.addAttribute("mascotas", mascotaService.listarMascotasPorDueno(idUsuario));
+            model.addAttribute("mascotas", mascotaService.buscarPorDuenoYNombre(idUsuario, nombre));
+            model.addAttribute("nombre", nombre);
             return "principal-cliente";
         } catch (IllegalArgumentException | IllegalStateException excepcion) {
             // Sin idUsuario, con id inválido o con un cliente inactivo no

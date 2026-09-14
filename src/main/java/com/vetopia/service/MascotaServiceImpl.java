@@ -182,4 +182,31 @@ public class MascotaServiceImpl implements MascotaService {
         }
         return mascotaRepository.findByDuenoId(duenoId);
     }
+
+    /**
+     * {@inheritDoc}
+     * Cuando el término llega nulo o vacío se delega al listado completo
+     * (misma firma del ejemplo del curso: un solo endpoint para listado
+     * y búsqueda).
+     */
+    @Override
+    public List<Mascota> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return listarMascotas();
+        }
+        return mascotaRepository.findByNombreContainingIgnoreCase(nombre.trim());
+    }
+
+    /**
+     * {@inheritDoc}
+     * Mismo patrón: si el término está vacío cae al listado acotado al
+     * dueño; de lo contrario aplica la consulta derivada compuesta.
+     */
+    @Override
+    public List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return listarMascotasPorDueno(duenoId);
+        }
+        return mascotaRepository.findByDuenoIdAndNombreContainingIgnoreCase(duenoId, nombre.trim());
+    }
 }

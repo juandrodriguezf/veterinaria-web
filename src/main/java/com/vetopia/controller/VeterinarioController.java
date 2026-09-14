@@ -100,14 +100,17 @@ public class VeterinarioController {
 
     /**
      * Atiende GET /veterinario/mascotas: listado de mascotas a cargo
-     * del veterinario.
+     * del veterinario, con filtro opcional por nombre (AC21).
      *
      * URL: http://localhost:8080/veterinario/mascotas
      * Vista: src/main/resources/templates/veterinario/mascotas-cargo.html
      */
     @GetMapping("/veterinario/mascotas")
-    public String listarMascotasVeterinario(Model model) {
-        model.addAttribute("mascotas", mascotaService.listarMascotas());
+    public String listarMascotasVeterinario(
+            @RequestParam(name = "nombre", required = false) String nombre,
+            Model model) {
+        model.addAttribute("mascotas", mascotaService.buscarPorNombre(nombre));
+        model.addAttribute("nombre", nombre);
         cargarNombreVeterinario(model);
         return "veterinario/mascotas-cargo";
     }

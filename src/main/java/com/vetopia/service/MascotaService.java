@@ -68,4 +68,18 @@ public interface MascotaService {
      * (relación Dueno 1 -- 0..* Mascota del diagrama de clases).
      */
     List<Mascota> listarMascotasPorDueno(Integer duenoId);
+
+    /**
+     * Busca mascotas cuyo nombre contenga el término dado sin distinguir
+     * mayúsculas (AC21). Si el término es nulo o vacío, devuelve el
+     * listado completo para que el mismo endpoint sirva búsqueda y listado.
+     */
+    List<Mascota> buscarPorNombre(String nombre);
+
+    /**
+     * Busca mascotas de un dueño cuyo nombre contenga el término dado
+     * (AC21, portal del cliente). Si el término es nulo o vacío, cae
+     * al listado de mascotas del dueño.
+     */
+    List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre);
 }
