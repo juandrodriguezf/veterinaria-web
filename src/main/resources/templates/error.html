@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div th:replace="fragmentos-portal :: head"></div>
     <title>Vetopia · Página no encontrada</title>
-    <link href="/css/tailwind-portal.css" rel="stylesheet"/>
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
     <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
         <div class="h-16 flex items-center px-6">
-            <a th:href="@{/}" class="font-headline-md text-headline-md text-primary font-bold tracking-wide">Vetopia</a>
+            <a th:href="@{/}" class="flex items-center">
+                <img th:src="@{/images/logo_Vetopia.png}" alt="Vetopia Logo" class="h-10 w-auto object-contain"/>
+            </a>
         </div>
     </nav>
 
@@ -37,5 +37,7 @@
             </div>
         </div>
     </main>
+
+    <footer th:replace="fragmentos-portal :: footer"></footer>
 </body>
 </html>
