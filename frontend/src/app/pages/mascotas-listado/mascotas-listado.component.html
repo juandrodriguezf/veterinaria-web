@@ -1,2 +1,65 @@
-<h1>Mascotas a cargo</h1>
-<p>Listado de mascotas en construcción.</p>
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-portal-gutter max-w-portal-container-max mx-auto h-20">
+      <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">
+        <img alt="Veto Precision Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGmAr_Hjp4ZCy8ezWVGciiNxUFa1a57lruSDgy0Xgk93QhrPSm4d8_uHrpj5GeNa8Gg7ipmkurP9qB75txOTGtJUl2O3Lps_uTsgVNoa-a34c6FNLAzDjLCSH5ZfIOMfLPBF4t-Twzkz4dvRsbGPzjr3wffVSkXbSjl5eiMJcgXm8I4yRlfxpuqeBtiFVV-UglKNkgxmK5yYEIB3TPFhPQC9TIA74zwryNrRCa5D_BeiKeTUJ9KI9bSUIY0pSF4GegTUA"/>
+      </a>
+      <div class="hidden md:flex gap-8">
+        <a aria-current="page" class="text-white font-bold border-b-2 border-white pb-1 hover:text-portal-primary transition-colors duration-200" routerLink="/mascotas" style="color: rgb(127, 255, 212); text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px; border-color: rgb(127, 255, 212);">Pacientes</a>
+        <a class="text-gray-300 font-portal-body-md text-portal-body-md hover:text-portal-primary transition-colors duration-200" href="#">Clientes</a>
+        <a class="text-gray-300 font-portal-body-md text-portal-body-md hover:text-portal-primary transition-colors duration-200" href="#">Tratamientos</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <button aria-label="Notifications" class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors text-white" type="button">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col items-end hidden sm:flex">
+            <span class="font-portal-label-md text-portal-label-md text-white">{{ nombreVeterinario }}</span>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-portal-primary-container text-portal-on-primary-container flex items-center justify-center font-bold">V</div>
+        </div>
+        <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+        <button class="md:hidden p-2 text-portal-on-surface-variant" type="button">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+    <app-page-title></app-page-title>
+
+    <section class="mb-portal-stack-md">
+      <form (ngSubmit)="buscar()" class="flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+          <input [(ngModel)]="nombre" class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+                 name="nombre" placeholder="Buscar por nombre..." type="text"/>
+        </div>
+        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+          Buscar
+        </button>
+        <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
+          Limpiar
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-portal-surface-container-lowest rounded-DEFAULT border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
+        <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
+        <div class="flex items-center gap-4">
+          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
+          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/mascotas/new">
+            Agregar mascota
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">pets</span>
+          </a>
+        </div>
+      </div>
+      <app-mascota-tabla (mascotaSeleccionada)="alternarEstado($event)" [mascotas]="mascotas" [nombre]="nombre"></app-mascota-tabla>
+    </section>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>
