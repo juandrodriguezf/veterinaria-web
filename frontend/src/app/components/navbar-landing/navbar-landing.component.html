@@ -1,0 +1,26 @@
+<header class="fixed top-0 w-full z-50 glass-header border-b border-white/10 bg-background/80 backdrop-blur-xl" id="main-header">
+  <div class="flex justify-between items-center px-margin-desktop py-6 w-full max-w-container-max mx-auto">
+    <a class="flex items-center" routerLink="/">
+      <img alt="Vetopia Logo" class="h-8 md:h-12 w-auto object-contain" src="images/logo_Vetopia.png"/>
+    </a>
+
+    <nav class="hidden md:flex gap-8 items-center font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
+      @for (enlace of enlaces; track enlace.fragmento) {
+        <a [class]="enlace.activo ? 'text-primary font-bold border-b-2 border-primary pb-1' : 'hover:text-primary transition-colors duration-300 font-medium'" [href]="'#' + enlace.fragmento">{{ enlace.texto }}</a>
+      }
+    </nav>
+
+    <div class="hidden md:flex items-center gap-4">
+      <a class="flex items-center gap-2 border border-white rounded-[35px] px-4 py-2 text-on-surface-variant hover:text-primary font-label-sm text-label-sm uppercase tracking-widest transition-colors" routerLink="/mascotas">
+        Log In <span class="material-symbols-outlined text-[16px]">login</span>
+      </a>
+      <a class="btn-primary bg-mint-accent text-deep-carbon font-bold px-6 py-3 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300" routerLink="/mascotas">
+        Agendar cita
+      </a>
+    </div>
+
+    <button class="md:hidden text-white" aria-label="Abrir menú">
+      <span class="material-symbols-outlined text-[32px]">menu</span>
+    </button>
+  </div>
+</header>
