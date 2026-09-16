@@ -107,12 +107,33 @@ Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma
 
 Las dos pantallas de administrador del prototipo quedan fuera del alcance de la Entrega 1: hoy el inicio de sesión con rol administrador redirige al landing. El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
 
+## Frontend Angular (Entrega 2)
+
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional y las tres pantallas del CRUD de mascotas del veterinario (listado, formulario y ficha clínica), con los mismos datos de prueba sembrados en sus servicios y sin llamadas al backend todavía.
+
+| Ruta | Descripción |
+|---|---|
+| `http://localhost:4200/` | Landing institucional |
+| `http://localhost:4200/mascotas` | Portal del veterinario: listado de mascotas |
+| `http://localhost:4200/mascotas/new` | Registrar mascota |
+| `http://localhost:4200/mascotas/update/:id` | Editar mascota |
+| `http://localhost:4200/mascotas/:id` | Ficha clínica de la mascota |
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+El detalle de la estructura, los datos quemados, las decisiones de diseño y las pruebas está en el [README del frontend](frontend/README.md).
+
 ## Estructura del proyecto
 
 ```
 Vetopia/
 ├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, JPA, H2, Lombok, Thymeleaf)
 ├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
+├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind (Entrega 2)
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
