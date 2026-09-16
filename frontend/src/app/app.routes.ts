@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from './pages/landing/landing.component';
-import { MascotaListadoComponent } from './pages/mascotas-listado/mascota-listado.component';
-import { MascotaFormularioComponent } from './pages/mascotas-formulario/mascota-formulario.component';
+import { MascotasListadoComponent } from './pages/mascotas-listado/mascotas-listado.component';
+import { MascotasFormularioComponent } from './pages/mascotas-formulario/mascotas-formulario.component';
 
 export const routes: Routes = [
   {
@@ -10,14 +10,14 @@ export const routes: Routes = [
   },
   {
     path: 'mascotas',
-    component: MascotaListadoComponent,
+    component: MascotasListadoComponent,
   },
   {
-    path: 'mascotas/nueva',
-    component: MascotaFormularioComponent,
+    path: 'mascotas/new',
+    component: MascotasFormularioComponent,
   },
   {
-    path: 'mascotas/editar/:id',
-    component: MascotaFormularioComponent,
+    path: 'mascotas/update/:id',
+    component: MascotasFormularioComponent,
   },
 ];

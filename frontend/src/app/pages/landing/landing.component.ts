@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NavbarLandingComponent } from '../../components/navbar-landing/navbar-landing.component';
 import { FooterLandingComponent } from '../../components/footer-landing/footer-landing.component';
@@ -7,12 +7,15 @@ import { FooterLandingComponent } from '../../components/footer-landing/footer-l
   selector: 'app-landing',
   imports: [RouterLink, NavbarLandingComponent, FooterLandingComponent],
   templateUrl: './landing.component.html',
+  styleUrl: './landing.component.scss',
   host: {
     class:
       'block overflow-x-hidden font-body-md text-body-md selection:bg-mint-accent selection:text-deep-carbon',
   },
 })
 export class LandingComponent {
+  readonly carrusel = viewChild.required<ElementRef<HTMLDivElement>>('carrusel');
+
   readonly equipo = [
     {
       nombre: 'Dra. Laura Gómez',
@@ -48,4 +51,9 @@ export class LandingComponent {
       imagen: 'https://img.magnific.com/fotos-premium/medico-veterinario-clinica-veterinaria_1368-127913.jpg',
     },
   ];
+
+  moverCarrusel(direccion: number): void {
+    const carrusel = this.carrusel().nativeElement;
+    carrusel.scrollBy({ left: direccion * carrusel.clientWidth * 0.6, behavior: 'smooth' });
+  }
 }

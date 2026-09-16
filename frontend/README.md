@@ -35,8 +35,22 @@ La aplicación queda disponible en `http://localhost:4200/`.
 |---|---|
 | `/` | Landing institucional |
 | `/mascotas` | Listado de mascotas |
-| `/mascotas/nueva` | Registrar mascota |
-| `/mascotas/editar/:id` | Editar mascota |
+| `/mascotas/new` | Registrar mascota |
+| `/mascotas/update/:id` | Editar mascota |
+
+## Pruebas
+
+El proyecto conserva la infraestructura de Karma y Jasmine (`target test` en `angular.json` y `tsconfig.spec.json`), con los schematics en `skipTests` para que los componentes y servicios se generen sin `.spec.ts`, igual que el proyecto de referencia.
+
+```bash
+npm test
+```
+
+Mientras no exista el primer archivo `.spec.ts`, el `include` de `tsconfig.spec.json` no encuentra entradas y TypeScript corta la corrida con `TS18003` (al proyecto de referencia le pasa lo mismo). Al agregar el primer spec el comando queda operativo; para una corrida única sin modo vigilancia:
+
+```bash
+npm test -- --watch=false --browsers=ChromeHeadless
+```
 
 ## Estilos
 

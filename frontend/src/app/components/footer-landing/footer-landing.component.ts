@@ -5,5 +5,6 @@ import { RouterLink } from '@angular/router';
   selector: 'app-footer-landing',
   imports: [RouterLink],
   templateUrl: './footer-landing.component.html',
+  styleUrl: './footer-landing.component.scss',
 })
 export class FooterLandingComponent {}
