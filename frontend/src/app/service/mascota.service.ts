@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { DuenoService } from './dueno.service';
+import { TratamientoService } from './tratamiento.service';
 import { Mascota } from '../models/mascota.model';
 
 @Injectable({
@@ -7,6 +8,8 @@ import { Mascota } from '../models/mascota.model';
 })
 export class MascotaService {
   private duenoService = inject(DuenoService);
+
+  private tratamientoService = inject(TratamientoService);
 
   private mascotas: Mascota[] = this.sembrar();
 
@@ -248,6 +251,7 @@ export class MascotaService {
       },
     ];
     mascotas.forEach((mascota) => mascota.dueno.mascotas.push(mascota));
+    this.tratamientoService.sembrarTratamientos(mascotas);
     return mascotas;
   }
 

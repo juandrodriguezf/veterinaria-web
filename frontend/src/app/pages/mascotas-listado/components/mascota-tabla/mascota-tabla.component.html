@@ -45,6 +45,10 @@
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.sexo }}</td>
           <td class="px-6 py-4">
             <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
+              <a [attr.aria-label]="'Consultar ficha clínica de ' + mascota.nombre" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" [routerLink]="['/mascotas', mascota.id]">
+                Ver ficha
+                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
+              </a>
               <a class="inline-flex items-center gap-2 rounded-full bg-portal-secondary-container px-4 py-2 font-portal-button text-portal-button uppercase text-portal-on-secondary-container transition-colors hover:bg-portal-secondary hover:text-portal-on-secondary" [routerLink]="['/mascotas/update', mascota.id]">
                 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">edit</span>
                 Editar
