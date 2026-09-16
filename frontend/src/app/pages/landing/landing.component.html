@@ -1,8 +1,171 @@
 <app-navbar-landing />
 
-<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-32 min-h-screen">
-  <h1 class="font-headline-lg text-headline-lg text-white">Vetopia</h1>
-  <p class="font-body-lg text-body-lg text-on-surface-variant">Secciones de la landing en construcción.</p>
+<main class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+  <section class="min-h-screen flex flex-col justify-center relative pt-20 md:pt-24 mb-section-gap">
+    <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-screen max-w-none z-[-1] overflow-hidden">
+      <img
+        class="w-full h-full min-w-full min-h-full object-cover object-center"
+        alt="Retrato de un galgo gris en una clínica veterinaria futurista"
+        src="images/gato-header.jpg"
+      />
+    </div>
+
+    <div class="z-10 max-w-3xl">
+      <h1 class="font-display-xl text-display-xl mb-10 text-white leading-tight ml-1.5">
+        PRECISIÓN EN EL<br />
+        <span class="text-mint-accent text-shadow-mint">CUIDADO ANIMAL</span>
+      </h1>
+
+      <div class="flex flex-wrap gap-4">
+        <a
+          class="btn-primary bg-mint-accent text-deep-carbon font-bold px-8 py-4 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center gap-2"
+          routerLink="/mascotas"
+        >
+          AGENDA UNA CITA <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </a>
+        <a
+          class="btn-secondary border border-mint-accent text-mint-accent hover:bg-mint-accent/10 font-bold px-8 py-4 rounded-DEFAULT font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center"
+          href="#servicios"
+        >
+          CONOCE NUESTROS SERVICIOS
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-section-gap" id="servicios">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
+      <div class="order-2 md:order-1 relative">
+        <img
+          class="float-animation w-full rounded-3xl shadow-2xl object-cover aspect-[2/2]"
+          alt="Mascota recibiendo atención veterinaria de última generación"
+          src="https://i.pinimg.com/736x/52/74/02/52740253b489af1e3a1fd8d0303cf19a.jpg"
+        />
+      </div>
+
+      <div class="order-1 md:order-2">
+        <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+          QUÉ <span class="text-mint-accent text-shadow-mint">HACEMOS</span>
+        </h2>
+        <p class="text-body-lg text-text-secondary">
+          En Vetopia ofrecemos una atención integral y de vanguardia para tu mascota: hospitalización
+          con monitoreo constante 24/7 en instalaciones de última generación, planes de tratamiento
+          personalizados basados en perfiles genéticos y biométricos precisos, y acceso instantáneo a
+          los signos vitales y al progreso de tu mascota a través de nuestra plataforma digital
+          integrada.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-section-gap" id="equipo">
+    <h2 class="font-headline-lg text-headline-lg mb-10 text-deep-carbon">
+      NUESTRO <span class="text-mint-accent text-shadow-mint">EQUIPO</span>
+    </h2>
+
+    <div class="relative">
+      <div
+        class="flex gap-gutter overflow-x-auto snap-x snap-mandatory scroll-smooth pt-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        id="team-carousel"
+      >
+        @for (miembro of equipo; track miembro.nombre) {
+          <div
+            class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500"
+          >
+            <div class="h-64 md:h-80 overflow-hidden">
+              <img
+                [class]="'w-full h-full object-cover ' + miembro.posicion"
+                [alt]="miembro.nombre"
+                [src]="miembro.imagen"
+              />
+            </div>
+            <div class="p-6 text-center">
+              <h3 class="font-headline-md text-headline-md text-white mb-1">{{ miembro.nombre }}</h3>
+              <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
+                {{ miembro.rol }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button
+        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        id="team-prev"
+        aria-label="Anterior"
+      >
+        <span class="material-symbols-outlined">chevron_left</span>
+      </button>
+      <button
+        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        id="team-next"
+        aria-label="Siguiente"
+      >
+        <span class="material-symbols-outlined">chevron_right</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="mb-section-gap" id="timeline">
+    <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+      CÓMO <span class="text-mint-accent text-shadow-mint">FUNCIONA</span>
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+      <div>
+        <p class="text-body-lg text-text-secondary mb-3">
+          El proceso en Vetopia es simple y transparente: registras a tu mascota en nuestra plataforma
+          digital, donde se crea su perfil biométrico de forma ágil y segura.
+        </p>
+        <p class="text-body-lg text-text-secondary mb-3">
+          Nuestro equipo realiza un diagnóstico integral con escaneo y laboratorio in situ, diseña un
+          tratamiento personalizado con base en su perfil genético y da seguimiento continuo durante
+          la recuperación.
+        </p>
+        <p class="text-body-lg text-text-secondary">
+          Todo con monitoreo 24/7 en instalaciones de última generación y acceso en tiempo real a los
+          signos vitales y al progreso de tu mascota desde cualquier dispositivo.
+        </p>
+      </div>
+
+      <div class="aspect-video rounded-3xl overflow-hidden border border-mint-accent/20 shadow-2xl">
+        <iframe
+          class="w-full h-full"
+          src="https://www.youtube.com/embed/MNvAtxbjNng"
+          title="Video de Vetopia"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-section-gap" id="ubicacion">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+      <div class="order-2 lg:order-1 rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
+        <iframe
+          class="w-full h-full"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31814.088114193386!2d-74.0655104!3d4.636672!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3f99a8193f1c9f%3A0xf93431640f134c07!2sPontificia%20Universidad%20Javeriana!5e0!3m2!1ses!2sco!4v1787244200838!5m2!1ses!2sco"
+          style="border: 0"
+          allowfullscreen
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Mapa de ubicación de Vetopia"
+        ></iframe>
+      </div>
+
+      <div class="order-1 lg:order-2">
+        <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+          DÓNDE <span class="text-mint-accent text-shadow-mint">UBICARNOS</span>
+        </h2>
+        <p class="text-body-lg text-text-secondary max-w-3xl">
+          Visítanos en nuestras instalaciones de última generación, pensadas para el bienestar y la
+          recuperación de tu mascota. Encuéntranos en
+          <span class="text-deep-carbon font-semibold">Ak 7 #40 - 62, Bogotá D.C., Colombia</span>.
+        </p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <app-footer-landing />
