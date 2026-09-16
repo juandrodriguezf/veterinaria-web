@@ -1,2 +1,132 @@
-<h1>Formulario de mascota</h1>
-<p>Registro y edición de mascotas en construcción.</p>
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-portal-gutter max-w-portal-container-max mx-auto h-20">
+      <a class="flex items-center" routerLink="/">
+        <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="text-portal-primary font-portal-body-md text-portal-body-md font-bold border-b-2 border-portal-primary pb-1" routerLink="/mascotas">Pacientes</a>
+        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" href="#">Clientes</a>
+        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" href="#">Tratamientos</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-1">
+    <div class="max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+      <div class="mb-portal-stack-lg">
+        <h1 class="text-portal-headline-xl font-portal-headline-xl text-portal-on-surface mb-1">{{ isEdit ? 'Editar Mascota' : 'Registrar Nueva Mascota' }}</h1>
+        <p class="text-portal-body-lg font-portal-body-lg text-portal-on-surface-variant">Completar los detalles de la mascota</p>
+      </div>
+
+      <form (ngSubmit)="guardar()" [formGroup]="mascotaForm" class="flex flex-col gap-portal-stack-lg">
+        <input formControlName="id" type="hidden"/>
+
+        <div class="bg-portal-surface-container-lowest p-8 rounded-portal-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-portal-outline-variant">
+          <div class="border-b border-portal-surface-container-highest pb-4 mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 bg-portal-primary rounded-full"></div>
+              <h2 class="text-portal-headline-lg font-portal-headline-lg text-portal-on-surface">Información de la Mascota</h2>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="nombre">Nombre mascota</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="nombre" id="nombre" placeholder="e.g. Max" type="text"/>
+                @if (mascotaForm.get('nombre')?.touched && mascotaForm.get('nombre')?.invalid) {
+                  <small class="text-portal-error">El nombre de la mascota es obligatorio.</small>
+                }
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="especie">Especie</label>
+                <select class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="especie" id="especie">
+                  <option value="">Seleccionar especie</option>
+                  <option value="Perro">Perro</option>
+                  <option value="Gato">Gato</option>
+                </select>
+                @if (mascotaForm.get('especie')?.touched && mascotaForm.get('especie')?.invalid) {
+                  <small class="text-portal-error">La especie es obligatoria.</small>
+                }
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="raza">Raza</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="raza" id="raza" placeholder="e.g. Golden Retriever" type="text"/>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="sexo">Sexo</label>
+                <select class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="sexo" id="sexo">
+                  <option value="">Seleccionar sexo</option>
+                  <option value="Macho">Macho</option>
+                  <option value="Hembra">Hembra</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="edad">Edad (Años)</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="edad" id="edad" min="0" placeholder="e.g. 2" step="0.1" type="number"/>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="pesoKg">Peso (kg)</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="pesoKg" id="pesoKg" min="0" placeholder="e.g. 15.5" step="0.1" type="number"/>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="color">Color / Pelaje</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="color" id="color" placeholder="e.g. Dorado" type="text"/>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="imagen">URL de Imagen</label>
+                <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="imagen" id="imagen" placeholder="https://..." type="text"/>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="dueno">Dueño</label>
+              <select class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="dueno" id="dueno" required>
+                <option value="">Seleccionar dueño</option>
+                @for (dueno of duenos; track $index) {
+                  <option [value]="dueno.id">{{ dueno.nombre }} ({{ dueno.cedula }})</option>
+                }
+              </select>
+              @if (mascotaForm.get('dueno')?.touched && mascotaForm.get('dueno')?.invalid) {
+                <small class="text-portal-error">El dueño es obligatorio.</small>
+              }
+            </div>
+
+            @if (isEdit) {
+              <div class="flex flex-col gap-2">
+                <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="estado">Estado</label>
+                <select class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="estado" id="estado">
+                  <option value="Activo">Activo</option>
+                  <option value="Inactivo">Inactivo</option>
+                </select>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-portal-outline-variant">
+          <a class="px-6 py-3 rounded-full border border-portal-outline text-portal-on-surface font-portal-button text-portal-button uppercase hover:bg-portal-surface-container-high transition-colors" routerLink="/mascotas">Cancelar</a>
+          <button [disabled]="!mascotaForm.valid" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-8 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary disabled:opacity-60" type="submit">
+            <span class="material-symbols-outlined text-lg">save</span>
+            <span>{{ isEdit ? 'Actualizar Mascota' : 'Registrar Mascota' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>
