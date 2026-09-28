@@ -5,7 +5,7 @@ import type { Veterinario } from './veterinario.model';
 export interface Tratamiento {
   id: number;
   fecha: string;
-  mascota: Mascota;
+  mascota?: Mascota;
   droga: Droga;
   veterinario: Veterinario;
 }

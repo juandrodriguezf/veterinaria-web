@@ -123,7 +123,7 @@ export class TratamientoService {
   }
 
   listarTratamientosPorMascota(id: number) {
-    return this.tratamientos.filter((tratamiento) => tratamiento.mascota.id === id);
+    return this.tratamientos.filter((tratamiento) => tratamiento.mascota?.id === id);
   }
 
   sembrarTratamientos(mascotas: Mascota[]) {
