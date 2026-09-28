@@ -19,7 +19,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 - **Landing institucional** y **login por rol** (veterinario, administrador y cliente/dueño).
 - **CRUD de mascotas por veterinario**: crear, listar, editar, desactivar y ver ficha clínica.
-- **CRUD de dueños por veterinario**: crear, listar, editar, desactivar (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas (borrado en cascada).
+- **CRUD de dueños por veterinario**: crear, listar, editar, desactivar (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
 - **Dueño obligatorio al registrar una mascota**: validado en el formulario y nuevamente en el servidor.
 - **Asignación de tratamientos** con medicamentos del inventario y descuento de existencias.
 - **Portal del cliente**: cada dueño ve únicamente **sus** mascotas, con su nombre en el encabezado.
@@ -29,7 +29,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 - Java 21
 - Spring Boot 3.5.4 (Web + Thymeleaf)
-- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL)
+- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
 - Lombok
 - Tailwind CSS compilado a hojas de estilo propias (`static/css/tailwind-landing.css` y `tailwind-portal.css`) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
 - Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
@@ -84,7 +84,7 @@ El modelo de dominio del negocio está documentado en [`docs/diagrams/class-diag
 
 ## Diagrama E/R
 
-Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `mascota_id`, `droga_id`, `veterinario_id` y la opcional `administrador_id`), las columnas conservan los mismos límites de las anotaciones `@Column` de las entidades JPA y la nulabilidad de cada una se señala como `«NOT NULL»` (obligatoria) u `«NULL»` (admite nulo).
+Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `droga_id` y `veterinario_id`) y las que admiten nulo (`mascota_id` y `administrador_id`), las columnas conservan los mismos límites de las anotaciones `@Column` de las entidades JPA y la nulabilidad de cada una se señala como `«NOT NULL»` (obligatoria) u `«NULL»` (admite nulo).
 
 ## Mockups (Figma)
 
