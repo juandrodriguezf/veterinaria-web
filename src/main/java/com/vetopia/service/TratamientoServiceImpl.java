@@ -51,14 +51,16 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     /**
      * {@inheritDoc}
-     * Consulta derivada findByMascotaId + borrado uno a uno: el mismo
-     * patrón del ejemplo para borrar por capas desde el service.
+     * Consulta derivada findByMascotaId y deja la referencia en nulo: el
+     * tratamiento sobrevive a la eliminacion de la mascota, asi que el
+     * historial clinico no se pierde. Hibernate confirma los UPDATE de la
+     * FK antes del DELETE de la mascota dentro de la misma transaccion.
      */
     @Override
     @Transactional
-    public void eliminarPorMascota(Integer mascotaId) {
+    public void desvincularDeMascota(Integer mascotaId) {
         for (Tratamiento tratamiento : tratamientoRepository.findByMascotaId(mascotaId)) {
-            tratamientoRepository.delete(tratamiento);
+            tratamiento.setMascota(null);
         }
     }
 

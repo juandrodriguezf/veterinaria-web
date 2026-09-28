@@ -50,11 +50,13 @@ public class Tratamiento {
     private LocalDate fecha;
 
     /**
-     * Mascota que recibe el tratamiento (Mascota 1 -- 0..* Tratamiento).
-     * Si la mascota se elimina, el service retira antes sus tratamientos.
+     * Mascota que recibe el tratamiento (Mascota 0..1 -- 0..* Tratamiento).
+     * La columna admite nulo: si la mascota se elimina, el service
+     * desvincula sus tratamientos en lugar de borrarlos, de modo que el
+     * historial clinico se conserva aunque quede sin mascota.
      */
     @ManyToOne
-    @JoinColumn(name = "mascota_id", nullable = false)
+    @JoinColumn(name = "mascota_id", nullable = true)
     private Mascota mascota;
 
     /**

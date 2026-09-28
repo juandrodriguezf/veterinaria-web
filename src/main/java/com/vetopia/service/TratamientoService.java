@@ -23,10 +23,11 @@ public interface TratamientoService {
     void guardar(Tratamiento tratamiento);
 
     /**
-     * Retira los tratamientos aplicados a una mascota. La usa el borrado
-     * en cascada para que la mascota no deje referencias huérfanas.
+     * Desvincula de la mascota los tratamientos que recibio, dejando la
+     * referencia en nulo en vez de borrarlos: el historial clinico se
+     * conserva cuando la mascota (o su dueno) se elimina.
      */
-    void eliminarPorMascota(Integer mascotaId);
+    void desvincularDeMascota(Integer mascotaId);
 
     /**
      * Registra la asignación del tratamiento aplicando las reglas de
