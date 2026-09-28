@@ -28,7 +28,7 @@ public class MascotaServiceImpl implements MascotaService {
     @Autowired
     private MascotaRepository mascotaRepository;
 
-    /** Servicio de tratamientos (se retiran antes de eliminar la mascota). */
+    /** Servicio de tratamientos (se desvinculan antes de eliminar la mascota). */
     @Autowired
     private TratamientoService tratamientoService;
 
@@ -153,10 +153,9 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Borra por capas: primero los tratamientos de la mascota (listado
-     * derivado + delete uno a uno) y después la mascota, para que la FK
-     * tratamiento.mascota no rechace el borrado (mismo patrón del
-     * ejemplo: el service se encarga de la cascada, no el DDL).
+     * Antes de retirar la mascota se desvinculan sus tratamientos (la FK
+     * tratamiento.mascota pasa a nulo), no se borran: el historial
+     * clinico se conserva cuando se elimina la mascota o su dueno.
      */
     @Override
     @Transactional
@@ -164,7 +163,7 @@ public class MascotaServiceImpl implements MascotaService {
         if (id == null) {
             throw new IllegalArgumentException("No se especificó el identificador de la mascota.");
         }
-        tratamientoService.eliminarPorMascota(id);
+        tratamientoService.desvincularDeMascota(id);
         mascotaRepository.deleteById(id);
     }
 

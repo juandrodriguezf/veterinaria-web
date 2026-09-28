@@ -19,7 +19,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 - **Landing institucional** y **login por rol** (veterinario, administrador y cliente/dueño).
 - **CRUD de mascotas por veterinario**: crear, listar, editar, desactivar y ver ficha clínica.
-- **CRUD de dueños por veterinario**: crear, listar, editar, desactivar (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas (borrado en cascada).
+- **CRUD de dueños por veterinario**: crear, listar, editar, desactivar (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
 - **Dueño obligatorio al registrar una mascota**: validado en el formulario y nuevamente en el servidor.
 - **Asignación de tratamientos** con medicamentos del inventario y descuento de existencias.
 - **Portal del cliente**: cada dueño ve únicamente **sus** mascotas, con su nombre en el encabezado.
@@ -29,7 +29,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 - Java 21
 - Spring Boot 3.5.4 (Web + Thymeleaf)
-- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL)
+- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
 - Lombok
 - Tailwind CSS compilado a hojas de estilo propias (`static/css/tailwind-landing.css` y `tailwind-portal.css`) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
 - Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
@@ -84,7 +84,7 @@ El modelo de dominio del negocio está documentado en [`docs/diagrams/class-diag
 
 ## Diagrama E/R
 
-Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `mascota_id`, `droga_id`, `veterinario_id` y la opcional `administrador_id`), las columnas conservan los mismos límites de las anotaciones `@Column` de las entidades JPA y la nulabilidad de cada una se señala como `«NOT NULL»` (obligatoria) u `«NULL»` (admite nulo).
+Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs/diagrams/er-diagram.svg). Es la versión persistida del modelo de dominio: las relaciones 1–N quedan como FK (`dueno_id`, `droga_id` y `veterinario_id`) y las que admiten nulo (`mascota_id` y `administrador_id`), las columnas conservan los mismos límites de las anotaciones `@Column` de las entidades JPA y la nulabilidad de cada una se señala como `«NOT NULL»` (obligatoria) u `«NULL»` (admite nulo).
 
 ## Mockups (Figma)
 
@@ -107,12 +107,33 @@ Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma
 
 Las dos pantallas de administrador del prototipo quedan fuera del alcance de la Entrega 1: hoy el inicio de sesión con rol administrador redirige al landing. El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
 
+## Frontend Angular (Entrega 2)
+
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional y las tres pantallas del CRUD de mascotas del veterinario (listado, formulario y ficha clínica), con los mismos datos de prueba sembrados en sus servicios y sin llamadas al backend todavía.
+
+| Ruta | Descripción |
+|---|---|
+| `http://localhost:4200/` | Landing institucional |
+| `http://localhost:4200/mascotas` | Portal del veterinario: listado de mascotas |
+| `http://localhost:4200/mascotas/new` | Registrar mascota |
+| `http://localhost:4200/mascotas/update/:id` | Editar mascota |
+| `http://localhost:4200/mascotas/:id` | Ficha clínica de la mascota |
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+El detalle de la estructura, los datos quemados, las decisiones de diseño y las pruebas está en el [README del frontend](frontend/README.md).
+
 ## Estructura del proyecto
 
 ```
 Vetopia/
 ├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, JPA, H2, Lombok, Thymeleaf)
 ├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
+├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind (Entrega 2)
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
