@@ -1,16 +1,28 @@
 <div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
   <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
     <div class="flex justify-between items-center w-full px-portal-gutter max-w-portal-container-max mx-auto h-20">
-      <a class="flex items-center" routerLink="/">
-        <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
+      <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">
+        <img alt="Veto Precision Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGmAr_Hjp4ZCy8ezWVGciiNxUFa1a57lruSDgy0Xgk93QhrPSm4d8_uHrpj5GeNa8Gg7ipmkurP9qB75txOTGtJUl2O3Lps_uTsgVNoa-a34c6FNLAzDjLCSH5ZfIOMfLPBF4t-Twzkz4dvRsbGPzjr3wffVSkXbSjl5eiMJcgXm8I4yRlfxpuqeBtiFVV-UglKNkgxmK5yYEIB3TPFhPQC9TIA74zwryNrRCa5D_BeiKeTUJ9KI9bSUIY0pSF4GegTUA"/>
       </a>
-      <div class="hidden md:flex items-center gap-8">
-        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" routerLink="/mascotas">Pacientes</a>
-        <a aria-current="page" class="text-portal-primary font-portal-body-md text-portal-body-md font-bold border-b-2 border-portal-primary pb-1" routerLink="/clientes">Clientes</a>
-        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" href="#">Tratamientos</a>
+      <div class="hidden md:flex gap-8">
+        <a class="text-gray-300 font-portal-body-md text-portal-body-md hover:text-portal-primary transition-colors duration-200" routerLink="/mascotas">Pacientes</a>
+        <a aria-current="page" class="text-white font-bold border-b-2 border-white pb-1 hover:text-portal-primary transition-colors duration-200" routerLink="/clientes" style="color: rgb(127, 255, 212); text-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px; border-color: rgb(127, 255, 212);">Clientes</a>
+        <a class="text-gray-300 font-portal-body-md text-portal-body-md hover:text-portal-primary transition-colors duration-200" href="#">Tratamientos</a>
       </div>
       <div class="flex items-center gap-4">
+        <button aria-label="Notifications" class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors text-white" type="button">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        </button>
+        <div class="flex items-center gap-3">
+          <div class="flex flex-col items-end hidden sm:flex">
+            <span class="font-portal-label-md text-portal-label-md text-white">{{ nombreVeterinario }}</span>
+          </div>
+          <div class="w-10 h-10 rounded-full bg-portal-primary-container text-portal-on-primary-container flex items-center justify-center font-bold">V</div>
+        </div>
         <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+        <button class="md:hidden p-2 text-portal-on-surface-variant" type="button">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
       </div>
     </div>
   </nav>

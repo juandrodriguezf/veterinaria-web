@@ -25,6 +25,8 @@ export class ClientesListadoComponent {
 
   private mascotaService = inject(MascotaService);
 
+  nombreVeterinario: string = 'Carlos Gutiérrez';
+
   duenos: Dueno[] = [];
 
   nombre: string = '';
