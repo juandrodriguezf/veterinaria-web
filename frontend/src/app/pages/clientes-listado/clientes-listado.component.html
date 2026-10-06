@@ -1,0 +1,53 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex justify-between items-center w-full px-portal-gutter max-w-portal-container-max mx-auto h-20">
+      <a class="flex items-center" routerLink="/">
+        <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" routerLink="/mascotas">Pacientes</a>
+        <a aria-current="page" class="text-portal-primary font-portal-body-md text-portal-body-md font-bold border-b-2 border-portal-primary pb-1" routerLink="/clientes">Clientes</a>
+        <a class="text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md" href="#">Tratamientos</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+    <app-clientes-page-title></app-clientes-page-title>
+
+    <section class="mb-portal-stack-md">
+      <form (ngSubmit)="buscar()" class="flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+          <input [(ngModel)]="nombre" class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+                 name="nombre" placeholder="Buscar por nombre..." type="text"/>
+        </div>
+        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+          Buscar
+        </button>
+        <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
+          Limpiar
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-portal-surface-container-lowest rounded-DEFAULT border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
+        <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de clientes</h2>
+        <div class="flex items-center gap-4">
+          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ duenos.length === 1 ? '1 cliente registrado' : duenos.length + ' clientes registrados' }}</span>
+          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/clientes/new">
+            Agregar cliente
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person_add</span>
+          </a>
+        </div>
+      </div>
+      <app-cliente-tabla (duenoEliminado)="eliminar($event)" (duenoSeleccionado)="alternarEstado($event)" [duenos]="duenos" [nombre]="nombre"></app-cliente-tabla>
+    </section>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

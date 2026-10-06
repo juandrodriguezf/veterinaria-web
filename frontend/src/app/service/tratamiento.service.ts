@@ -126,6 +126,24 @@ export class TratamientoService {
     return this.tratamientos.filter((tratamiento) => tratamiento.mascota?.id === id);
   }
 
+  desvincularDeMascota(id: number) {
+    const vinculados = this.listarTratamientosPorMascota(id);
+    this.tratamientos = this.tratamientos.filter((tratamiento) => tratamiento.mascota?.id !== id);
+    vinculados.forEach((tratamiento) => {
+      const mascota = tratamiento.mascota;
+      if (mascota) {
+        mascota.tratamientos = mascota.tratamientos.filter((otro) => otro.id !== tratamiento.id);
+      }
+      tratamiento.droga.tratamientos = tratamiento.droga.tratamientos.filter(
+        (otro) => otro.id !== tratamiento.id,
+      );
+      tratamiento.veterinario.tratamientos = tratamiento.veterinario.tratamientos.filter(
+        (otro) => otro.id !== tratamiento.id,
+      );
+    });
+    return vinculados.length;
+  }
+
   sembrarTratamientos(mascotas: Mascota[]) {
     const [max, luna, rocky] = mascotas;
     const [amoxicilina, ivermectina, metronidazol, rimadyl, doxiciclina] = this.drogas;
