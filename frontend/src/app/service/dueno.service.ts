@@ -95,4 +95,60 @@ export class DuenoService {
   obtenerPorId(id: number) {
     return this.duenos.find((dueno) => dueno.id === id);
   }
+
+  buscarPorNombre(nombre: string) {
+    if (!nombre || !nombre.trim()) {
+      return this.listarDuenos();
+    }
+    const termino = nombre.trim().toLowerCase();
+    return this.duenos.filter((dueno) => dueno.nombre.toLowerCase() === termino);
+  }
+
+  guardarValidada(dueno: Dueno): string | undefined {
+    const porCorreo = this.duenos.find(
+      (registro) => registro.correo.trim().toLowerCase() === dueno.correo.trim().toLowerCase(),
+    );
+    if (porCorreo && porCorreo.id !== dueno.id) {
+      return `Ya existe un cliente con el correo "${dueno.correo}".`;
+    }
+
+    const porCedula = this.duenos.find((registro) => registro.cedula.trim() === dueno.cedula.trim());
+    if (porCedula && porCedula.id !== dueno.id) {
+      return `Ya existe un cliente con la cédula "${dueno.cedula}".`;
+    }
+
+    const existente = dueno.id ? this.obtenerPorId(dueno.id) : undefined;
+    if (!existente) {
+      dueno.id = this.siguienteId();
+      dueno.estado = dueno.estado || 'Activo';
+      dueno.mascotas = dueno.mascotas ?? [];
+      dueno.contrasena = dueno.contrasena || 'vetopia123';
+      this.duenos.push(dueno);
+      return undefined;
+    }
+
+    Object.assign(existente, dueno, {
+      contrasena: dueno.contrasena?.trim() ? dueno.contrasena : existente.contrasena,
+      estado: dueno.estado || 'Activo',
+      mascotas: existente.mascotas,
+    });
+    return undefined;
+  }
+
+  alternarEstado(id: number) {
+    const dueno = this.obtenerPorId(id);
+    if (!dueno) {
+      return undefined;
+    }
+    dueno.estado = dueno.estado === 'Inactivo' ? 'Activo' : 'Inactivo';
+    return dueno.estado;
+  }
+
+  eliminar(id: number) {
+    this.duenos = this.duenos.filter((dueno) => dueno.id !== id);
+  }
+
+  private siguienteId() {
+    return this.duenos.reduce((mayor, dueno) => Math.max(mayor, dueno.id), 0) + 1;
+  }
 }

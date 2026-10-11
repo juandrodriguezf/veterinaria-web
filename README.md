@@ -109,7 +109,7 @@ Las dos pantallas de administrador del prototipo quedan fuera del alcance de la 
 
 ## Frontend Angular (Entrega 2)
 
-La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional y las tres pantallas del CRUD de mascotas del veterinario (listado, formulario y ficha clínica), con los mismos datos de prueba sembrados en sus servicios y sin llamadas al backend todavía.
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas del veterinario (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), con los mismos datos de prueba sembrados en sus servicios y sin llamadas al backend todavía.
 
 | Ruta | Descripción |
 |---|---|
@@ -118,6 +118,9 @@ La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, co
 | `http://localhost:4200/mascotas/new` | Registrar mascota |
 | `http://localhost:4200/mascotas/update/:id` | Editar mascota |
 | `http://localhost:4200/mascotas/:id` | Ficha clínica de la mascota |
+| `http://localhost:4200/clientes` | Portal del veterinario: listado de dueños |
+| `http://localhost:4200/clientes/new` | Registrar cliente |
+| `http://localhost:4200/clientes/update/:id` | Editar cliente |
 
 ```bash
 cd frontend

@@ -50,6 +50,20 @@ export class MascotaService {
     return mascota.estado;
   }
 
+  listarPorDueno(duenoId: number) {
+    return this.mascotas.filter((mascota) => mascota.dueno.id === duenoId);
+  }
+
+  eliminarPorDueno(duenoId: number) {
+    const eliminadas = this.listarPorDueno(duenoId);
+    eliminadas.forEach((mascota) => {
+      this.tratamientoService.desvincularDeMascota(mascota.id);
+      this.mascotas = this.mascotas.filter((otra) => otra.id !== mascota.id);
+      mascota.dueno.mascotas = mascota.dueno.mascotas.filter((otra) => otra.id !== mascota.id);
+    });
+    return eliminadas.length;
+  }
+
   private siguienteId() {
     return this.mascotas.reduce((mayor, mascota) => Math.max(mayor, mascota.id), 0) + 1;
   }
