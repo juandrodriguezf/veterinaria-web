@@ -1,5 +1,7 @@
 package com.vetopia.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -35,4 +37,11 @@ public interface DuenoRepository extends JpaRepository<Dueno, Integer> {
      * el service (una cédula no puede repetirse).
      */
     Dueno findByCedula(String cedula);
+
+    /**
+     * Clientes cuyo nombre coincide exactamente con el término buscado,
+     * sin distinguir mayúsculas/minúsculas (AC21: buscar un cliente por
+     * su nombre). Es la misma consulta derivada que usa MascotaRepository.
+     */
+    List<Dueno> findByNombreIgnoreCase(String nombre);
 }

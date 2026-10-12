@@ -37,6 +37,21 @@ public class DuenoServiceImpl implements DuenoService {
         return List.copyOf(duenoRepository.findAll());
     }
 
+    /**
+     * {@inheritDoc}
+     * Búsqueda por coincidencia exacta del nombre sin distinguir
+     * mayúsculas/minúsculas (findByNombreIgnoreCase). Cuando el término
+     * llega nulo o vacío se delega al listado completo (un solo endpoint
+     * para listado y búsqueda).
+     */
+    @Override
+    public List<Dueno> buscarPorNombre(String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return listarDuenos();
+        }
+        return duenoRepository.findByNombreIgnoreCase(nombre.trim());
+    }
+
     @Override
     public Dueno obtenerDuenoPorId(Integer id) {
         // Entrada inválida: sin id no hay nada que buscar en el repositorio.
