@@ -3,6 +3,8 @@ package com.vetopia.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -65,8 +67,11 @@ public class Droga {
 
     /**
      * Tratamientos que utilizan la droga (lado inverso de la relación
-     * Tratamiento 0..* -- 1 Droga; la FK vive en Tratamiento.droga).
+     * Tratamiento 0..* -- 1 Droga; la FK vive en Tratamiento.droga). La
+     * anotación JsonIgnore corta la recursión infinita de Jackson en la
+     * API REST.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "droga")
     @Builder.Default
     private List<Tratamiento> tratamientos = new ArrayList<>();

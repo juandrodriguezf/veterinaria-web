@@ -3,6 +3,8 @@ package com.vetopia.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -63,8 +65,10 @@ public class Administrador {
     /**
      * Veterinarios que gestiona (lado inverso de la relación
      * Administrador 1 -- 0..* Veterinario; la FK vive en
-     * Veterinario.administrador).
+     * Veterinario.administrador). La anotación JsonIgnore corta la
+     * recursión infinita de Jackson en la API REST.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "administrador")
     @Builder.Default
     private List<Veterinario> veterinarios = new ArrayList<>();

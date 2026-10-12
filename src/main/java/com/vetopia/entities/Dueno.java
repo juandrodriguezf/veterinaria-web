@@ -3,6 +3,8 @@ package com.vetopia.entities;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,8 +71,11 @@ public class Dueno {
 
     /**
      * Mascotas que posee el dueño (lado inverso de la relación
-     * Dueno 1 -- 0..* Mascota; la FK vive en Mascota.dueno).
+     * Dueno 1 -- 0..* Mascota; la FK vive en Mascota.dueno). La
+     * anotación JsonIgnore corta la recursión infinita de Jackson en la
+     * API REST: las mascotas se piden aparte cuando se necesitan.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "dueno")
     @Builder.Default
     private List<Mascota> mascotas = new ArrayList<>();

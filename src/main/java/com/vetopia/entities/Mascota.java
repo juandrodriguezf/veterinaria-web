@@ -6,6 +6,8 @@ import java.util.List;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -112,7 +114,10 @@ public class Mascota {
      * relación Mascota 1 -- 0..* Tratamiento; la FK vive en
      * Tratamiento.mascota). Se ordenan por fecha ascendente para que
      * el historial médico siempre se presente en orden cronológico.
+     * La anotación JsonIgnore corta la recursión infinita de Jackson en
+     * la API REST: el historial se pide aparte cuando se necesita.
      */
+    @JsonIgnore
     @OneToMany(mappedBy = "mascota")
     @OrderBy("fecha ASC")
     @Builder.Default
