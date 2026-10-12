@@ -4,43 +4,79 @@
   <img src="docs/logo/logo_Vetopia_letrasNegras.png" alt="Logo de Vetopia" width="320">
 </p>
 
-**Vetopia – Hospital Veterinario del Futuro.** Sistema web de gestión para la clínica veterinaria Vetopia: los veterinarios administran a los **dueños**, sus **mascotas** y sus **tratamientos**, y cada dueño consulta desde su propio portal únicamente la información de sus mascotas.
+**Vetopia – Hospital Veterinario del Futuro.** Sistema de gestión para la clínica veterinaria Vetopia: los veterinarios administran a los **dueños**, sus **mascotas** y sus **tratamientos**. El proyecto tiene dos partes: un **backend Spring Boot** que expone una **API REST** y un **frontend Angular** que la consume con `HttpClient`.
 
 Construida con **Spring Boot** siguiendo el patrón de diseño de capas:
 
 ```
-Controller  ->  Service  ->  Repository
-(@Controller)   (@Service)   (interfaces JpaRepository)
+Controller       ->  Service  ->  Repository
+(@RestController)   (@Service)   (interfaces JpaRepository)
 ```
 
 Cada capa se comunica únicamente con la capa inferior y las dependencias se gestionan con inyección de dependencias de Spring (constructor en `DataLoader`, `@Autowired` en el resto). La persistencia es real: **Spring Data JPA 100% con queries derivadas** (sin JPQL) sobre **H2**, siguiendo los patrones del material del curso (`7.JPA_avanzado`).
 
 ## Funcionalidades
 
-- **Landing institucional** y **login por rol** (veterinario, administrador y cliente/dueño).
-- **CRUD de mascotas por veterinario**: crear, listar, editar, desactivar y ver ficha clínica.
-- **CRUD de dueños por veterinario**: crear, listar, editar, desactivar (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
-- **Dueño obligatorio al registrar una mascota**: validado en el formulario y nuevamente en el servidor.
-- **Asignación de tratamientos** con medicamentos del inventario y descuento de existencias.
-- **Portal del cliente**: cada dueño ve únicamente **sus** mascotas, con su nombre en el encabezado.
-- **Página amable de errores**: los recursos inexistentes y los errores inesperados aterrizan en `error.html` con su causa (`errors/GlobalExceptionHandler`, `@ControllerAdvice`).
+- **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño, listar las activas, crear, actualizar, alternar estado y eliminar.
+- **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
+- **API REST de tratamientos y drogas**: consultar el historial de una mascota, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos.
+- **API REST de veterinarios y administradores**: listar, consultar por id y registrar.
+- **Documentación interactiva** de la API con **Swagger UI** y su especificación OpenAPI en JSON.
+- **Frontend Angular** que consume la API con `HttpClient` (ver [`frontend/`](frontend/README.md)).
 
 ## Tecnologías
 
 - Java 21
-- Spring Boot 3.5.4 (Web + Thymeleaf)
+- Spring Boot 3.5.4 (Web)
 - **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
 - Lombok
-- Tailwind CSS compilado a hojas de estilo propias (`static/css/tailwind-landing.css` y `tailwind-portal.css`) con paleta Material Design M3 personalizada (`docs/color-palette/paleta-colores-vetopia.jpeg`)
-- Google Fonts: Hanken Grotesk, Bricolage Grotesque, JetBrains Mono y Material Symbols Outlined
+- **springdoc-openapi** para documentar la API (Swagger UI en `/swagger-ui/index.html` y OpenAPI en `/v3/api-docs`)
 - `DataLoader` (`CommandLineRunner`) siembra datos de prueba al arrancar si la base está vacía (50 clientes, 100 perros generados con `Random(41)`, semilla del ejemplo del curso)
-- Manejo de errores con `errors/GlobalExceptionHandler` sobre `templates/error.html`
+- La interfaz (Tailwind CSS con la paleta Material Design M3 de `docs/color-palette/paleta-colores-vetopia.jpeg` y Google Fonts) vive en el frontend Angular
+
+## API REST
+
+Todos los controladores son `@RestController`, viven en `controller/api/` y están abiertos a `http://localhost:4200` con `@CrossOrigin`. Las entidades se exponen directamente como JSON y las colecciones `@OneToMany` van con `@JsonIgnore` para cortar la recursión de Jackson; por eso las relaciones se consultan con rutas aparte (por ejemplo, las mascotas de un dueño o el historial de una mascota).
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/mascota/all` | Todas las mascotas |
+| `GET` | `/mascota/find/{id}` | Una mascota por id |
+| `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas) |
+| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño |
+| `GET` | `/mascota/activas` | Solo las mascotas activas |
+| `POST` | `/mascota/add` | Crea una mascota (dueño obligatorio, estado inicial Activo) |
+| `PUT` | `/mascota/update` | Actualiza una mascota |
+| `PUT` | `/mascota/toggle/{id}` | Alterna el estado (`Activo` ↔ `Inactivo`) y lo devuelve |
+| `DELETE` | `/mascota/delete/{id}` | Elimina una mascota (desvincula su historial) |
+| `GET` | `/dueno/all` | Todos los clientes |
+| `GET` | `/dueno/find/{id}` | Un cliente por id |
+| `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia exacta, sin distinguir mayúsculas) |
+| `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos) |
+| `PUT` | `/dueno/update` | Actualiza un cliente |
+| `PUT` | `/dueno/toggle/{id}` | Alterna el estado y lo devuelve |
+| `DELETE` | `/dueno/delete/{id}` | Elimina un cliente y, en cascada, sus mascotas |
+| `GET` | `/tratamiento/all` | Todos los tratamientos |
+| `GET` | `/tratamiento/find/{id}` | Un tratamiento por id |
+| `GET` | `/tratamiento/byMascota/{mascotaId}` | Historial de tratamientos de una mascota |
+| `POST` | `/tratamiento/add` | Asigna un tratamiento (valida mascota activa y stock; descuenta inventario) |
+| `GET` | `/droga/all` | Inventario de medicamentos |
+| `GET` | `/droga/find/{id}` | Una droga por id |
+| `POST` | `/droga/add` | Registra una droga |
+| `GET` | `/veterinario/all` | Todos los veterinarios |
+| `GET` | `/veterinario/find/{id}` | Un veterinario por id |
+| `POST` | `/veterinario/add` | Registra un veterinario |
+| `GET` | `/administrador/all` | Todos los administradores |
+| `GET` | `/administrador/find/{id}` | Un administrador por id |
+| `POST` | `/administrador/add` | Registra un administrador |
+
+La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
 
 ## Datos de prueba
 
 Al arrancar con la base vacía, `DataLoader` siembra:
 
-- **53 clientes** (los 3 credenciales de demostración + 50 generados, cadencia de 1 inactivo cada 10)
+- **53 clientes** (los 3 clientes semilla + 50 generados, cadencia de 1 inactivo cada 10)
 - **103 mascotas**: Max, Luna y Rocky + 100 perros generados (edades 0.3–12 años, pesos 2–45 kg, 8 enfermedades de ejemplo, cadencia de 1 inactiva cada 9)
 - 3 drogas del inventario, 3 veterinarios y 3 administradores
 - 3 tratamientos de ejemplo conectando mascota × droga × veterinario
@@ -56,27 +92,27 @@ Al arrancar con la base vacía, `DataLoader` siembra:
 mvn spring-boot:run
 ```
 
-Luego abre en el navegador:
+El backend queda en `http://localhost:8080`. Rutas útiles:
 
 | Ruta | Descripción |
 |---|---|
-| `http://localhost:8080/` | Landing institucional |
-| `http://localhost:8080/login` | Inicio de sesión |
-| `http://localhost:8080/veterinario/mascotas` | Portal del veterinario: listado de mascotas |
-| `http://localhost:8080/veterinario/mascotas/clientes` | Portal del veterinario: listado de dueños |
-| `http://localhost:8080/veterinario/mascotas/ficha?id=1` | Ficha clínica de la mascota con id 1 |
-| `http://localhost:8080/cliente/mascotas?idUsuario=1` | Portal del cliente: mascotas del dueño con id 1 |
-| `http://localhost:8080/veterinario/mascotas/ficha?id=9999` | Página amable de error (recurso inexistente) |
+| `http://localhost:8080/swagger-ui/index.html` | Documentación interactiva de la API (Swagger UI) |
+| `http://localhost:8080/v3/api-docs` | Especificación OpenAPI en JSON |
+| `http://localhost:8080/h2` | Consola de la base de datos H2 |
+| `http://localhost:8080/mascota/all` | Ejemplo: todas las mascotas |
+| `http://localhost:8080/dueno/all` | Ejemplo: todos los dueños |
 
-## Credenciales de demostración
+La interfaz de usuario vive en el [frontend Angular](frontend/README.md) (`http://localhost:4200`), que consume esta API con `HttpClient`.
 
-| Rol | Usuario | Contraseña | Estado |
+## Clientes de demostración
+
+`DataLoader` siembra tres clientes de ejemplo con sus credenciales; el inicio de sesión es el último tema del curso y todavía no está implementado, así que por ahora solo sirven como datos de prueba.
+
+| Cliente | Correo | Contraseña | Estado |
 |---|---|---|---|
-| Veterinario | `carlos.gutierrez@vetopia.com` | `vet123` | — |
-| Administrador | `admin@vetopia.com` | `admin123` | — |
-| Cliente | `ana@correo.com` | `dueño123` | Activa |
-| Cliente | `pedro@correo.com` | `dueño123` | Activa |
-| Cliente | `maria@correo.com` | `dueño123` | Inactiva (no puede iniciar sesión) |
+| Ana Rodríguez | `ana@correo.com` | `dueño123` | Activa |
+| Pedro Gómez | `pedro@correo.com` | `dueño123` | Activa |
+| María López | `maria@correo.com` | `dueño123` | Inactiva |
 
 ## Diagrama de clases
 
@@ -90,35 +126,35 @@ Modelo de la base de datos, documentado en [`docs/diagrams/er-diagram.svg`](docs
 
 Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma.com/design/EUzRoGpnaSxhlcG9x3kk0s/Vetopia?node-id=0-1).
 
-| Pantalla en Figma | Ruta / plantilla en la app | Estado |
+| Pantalla en Figma | Ruta en el frontend | Estado |
 |---|---|---|
-| Landing Page | `/` → `landing/index.html` | Implementada |
-| Log In | `/login` → `login/login.html` | Implementada |
-| Principal Cliente | `/cliente/mascotas?idUsuario=…` → `principal-cliente.html` | Implementada |
-| Detalle mascota Cliente | `/cliente/mascotas/detalle` → `cliente/detalle-mascota.html` | Implementada |
-| Mascotas a Cargo | `/veterinario/mascotas` → `veterinario/mascotas-cargo.html` | Implementada |
-| Ficha Clínica | `/veterinario/mascotas/ficha` → `veterinario/ficha-clinica.html` | Implementada |
-| Registrar Nuevo Cliente (paso 1) | `/veterinario/mascotas/clientes/crear` → `veterinario/cliente-form.html` | Implementada |
-| Section 2: Pet Information (paso 2) | `/veterinario/mascotas/registrar-mascota` → `veterinario/mascota-form.html` | Implementada |
-| Asignar Nuevo Tratamiento | `/veterinario/mascotas/asignar-tratamiento` → `veterinario/asignar-tratamiento.html` | Implementada |
-| Tratamiento Aplicado (modal) | misma ruta → `veterinario/tratamiento-confirmacion.html` | Implementada |
+| Landing Page | `/` | Implementada |
+| Log In | — | No implementada |
+| Principal Cliente | — | No implementada |
+| Detalle mascota Cliente | — | No implementada |
+| Mascotas a Cargo | `/mascotas` | Implementada |
+| Ficha Clínica | `/mascotas/:id` | Implementada |
+| Registrar Nuevo Cliente (paso 1) | `/clientes/new` | Implementada |
+| Section 2: Pet Information (paso 2) | `/mascotas/new` | Implementada |
+| Asignar Nuevo Tratamiento | — | No implementada |
+| Tratamiento Aplicado (modal) | — | No implementada |
 | Dashboard Administrativo | — | Futura |
 | Gestión Veterinarios | — | Futura |
 
-Las dos pantallas de administrador del prototipo quedan fuera del alcance de la Entrega 1: hoy el inicio de sesión con rol administrador redirige al landing. El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
+Las pantallas del portal del cliente y de administrador quedan fuera de esta entrega, igual que la asignación de tratamientos y el inicio de sesión (el último tema del curso). El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
 
-## Frontend Angular (Entrega 2)
+## Frontend Angular
 
-La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas del veterinario (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), con los mismos datos de prueba sembrados en sus servicios y sin llamadas al backend todavía.
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), y **consume esta API REST con `HttpClient`** (los servicios ya no tienen datos quemados).
 
 | Ruta | Descripción |
 |---|---|
 | `http://localhost:4200/` | Landing institucional |
-| `http://localhost:4200/mascotas` | Portal del veterinario: listado de mascotas |
+| `http://localhost:4200/mascotas` | Listado de mascotas |
 | `http://localhost:4200/mascotas/new` | Registrar mascota |
 | `http://localhost:4200/mascotas/update/:id` | Editar mascota |
 | `http://localhost:4200/mascotas/:id` | Ficha clínica de la mascota |
-| `http://localhost:4200/clientes` | Portal del veterinario: listado de dueños |
+| `http://localhost:4200/clientes` | Listado de dueños |
 | `http://localhost:4200/clientes/new` | Registrar cliente |
 | `http://localhost:4200/clientes/update/:id` | Editar cliente |
 
@@ -128,31 +164,27 @@ npm install
 npm start
 ```
 
-El detalle de la estructura, los datos quemados, las decisiones de diseño y las pruebas está en el [README del frontend](frontend/README.md).
+El detalle de la estructura, los servicios HTTP, las decisiones de diseño y las pruebas está en el [README del frontend](frontend/README.md).
 
 ## Estructura del proyecto
 
 ```
 Vetopia/
-├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, JPA, H2, Lombok, Thymeleaf)
+├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Web, JPA, H2, Lombok, springdoc)
 ├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
-├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind (Entrega 2)
+├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
     │   ├── DataLoader.java                  # Siembra datos de prueba al arranque (CommandLineRunner)
-    │   ├── controller/
-    │   │   ├── HomeController.java          # Raíz "/" y login "/login"
-    │   │   ├── VeterinarioController.java   # Portal del veterinario (mascotas, dueños, tratamientos)
-    │   │   └── ClienteController.java       # Portal del cliente (mascotas visible solo de su dueño)
+    │   ├── controller/api/                  # Controladores REST (@RestController) por recurso
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
     │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
     │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
-    │   └── errors/                          # RecursoNoEncontradoException + GlobalExceptionHandler (@ControllerAdvice)
+    │   └── errors/                          # RecursoNoEncontradoException
     └── resources/
-        ├── application.properties
-        ├── templates/                       # Vistas Thymeleaf (landing, login, veterinario, cliente, error)
-        └── static/                          # CSS, JS e imágenes del landing
+        ├── application.properties           # Puerto y perfil activo (h2)
+        └── application-h2.properties        # Datasource H2 en archivo, consola y ddl-auto
 ```
 
 ## Estrategia de ramas
