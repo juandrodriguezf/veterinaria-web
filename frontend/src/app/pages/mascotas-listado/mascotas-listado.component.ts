@@ -29,19 +29,28 @@ export class MascotasListadoComponent {
   nombre: string = '';
 
   ngOnInit() {
-    this.mascotas = this.mascotaService.listarMascotas();
+    this.cargar();
+  }
+
+  /** Carga el listado completo o el filtrado por nombre (según el término). */
+  cargar() {
+    if (this.nombre.trim()) {
+      this.mascotaService.buscarPorNombre(this.nombre).subscribe((data) => (this.mascotas = data));
+    } else {
+      this.mascotaService.listarMascotas().subscribe((data) => (this.mascotas = data));
+    }
   }
 
   buscar() {
-    this.mascotas = this.mascotaService.buscarPorNombre(this.nombre);
+    this.cargar();
   }
 
   limpiar() {
     this.nombre = '';
-    this.mascotas = this.mascotaService.listarMascotas();
+    this.cargar();
   }
 
   alternarEstado(mascota: Mascota) {
-    this.mascotaService.alternarEstado(mascota.id);
+    this.mascotaService.alternarEstado(mascota.id).subscribe(() => this.cargar());
   }
 }

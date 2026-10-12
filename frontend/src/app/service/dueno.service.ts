@@ -1,154 +1,64 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Dueno } from '../models/dueno.model';
 
+/**
+ * SERVICIO - Dueno (cliente)
+ * Capa de servicio del frontend: su única tarea es hacer las peticiones
+ * HTTP a la API REST de Spring Boot (patrón de la clase de REST). Ya no
+ * siembra datos quemados: los clientes viven en la base de datos del
+ * backend.
+ *
+ * Regla del video: las consultas devuelven el Observable para que el
+ * componente reaccione a la respuesta; los comandos que no actualizan la
+ * vista (crear, actualizar, eliminar) hacen el subscribe aquí mismo.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class DuenoService {
-  private duenos: Dueno[] = [
-    {
-      id: 1,
-      cedula: '1020304050',
-      nombre: 'Ana Rodríguez',
-      correo: 'ana@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001234567',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 2,
-      cedula: '1020304051',
-      nombre: 'Pedro Gómez',
-      correo: 'pedro@correo.com',
-      contrasena: 'dueño123',
-      celular: '3007654321',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 3,
-      cedula: '1020304052',
-      nombre: 'María López',
-      correo: 'maria@correo.com',
-      contrasena: 'dueño123',
-      celular: '3010001111',
-      estado: 'Inactivo',
-      mascotas: [],
-    },
-    {
-      id: 4,
-      cedula: '10203004105',
-      nombre: 'Sofía Sánchez',
-      correo: 'cliente1@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001000000',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 5,
-      cedula: '10203004106',
-      nombre: 'Mateo Ramírez',
-      correo: 'cliente2@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001000137',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 6,
-      cedula: '10203004107',
-      nombre: 'Valentina Torres',
-      correo: 'cliente3@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001000274',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 7,
-      cedula: '10203004108',
-      nombre: 'Sebastián Fernández',
-      correo: 'cliente4@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001000411',
-      estado: 'Activo',
-      mascotas: [],
-    },
-    {
-      id: 8,
-      cedula: '10203004109',
-      nombre: 'Camila Silva',
-      correo: 'cliente5@correo.com',
-      contrasena: 'dueño123',
-      celular: '3001000548',
-      estado: 'Activo',
-      mascotas: [],
-    },
-  ];
+  private http = inject(HttpClient);
 
-  listarDuenos() {
-    return [...this.duenos];
+  private readonly baseUrl = 'http://localhost:8080/dueno';
+
+  /** Lista todos los clientes. */
+  listarDuenos(): Observable<Dueno[]> {
+    return this.http.get<Dueno[]>(`${this.baseUrl}/all`);
   }
 
-  obtenerPorId(id: number) {
-    return this.duenos.find((dueno) => dueno.id === id);
+  /** Obtiene un cliente por su identificador. */
+  obtenerPorId(id: number): Observable<Dueno> {
+    return this.http.get<Dueno>(`${this.baseUrl}/find/${id}`);
   }
 
-  buscarPorNombre(nombre: string) {
-    if (!nombre || !nombre.trim()) {
-      return this.listarDuenos();
+  /** Busca clientes por nombre (coincidencia exacta, sin distinguir mayúsculas). */
+  buscarPorNombre(nombre: string): Observable<Dueno[]> {
+    return this.http.get<Dueno[]>(`${this.baseUrl}/search/${encodeURIComponent(nombre)}`);
+  }
+
+  /**
+   * Crea o actualiza un cliente: sin id va a /add (POST) y con id a
+   * /update (PUT). Es un comando (el componente no reacciona a la
+   * respuesta), así que el subscribe va aquí.
+   */
+  guardarValidada(dueno: Dueno): void {
+    if (dueno.id) {
+      this.http.put<void>(`${this.baseUrl}/update`, dueno).subscribe();
+      return;
     }
-    const termino = nombre.trim().toLowerCase();
-    return this.duenos.filter((dueno) => dueno.nombre.toLowerCase() === termino);
+    // En la creación se omite el id: el backend trata un id nulo como
+    // registro nuevo (con id 0 lo tomaría como edición).
+    this.http.post<void>(`${this.baseUrl}/add`, { ...dueno, id: null }).subscribe();
   }
 
-  guardarValidada(dueno: Dueno): string | undefined {
-    const porCorreo = this.duenos.find(
-      (registro) => registro.correo.trim().toLowerCase() === dueno.correo.trim().toLowerCase(),
-    );
-    if (porCorreo && porCorreo.id !== dueno.id) {
-      return `Ya existe un cliente con el correo "${dueno.correo}".`;
-    }
-
-    const porCedula = this.duenos.find((registro) => registro.cedula.trim() === dueno.cedula.trim());
-    if (porCedula && porCedula.id !== dueno.id) {
-      return `Ya existe un cliente con la cédula "${dueno.cedula}".`;
-    }
-
-    const existente = dueno.id ? this.obtenerPorId(dueno.id) : undefined;
-    if (!existente) {
-      dueno.id = this.siguienteId();
-      dueno.estado = dueno.estado || 'Activo';
-      dueno.mascotas = dueno.mascotas ?? [];
-      dueno.contrasena = dueno.contrasena || 'vetopia123';
-      this.duenos.push(dueno);
-      return undefined;
-    }
-
-    Object.assign(existente, dueno, {
-      contrasena: dueno.contrasena?.trim() ? dueno.contrasena : existente.contrasena,
-      estado: dueno.estado || 'Activo',
-      mascotas: existente.mascotas,
-    });
-    return undefined;
+  /** Alterna el estado (Activo <-> Inactivo): el componente reacciona al nuevo estado. */
+  alternarEstado(id: number): Observable<string> {
+    return this.http.put(`${this.baseUrl}/toggle/${id}`, null, { responseType: 'text' });
   }
 
-  alternarEstado(id: number) {
-    const dueno = this.obtenerPorId(id);
-    if (!dueno) {
-      return undefined;
-    }
-    dueno.estado = dueno.estado === 'Inactivo' ? 'Activo' : 'Inactivo';
-    return dueno.estado;
-  }
-
-  eliminar(id: number) {
-    this.duenos = this.duenos.filter((dueno) => dueno.id !== id);
-  }
-
-  private siguienteId() {
-    return this.duenos.reduce((mayor, dueno) => Math.max(mayor, dueno.id), 0) + 1;
+  /** Elimina el cliente y, en cascada, sus mascotas (comando: subscribe aquí). */
+  eliminar(id: number): void {
+    this.http.delete<void>(`${this.baseUrl}/delete/${id}`).subscribe();
   }
 }

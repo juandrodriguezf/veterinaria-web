@@ -1,281 +1,73 @@
 import { Injectable, inject } from '@angular/core';
-import { DuenoService } from './dueno.service';
-import { TratamientoService } from './tratamiento.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Mascota } from '../models/mascota.model';
 
+/**
+ * SERVICIO - Mascota
+ * Capa de servicio del frontend: hace las peticiones HTTP a la API REST de
+ * Spring Boot (patrón de la clase de REST). Ya no siembra datos quemados ni
+ * mantiene las dos caras de la relación en memoria: la persistencia y las
+ * reglas viven en el backend.
+ *
+ * Regla del video: las consultas devuelven el Observable para que el
+ * componente reaccione a la respuesta; los comandos que no actualizan la
+ * vista (crear, actualizar, eliminar) hacen el subscribe aquí mismo.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class MascotaService {
-  private duenoService = inject(DuenoService);
+  private http = inject(HttpClient);
 
-  private tratamientoService = inject(TratamientoService);
+  private readonly baseUrl = 'http://localhost:8080/mascota';
 
-  private mascotas: Mascota[] = this.sembrar();
-
-  listarMascotas() {
-    return [...this.mascotas];
+  /** Lista todas las mascotas. */
+  listarMascotas(): Observable<Mascota[]> {
+    return this.http.get<Mascota[]>(`${this.baseUrl}/all`);
   }
 
-  obtenerMascotaPorId(id: number) {
-    return this.mascotas.find((mascota) => mascota.id === id);
+  /** Obtiene una mascota por su identificador. */
+  obtenerMascotaPorId(id: number): Observable<Mascota> {
+    return this.http.get<Mascota>(`${this.baseUrl}/find/${id}`);
   }
 
-  buscarPorNombre(nombre: string) {
-    if (!nombre || !nombre.trim()) {
-      return this.listarMascotas();
-    }
-    const termino = nombre.trim().toLowerCase();
-    return this.mascotas.filter((mascota) => mascota.nombre.toLowerCase() === termino);
+  /** Busca mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas). */
+  buscarPorNombre(nombre: string): Observable<Mascota[]> {
+    return this.http.get<Mascota[]>(`${this.baseUrl}/search/${encodeURIComponent(nombre)}`);
   }
 
-  guardarValidada(mascota: Mascota) {
-    const existente = this.obtenerMascotaPorId(mascota.id);
-    if (!existente) {
-      mascota.estado = 'Activo';
-      mascota.id = this.siguienteId();
-      this.mascotas.push(mascota);
-      mascota.dueno.mascotas.push(mascota);
+  /** Mascotas de un dueño (consulta aparte: la colección va con @JsonIgnore). */
+  listarPorDueno(duenoId: number): Observable<Mascota[]> {
+    return this.http.get<Mascota[]>(`${this.baseUrl}/byDueno/${duenoId}`);
+  }
+
+  /** Solo las mascotas activas (candidatas a recibir tratamiento). */
+  listarMascotasActivas(): Observable<Mascota[]> {
+    return this.http.get<Mascota[]>(`${this.baseUrl}/activas`);
+  }
+
+  /**
+   * Crea (sin id) o actualiza (con id) una mascota. Es un comando (el
+   * componente no reacciona a la respuesta), así que el subscribe va aquí.
+   */
+  guardarValidada(mascota: Mascota): void {
+    if (mascota.id) {
+      this.http.put<void>(`${this.baseUrl}/update`, mascota).subscribe();
       return;
     }
-    Object.assign(existente, mascota);
+    // En la creación se omite el id: el backend trata un id nulo como
+    // registro nuevo (con id 0 lo tomaría como edición/merge).
+    this.http.post<void>(`${this.baseUrl}/add`, { ...mascota, id: null }).subscribe();
   }
 
-  alternarEstado(id: number) {
-    const mascota = this.obtenerMascotaPorId(id);
-    if (!mascota) {
-      return undefined;
-    }
-    mascota.estado = mascota.estado === 'Inactivo' ? 'Activo' : 'Inactivo';
-    return mascota.estado;
+  /** Alterna el estado (Activo <-> Inactivo): el componente reacciona al nuevo estado. */
+  alternarEstado(id: number): Observable<string> {
+    return this.http.put(`${this.baseUrl}/toggle/${id}`, null, { responseType: 'text' });
   }
 
-  listarPorDueno(duenoId: number) {
-    return this.mascotas.filter((mascota) => mascota.dueno.id === duenoId);
-  }
-
-  eliminarPorDueno(duenoId: number) {
-    const eliminadas = this.listarPorDueno(duenoId);
-    eliminadas.forEach((mascota) => {
-      this.tratamientoService.desvincularDeMascota(mascota.id);
-      this.mascotas = this.mascotas.filter((otra) => otra.id !== mascota.id);
-      mascota.dueno.mascotas = mascota.dueno.mascotas.filter((otra) => otra.id !== mascota.id);
-    });
-    return eliminadas.length;
-  }
-
-  private siguienteId() {
-    return this.mascotas.reduce((mayor, mascota) => Math.max(mayor, mascota.id), 0) + 1;
-  }
-
-  private sembrar() {
-    const duenos = this.duenoService.listarDuenos();
-    const mascotas: Mascota[] = [
-      {
-        id: 1,
-        nombre: 'Max',
-        especie: 'Perro',
-        raza: 'Doberman',
-        edad: 5,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(0),
-        pesoKg: 32,
-        color: 'Negro',
-        fechaIngreso: '2026-01-12',
-        enfermedad: 'Control de rutina y vacunación',
-        dueno: duenos[0],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 2,
-        nombre: 'Luna',
-        especie: 'Gato',
-        raza: 'Siamés',
-        edad: 3,
-        sexo: 'Hembra',
-        imagen: this.imagenGato(),
-        pesoKg: 4.2,
-        color: 'Blanco y café',
-        fechaIngreso: '2026-02-03',
-        enfermedad: 'Infección respiratoria leve',
-        dueno: duenos[1],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 3,
-        nombre: 'Rocky',
-        especie: 'Perro',
-        raza: 'Bulldog Francés',
-        edad: 0.6,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(1),
-        pesoKg: 7.5,
-        color: 'Gris atigrado',
-        fechaIngreso: '2025-11-20',
-        enfermedad: 'Desparasitación',
-        dueno: duenos[2],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 4,
-        nombre: 'Canela',
-        especie: 'Perro',
-        raza: 'Labrador',
-        edad: 3.5,
-        sexo: 'Hembra',
-        imagen: this.imagenPerro(0),
-        pesoKg: 18.4,
-        color: 'Canela',
-        fechaIngreso: '2025-06-14',
-        enfermedad: 'Desparasitación',
-        dueno: duenos[3],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 5,
-        nombre: 'Toby',
-        especie: 'Perro',
-        raza: 'Beagle',
-        edad: 7.2,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(1),
-        pesoKg: 12.1,
-        color: 'Tricolor',
-        fechaIngreso: '2025-03-02',
-        enfermedad: 'Gastritis aguda',
-        dueno: duenos[4],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 6,
-        nombre: 'Bruno',
-        especie: 'Perro',
-        raza: 'Pastor Alemán',
-        edad: 5.8,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(0),
-        pesoKg: 34.7,
-        color: 'Negro',
-        fechaIngreso: '2025-09-21',
-        enfermedad: 'Chequeo post-operatorio',
-        dueno: duenos[5],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 7,
-        nombre: 'Milú',
-        especie: 'Perro',
-        raza: 'Corgi',
-        edad: 1.4,
-        sexo: 'Hembra',
-        imagen: this.imagenPerro(1),
-        pesoKg: 9.3,
-        color: 'Dorado',
-        fechaIngreso: '2026-01-30',
-        enfermedad: 'Control de rutina y vacunación',
-        dueno: duenos[6],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 8,
-        nombre: 'Copito',
-        especie: 'Perro',
-        raza: 'Poodle',
-        edad: 2.9,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(0),
-        pesoKg: 6.8,
-        color: 'Blanco',
-        fechaIngreso: '2025-12-11',
-        enfermedad: 'Dermatitis alérgica leve',
-        dueno: duenos[7],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 9,
-        nombre: 'Balto',
-        especie: 'Perro',
-        raza: 'Husky',
-        edad: 6.3,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(1),
-        pesoKg: 27.5,
-        color: 'Gris',
-        fechaIngreso: '2025-05-08',
-        enfermedad: 'Rehabilitación tras artroscopia',
-        dueno: duenos[0],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 10,
-        nombre: 'Dante',
-        especie: 'Perro',
-        raza: 'Mestizo',
-        edad: 0.5,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(0),
-        pesoKg: 5.2,
-        color: 'Café con blanco',
-        fechaIngreso: '2026-02-17',
-        enfermedad: 'Seguimiento por infección urinaria',
-        dueno: duenos[1],
-        estado: 'Inactivo',
-        tratamientos: [],
-      },
-      {
-        id: 11,
-        nombre: 'León',
-        especie: 'Perro',
-        raza: 'Golden Retriever',
-        edad: 8.1,
-        sexo: 'Macho',
-        imagen: this.imagenPerro(1),
-        pesoKg: 31.9,
-        color: 'Dorado',
-        fechaIngreso: '2025-02-25',
-        enfermedad: 'Anemia por malnutrición',
-        dueno: duenos[2],
-        estado: 'Activo',
-        tratamientos: [],
-      },
-      {
-        id: 12,
-        nombre: 'Kiara',
-        especie: 'Perro',
-        raza: 'Chihuahua',
-        edad: 4.6,
-        sexo: 'Hembra',
-        imagen: this.imagenPerro(0),
-        pesoKg: 3.4,
-        color: 'Marrón',
-        fechaIngreso: '2025-10-03',
-        enfermedad: 'Control de rutina y vacunación',
-        dueno: duenos[3],
-        estado: 'Inactivo',
-        tratamientos: [],
-      },
-    ];
-    mascotas.forEach((mascota) => mascota.dueno.mascotas.push(mascota));
-    this.tratamientoService.sembrarTratamientos(mascotas);
-    return mascotas;
-  }
-
-  private imagenPerro(indice: number) {
-    return indice % 2 === 0
-      ? 'https://imgs.search.brave.com/8AIQQXIiiwAhhRKhD87lE0EUhLc7Irg8eiwpgIx1x7U/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/cGhvdG8vMjAxNi8wMy8yNy8xOC8xMi9sdW5hLTEyODMzNTZfNjQwLmpwZw'
-      : 'https://imgs.search.brave.com/SpvOGsBrp_Lq8prflOD7fsZ5TRntmOqrUHvFvtSrWzg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90aHVtYnMuZHJlYW1zdGltZS5jb20vYi9zZW50/YWRhLWdyaXMtZGVs/LXBlcnJpdG8tZG9n/by1mcmFuYyVDMyVB/OXMtYWlzbGFkYS0x/MDE3NTU1MzAuanBn';
-  }
-
-  private imagenGato() {
-    return 'https://imgs.search.brave.com/lyQdUI6O4tK7o734zlUOxuFLdw-1kUFmZssTDwlkam0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTU0/MjEyMDY2L2VzL2Zv/dG8vZ2F0by1zaWFt/JUMzJUE5cy5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9ZV9V/WDktSU5fZ3VPQWhw/bUxVYk40VGktWVBj/LU92c3hWQXJUOWpn/MWxVWT0';
+  /** Elimina definitivamente una mascota (comando: subscribe aquí). */
+  eliminar(id: number): void {
+    this.http.delete<void>(`${this.baseUrl}/delete/${id}`).subscribe();
   }
 }

@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { mergeMap } from 'rxjs';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Mascota } from '../../models/mascota.model';
 import { MascotaService } from '../../service/mascota.service';
+import { TratamientoService } from '../../service/tratamiento.service';
 
 @Component({
   selector: 'app-mascotas-ficha',
@@ -12,6 +14,8 @@ import { MascotaService } from '../../service/mascota.service';
 })
 export class MascotasFichaComponent {
   private mascotaService = inject(MascotaService);
+
+  private tratamientoService = inject(TratamientoService);
 
   private activatedRoute = inject(ActivatedRoute);
 
@@ -23,10 +27,24 @@ export class MascotasFichaComponent {
 
   ngOnInit() {
     const id = Number(this.activatedRoute.snapshot.params['id']);
-    this.mascota = this.mascotaService.obtenerMascotaPorId(id);
-    if (!this.mascota) {
-      this.mensajeError = this.mensajeNoEncontrada(id);
-    }
+    // Consultas encadenadas con mergeMap (patrón del video): primero la
+    // mascota y, con esa respuesta, su historial de tratamientos. Así se
+    // evita anidar un subscribe dentro de otro.
+    this.mascotaService
+      .obtenerMascotaPorId(id)
+      .pipe(
+        mergeMap((mascota) => {
+          this.mascota = mascota;
+          // La colección de tratamientos va con @JsonIgnore: se pide aparte.
+          this.mascota.tratamientos = [];
+          return this.tratamientoService.listarTratamientosPorMascota(mascota.id);
+        }),
+      )
+      .subscribe((tratamientos) => {
+        if (this.mascota) {
+          this.mascota.tratamientos = tratamientos;
+        }
+      });
   }
 
   descripcionEdad(mascota: Mascota) {
@@ -51,17 +69,11 @@ export class MascotasFichaComponent {
 
   alternarEstado() {
     if (this.mascota) {
-      this.mascotaService.alternarEstado(this.mascota.id);
+      this.mascotaService.alternarEstado(this.mascota.id).subscribe((estado) => {
+        if (this.mascota) {
+          this.mascota.estado = estado;
+        }
+      });
     }
-  }
-
-  private mensajeNoEncontrada(id: number) {
-    if (!Number.isInteger(id)) {
-      return 'El identificador suministrado no es válido.';
-    }
-    if (id <= 0) {
-      return 'El identificador "' + id + '" no es válido.';
-    }
-    return 'No encontramos ninguna mascota registrada con el identificador "' + id + '".';
   }
 }

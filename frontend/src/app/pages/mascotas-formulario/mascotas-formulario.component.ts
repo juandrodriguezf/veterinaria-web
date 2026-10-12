@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
+import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
 
@@ -42,16 +43,16 @@ export class MascotasFormularioComponent {
   });
 
   ngOnInit() {
-    this.duenos = this.duenoService.listarDuenos();
+    this.duenoService.listarDuenos().subscribe((data) => (this.duenos = data));
     this.id = Number(this.activatedRoute.snapshot.params['id']) || 0;
     if (!this.id) {
       return;
     }
     this.isEdit = true;
-    const mascota = this.mascotaService.obtenerMascotaPorId(this.id);
-    if (!mascota) {
-      return;
-    }
+    this.mascotaService.obtenerMascotaPorId(this.id).subscribe((mascota) => this.precargar(mascota));
+  }
+
+  private precargar(mascota: Mascota) {
     this.mascotaForm.patchValue({
       id: mascota.id,
       nombre: mascota.nombre,
@@ -73,6 +74,7 @@ export class MascotasFormularioComponent {
     if (!dueno) {
       return;
     }
+    // Comando: el service hace el subscribe; el formulario regresa al listado.
     this.mascotaService.guardarValidada({
       id: this.isEdit ? this.id : 0,
       nombre: formValue.nombre ?? '',
@@ -85,7 +87,7 @@ export class MascotasFormularioComponent {
       imagen: formValue.imagen ?? '',
       dueno,
       estado: formValue.estado ?? 'Activo',
-      tratamientos: this.mascotaService.obtenerMascotaPorId(this.id)?.tratamientos ?? [],
+      tratamientos: [],
     });
     this.router.navigate(['/mascotas']);
   }

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
+import { Dueno } from '../../models/dueno.model';
 import { DuenoService } from '../../service/dueno.service';
 
 @Component({
@@ -39,25 +40,23 @@ export class ClientesFormularioComponent {
       return;
     }
     this.isEdit = true;
-    const dueno = this.duenoService.obtenerPorId(this.id);
-    if (!dueno) {
-      return;
-    }
-    this.duenoForm.patchValue({
-      id: dueno.id,
-      cedula: dueno.cedula,
-      nombre: dueno.nombre,
-      correo: dueno.correo,
-      contrasena: '',
-      celular: dueno.celular ?? '',
-      estado: dueno.estado,
-    });
+    this.duenoService.obtenerPorId(this.id).subscribe((dueno) =>
+      this.duenoForm.patchValue({
+        id: dueno.id,
+        cedula: dueno.cedula,
+        nombre: dueno.nombre,
+        correo: dueno.correo,
+        contrasena: '',
+        celular: dueno.celular ?? '',
+        estado: dueno.estado,
+      }),
+    );
   }
 
   guardar() {
-    this.mensajeError = '';
     const formValue = this.duenoForm.value;
-    const error = this.duenoService.guardarValidada({
+    // Comando: el service hace el subscribe; el formulario regresa al listado.
+    this.duenoService.guardarValidada({
       id: this.isEdit ? this.id : 0,
       cedula: (formValue.cedula ?? '').trim(),
       nombre: (formValue.nombre ?? '').trim(),
@@ -65,12 +64,8 @@ export class ClientesFormularioComponent {
       contrasena: formValue.contrasena ?? '',
       celular: (formValue.celular ?? '').trim(),
       estado: formValue.estado ?? 'Activo',
-      mascotas: this.duenoService.obtenerPorId(this.id)?.mascotas ?? [],
+      mascotas: [],
     });
-    if (error) {
-      this.mensajeError = error;
-      return;
-    }
     this.router.navigate(['/clientes']);
   }
 }
