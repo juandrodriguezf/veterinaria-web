@@ -16,6 +16,13 @@ public interface TratamientoService {
     /** Lista todos los tratamientos registrados. */
     List<Tratamiento> listarTratamientos();
 
+    /**
+     * Lista los tratamientos de una mascota (su historial clínico). La
+     * colección de la entidad viaja con @JsonIgnore en la API REST, así
+     * que la ficha clínica pide el historial con esta consulta aparte.
+     */
+    List<Tratamiento> listarTratamientosPorMascota(Integer mascotaId);
+
     /** Obtiene un tratamiento validando previamente el identificador. */
     Tratamiento obtenerTratamientoPorId(Integer id);
 

@@ -51,6 +51,20 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     /**
      * {@inheritDoc}
+     * Consulta derivada findByMascotaId: como la colección de la entidad
+     * viaja con @JsonIgnore en la API REST, el historial clínico se pide
+     * aparte por el id de la mascota.
+     */
+    @Override
+    public List<Tratamiento> listarTratamientosPorMascota(Integer mascotaId) {
+        if (mascotaId == null) {
+            throw new IllegalArgumentException("No se especificó la mascota del historial.");
+        }
+        return tratamientoRepository.findByMascotaId(mascotaId);
+    }
+
+    /**
+     * {@inheritDoc}
      * Consulta derivada findByMascotaId y deja la referencia en nulo: el
      * tratamiento sobrevive a la eliminacion de la mascota, asi que el
      * historial clinico no se pierde. Hibernate confirma los UPDATE de la
