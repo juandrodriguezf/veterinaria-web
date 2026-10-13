@@ -22,6 +22,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 - **API REST de tratamientos y drogas**: consultar el historial de una mascota, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos.
 - **API REST de veterinarios y administradores**: listar, consultar por id y registrar.
 - **API REST de login**: autentica por correo y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal.
+- **Manejo de errores REST**: un `@RestControllerAdvice` (`RestExceptionHandler`) traduce las excepciones de negocio a códigos HTTP con `{"mensaje": …}` (**404** recurso inexistente, **400** dato o identificador inválido, **409** conflicto de estado, **500** genérico).
 - **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
 - **Documentación interactiva** de la API con **Swagger UI** y su especificación OpenAPI en JSON.
 - **Frontend Angular** que consume la API con `HttpClient` (ver [`frontend/`](frontend/README.md)).
@@ -75,6 +76,8 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `POST` | `/login` | Autentica por correo y contraseña; devuelve `{rol, id}` o `401 {mensaje}` |
 
 La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
+
+Los errores de negocio se devuelven con el mismo formato `{"mensaje": …}` y un código acorde: **404** cuando el recurso no existe (`RecursoNoEncontradoException`), **400** cuando falta un dato o un identificador no es válido (`IllegalArgumentException`, incluido el valor de ruta que Spring no puede convertir al tipo esperado), **409** cuando la operación choca con el estado actual (`IllegalStateException`, por ejemplo una mascota de otro dueño o un medicamento sin stock) y **500** para cualquier error no contemplado. El login añade su propio **401**.
 
 ## Datos de prueba
 
@@ -191,7 +194,7 @@ Vetopia/
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
     │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
     │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
-    │   └── errors/                          # RecursoNoEncontradoException
+    │   └── errors/                          # RecursoNoEncontradoException + RestExceptionHandler (@RestControllerAdvice)
     └── resources/
         ├── application.properties           # Puerto y perfil activo (h2)
         └── application-h2.properties        # Datasource H2 en archivo, consola y ddl-auto

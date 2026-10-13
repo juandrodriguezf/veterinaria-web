@@ -9,6 +9,7 @@ import { ClientesFormularioComponent } from './pages/clientes-formulario/cliente
 import { ClienteMascotasComponent } from './pages/cliente-mascotas/cliente-mascotas.component';
 import { ClienteDetalleComponent } from './pages/cliente-detalle/cliente-detalle.component';
 import { TratamientoAsignarComponent } from './pages/tratamiento-asignar/tratamiento-asignar.component';
+import { ErrorComponent } from './pages/error/error.component';
 
 export const routes: Routes = [
   {
@@ -58,5 +59,13 @@ export const routes: Routes = [
   {
     path: 'tratamiento/asignar',
     component: TratamientoAsignarComponent,
+  },
+  {
+    path: 'error',
+    component: ErrorComponent,
+  },
+  {
+    path: '**',
+    component: ErrorComponent,
   },
 ];
