@@ -1,0 +1,111 @@
+<div class="bg-portal-surface text-portal-on-surface font-portal-body-md antialiased min-h-screen flex flex-col">
+  <!-- Encabezado del portal del cliente -->
+  <header class="sticky top-0 z-50 bg-[#0f1115] text-white">
+    <div class="max-w-portal-container-max mx-auto flex items-center justify-between px-portal-gutter py-portal-stack-md">
+      <a class="flex items-center gap-3" routerLink="/">
+        <img alt="Vetopia Logo" class="h-10 w-auto object-contain" src="images/logo_Vetopia.png"/>
+        <span class="hidden sm:block font-portal-label-md text-portal-label-md uppercase tracking-widest text-gray-300">{{ dueno?.nombre }}</span>
+      </a>
+      <nav class="flex items-center gap-6 md:gap-8 font-portal-label-md text-portal-label-md uppercase tracking-widest">
+        <a class="font-bold text-portal-primary-fixed border-b-2 border-portal-primary-fixed pb-1" [routerLink]="['/cliente/mascotas', idUsuario]">Mascotas</a>
+        <a class="hidden sm:inline text-gray-300 hover:text-portal-primary-fixed transition-colors" href="#">Citas</a>
+        <a class="flex items-center gap-2 text-gray-300 hover:text-portal-error transition-colors" routerLink="/login">
+          <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+          Cerrar Sesión
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+    <section class="mb-portal-stack-lg">
+      <h1 class="mb-2 font-portal-headline-xl text-portal-headline-xl text-portal-on-surface">Mis Mascotas</h1>
+      <p class="max-w-3xl font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+        Consulta la información de tus mascotas registradas en Vetopia. Selecciona una mascota para ver su perfil completo.
+      </p>
+    </section>
+
+    <section class="mb-portal-stack-md">
+      <form (ngSubmit)="buscar()" class="flex items-center gap-3">
+        <div class="relative flex-1 max-w-sm">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+          <input class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+                 name="nombre" [(ngModel)]="nombre" placeholder="Buscar por nombre..." type="text"/>
+        </div>
+        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+          Buscar
+        </button>
+        <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
+          Limpiar
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-portal-surface-container-lowest rounded-portal border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
+        <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
+        <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px] text-left">
+          <thead>
+            <tr class="bg-portal-surface-container-low uppercase">
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Foto</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Nombre</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Especie</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Raza</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Edad</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Sexo</th>
+              <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (mascotas.length === 0) {
+              <tr>
+                <td class="px-6 py-16 text-center" colspan="7">
+                  <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-portal-outline-variant" style="font-variation-settings: 'FILL' 0;">{{ nombre.trim() ? 'search_off' : 'pets' }}</span>
+                  @if (nombre.trim()) {
+                    <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">No se encontraron mascotas con el nombre "{{ nombre }}".</p>
+                  } @else {
+                    <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">Aún no tienes mascotas registradas.</p>
+                  }
+                </td>
+              </tr>
+            }
+            @for (mascota of mascotas; track $index) {
+              <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+                <td class="px-6 py-4">
+                  @if (mascota.imagen) {
+                    <img [alt]="'Foto de ' + mascota.nombre" class="h-14 w-14 rounded-full border border-portal-surface-container-highest object-cover" [src]="mascota.imagen"/>
+                  } @else {
+                    <div aria-label="Sin fotografía disponible" class="flex h-14 w-14 items-center justify-center rounded-full bg-portal-surface-container-high text-portal-outline" role="img">
+                      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">pets</span>
+                    </div>
+                  }
+                </td>
+                <td class="px-6 py-4">
+                  <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ mascota.nombre }}</p>
+                  <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant">Paciente N° {{ numeroPaciente(mascota) }}</p>
+                </td>
+                <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.especie }}</td>
+                <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ mascota.raza }}</td>
+                <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ descripcionEdad(mascota) }}</td>
+                <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.sexo }}</td>
+                <td class="px-6 py-4">
+                  <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary"
+                     [attr.aria-label]="'Consultar detalles de ' + mascota.nombre"
+                     [routerLink]="['/cliente/mascotas', idUsuario, 'detalle', mascota.id]">
+                    Ver detalles
+                    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

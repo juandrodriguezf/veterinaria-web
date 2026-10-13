@@ -5,6 +5,17 @@ import { Droga } from '../models/droga.model';
 import { Tratamiento } from '../models/tratamiento.model';
 
 /**
+ * Cuerpo que el formulario envía al asignar un tratamiento: el backend
+ * resuelve la mascota, la droga y el veterinario responsable a partir de
+ * los id, así que solo viajan las referencias mínimas.
+ */
+export interface NuevoTratamiento {
+  fecha: string;
+  mascota: { id: number };
+  droga: { id: number };
+}
+
+/**
  * SERVICIO - Tratamiento
  * Capa de servicio del frontend: hace las peticiones HTTP a la API REST de
  * Spring Boot (patrón de la clase de REST). El historial de una mascota se
@@ -28,7 +39,7 @@ export class TratamientoService {
    * Asigna un tratamiento: el backend valida mascota activa y stock,
    * descuenta una unidad del inventario y devuelve la Droga actualizada.
    */
-  asignar(tratamiento: Tratamiento): Observable<Droga> {
+  asignar(tratamiento: NuevoTratamiento): Observable<Droga> {
     return this.http.post<Droga>(`${this.baseUrl}/add`, tratamiento);
   }
 }

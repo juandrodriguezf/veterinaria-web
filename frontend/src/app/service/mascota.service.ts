@@ -38,8 +38,18 @@ export class MascotaService {
   }
 
   /** Mascotas de un dueño (consulta aparte: la colección va con @JsonIgnore). */
-  listarPorDueno(duenoId: number): Observable<Mascota[]> {
-    return this.http.get<Mascota[]>(`${this.baseUrl}/byDueno/${duenoId}`);
+  listarPorDueno(duenoId: number, nombre?: string): Observable<Mascota[]> {
+    const url = `${this.baseUrl}/byDueno/${duenoId}`;
+    // Un solo endpoint sirve el listado del portal del cliente y su
+    // búsqueda: el nombre viaja como parámetro opcional.
+    return nombre && nombre.trim()
+      ? this.http.get<Mascota[]>(url, { params: { nombre } })
+      : this.http.get<Mascota[]>(url);
+  }
+
+  /** Mascota propia de un dueño (el backend valida la pertenencia). */
+  obtenerPropia(id: number, duenoId: number): Observable<Mascota> {
+    return this.http.get<Mascota>(`${this.baseUrl}/propia/${id}/${duenoId}`);
   }
 
   /** Solo las mascotas activas (candidatas a recibir tratamiento). */

@@ -1,0 +1,84 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <main class="flex-1 flex flex-col md:flex-row min-h-screen">
+    <!-- Columna izquierda: hero con imagen -->
+    <div class="relative flex-1 bg-[#0f1512] overflow-hidden flex items-end p-8 md:p-16 min-h-[300px] md:min-h-screen">
+      <div class="absolute inset-0 bg-gradient-to-r from-[#0f1716]/80 to-[#0f1716]/30 z-10"></div>
+      <div class="absolute inset-0 z-0">
+        <img alt="Veterinario con un gato" class="w-full h-full object-cover object-center" src="images/gato-header.jpg"/>
+      </div>
+
+      <div class="relative z-20 max-w-[512px] w-full">
+        <div class="mb-6">
+          <img alt="Vetopia Logo" class="h-16 w-auto object-contain brightness-0 invert" src="images/logo_Vetopia.png"/>
+        </div>
+        <h1 class="text-headline-lg font-headline-lg text-white leading-tight mb-4">Cuidamos a<br/>quienes más<br/>quieres.</h1>
+        <p class="text-body-lg font-body-lg text-white/90">Accede a tu portal para gestionar estados de<br/>salud, atenciones y tratamientos.</p>
+      </div>
+    </div>
+
+    <!-- Columna derecha: formulario de login -->
+    <div class="flex-1 bg-portal-background flex items-center justify-center p-6 md:p-16 relative">
+      <a class="absolute top-8 right-6 md:right-8 flex items-center gap-2 text-portal-on-surface-variant font-portal-button text-portal-button uppercase hover:text-portal-primary transition-colors" routerLink="/">
+        <span class="material-symbols-outlined text-sm">arrow_back</span>
+        Volver al Inicio
+      </a>
+
+      <div class="w-full max-w-[448px]">
+        <div class="bg-portal-surface-container-lowest p-8 rounded-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-portal-surface-container-highest">
+          <h2 class="text-portal-headline-lg font-portal-headline-lg text-portal-on-surface mb-1">Iniciar Sesión</h2>
+          <p class="text-portal-body-lg font-portal-body-lg text-portal-on-surface-variant mb-6">Ingresa tus credenciales para acceder a tu portal.</p>
+
+          @if (mensajeError) {
+            <div class="mb-6 flex items-start gap-3 rounded-xl border border-portal-error/30 bg-portal-error-container/40 p-4" role="alert">
+              <span class="material-symbols-outlined text-portal-error mt-0.5">error</span>
+              <p class="font-portal-body-md text-portal-body-md text-portal-on-error-container">{{ mensajeError }}</p>
+            </div>
+          }
+
+          <form (ngSubmit)="ingresar()" class="space-y-6">
+            <div class="space-y-2">
+              <label class="font-portal-label-md text-portal-label-md text-portal-on-surface uppercase tracking-widest" for="username">Cédula o Correo Electrónico</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <span class="material-symbols-outlined text-portal-on-surface-variant">person</span>
+                </div>
+                <input class="w-full pl-12 pr-4 py-3 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded-full focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent placeholder:text-portal-on-surface-variant/40"
+                       id="username" name="username" [(ngModel)]="correo" placeholder="ejemplo@correo.com o número de documento" type="text"/>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="font-portal-label-md text-portal-label-md text-portal-on-surface uppercase tracking-widest" for="password">Contraseña</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                  <span class="material-symbols-outlined text-portal-on-surface-variant">lock</span>
+                </div>
+                <input class="w-full pl-12 pr-12 py-3 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded-full focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent placeholder:text-portal-on-surface-variant/40"
+                       id="password" name="password" [(ngModel)]="contrasena" placeholder="••••••••" [type]="mostrarContrasena ? 'text' : 'password'"/>
+                <button (click)="mostrarContrasena = !mostrarContrasena" class="absolute inset-y-0 right-4 flex items-center text-portal-on-surface-variant hover:text-portal-primary transition-colors" type="button">
+                  <span class="material-symbols-outlined">{{ mostrarContrasena ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+            </div>
+
+            <button class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-portal-primary-container px-6 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+              Ingresar al Portal
+              <span class="material-symbols-outlined text-lg">login</span>
+            </button>
+          </form>
+
+          <div class="mt-6 pt-6 border-t border-portal-surface-container-high">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-portal-primary">info</span>
+              <p class="text-portal-body-md font-portal-body-md text-portal-on-surface-variant">
+                El sistema identificará automáticamente tu rol (Cliente,<br/>Veterinario o Administrador) y te dirigirá a tu panel<br/>correspondiente.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>
