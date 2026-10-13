@@ -11,18 +11,19 @@ Este proyecto reproduce las pantallas del prototipo que el backend ya soporta, p
 | Pantalla del prototipo | Ruta en Angular | Estado |
 |---|---|---|
 | Landing Page | `/` | Portada |
+| Log In | `/login` | Portada |
 | Mascotas a Cargo | `/mascotas` | Portada |
 | Section 2: Pet Information (registrar mascota) | `/mascotas/new` | Portada |
 | Section 2: Pet Information (editar mascota) | `/mascotas/update/:id` | Portada |
-| Log In | — | No portada |
 | Ficha Clínica | `/mascotas/:id` | Portada |
 | Clientes (listado) | `/clientes` | Portada |
 | Registrar Nuevo Cliente (crear) | `/clientes/new` | Portada |
 | Registrar Nuevo Cliente (editar) | `/clientes/update/:id` | Portada |
-| Asignar Nuevo Tratamiento / Tratamiento Aplicado | — | No portada |
-| Principal Cliente / Detalle mascota Cliente | — | No portada |
+| Asignar Nuevo Tratamiento / Tratamiento Aplicado | `/tratamiento/asignar` | Portada |
+| Principal Cliente | `/cliente/mascotas/:idUsuario` | Portada |
+| Detalle mascota Cliente | `/cliente/mascotas/:idUsuario/detalle/:id` | Portada |
 
-Los enlaces del encabezado que todavía no tienen página (`Tratamientos`) llevan a `#` y `Logout` vuelve al landing. El listado de mascotas tiene tres acciones en cada fila (`Ver ficha`, `Editar` y `Desactivar/Activar`), con la ficha clínica como única pantalla de detalle; el de clientes tiene `Editar`, `Desactivar/Activar` y `Eliminar`, y ese último borra en cascada las mascotas del dueño.
+El encabezado del portal enlaza `Pacientes` (`/mascotas`), `Clientes` (`/clientes`) y `Tratamientos` (`/tratamiento/asignar`); `Logout` vuelve al landing. El listado de mascotas tiene tres acciones en cada fila (`Ver ficha`, `Editar` y `Desactivar/Activar`), con la ficha clínica como única pantalla de detalle; el de clientes tiene `Editar`, `Desactivar/Activar` y `Eliminar`, y ese último borra en cascada las mascotas del dueño.
 
 ## Estructura
 
@@ -41,21 +42,28 @@ src/app/
 │   └── veterinario.model.ts
 ├── pages/
 │   ├── landing/                 Landing institucional (5 secciones + carrusel)
+│   ├── login/                   Inicio de sesión (navega según el rol)
 │   ├── clientes-listado/        Listado de clientes (dueños)
 │   │   └── components/
 │   │       ├── cliente-tabla/   Tabla (componente hijo)
 │   │       └── page-title/      Título y subtítulo de la página
 │   ├── clientes-formulario/     Formulario de registrar y editar cliente
+│   ├── cliente-mascotas/        Portal del cliente: sus mascotas
+│   ├── cliente-detalle/         Detalle de una mascota del cliente
 │   ├── mascotas-listado/        Listado de mascotas a cargo
 │   │   └── components/
 │   │       ├── mascota-tabla/   Tabla (componente hijo)
 │   │       └── page-title/      Título y subtítulo de la página
 │   ├── mascotas-formulario/     Formulario de registrar y editar mascota
-│   └── mascotas-ficha/          Ficha clínica de una mascota
+│   ├── mascotas-ficha/          Ficha clínica de una mascota
+│   └── tratamiento-asignar/     Asignar tratamiento (formulario + modal)
 ├── service/                     Peticiones HTTP a la API REST
+│   ├── login.service.ts         Autenticación (POST /login)
 │   ├── dueno.service.ts         CRUD de clientes (GET/POST/PUT/DELETE)
 │   ├── mascota.service.ts       CRUD de mascotas (GET/POST/PUT/DELETE)
-│   └── tratamiento.service.ts   Historial por mascota y asignación de tratamientos
+│   ├── tratamiento.service.ts   Historial por mascota y asignación de tratamientos
+│   ├── droga.service.ts         Inventario de medicamentos
+│   └── veterinario.service.ts   Veterinarios
 ├── app.component.ts             Shell de la aplicación
 ├── app.config.ts                Configuración (provideRouter + HttpClientModule)
 └── app.routes.ts                Rutas
@@ -69,10 +77,11 @@ Las interfaces copian los atributos y las asociaciones de las entidades JPA: las
 
 ## Servicios HTTP
 
-Los tres servicios ya no siembran datos: cada método hace una petición a la API REST con `HttpClient`, usando `baseUrl = http://localhost:8080/<recurso>`. Siguiendo el patrón de la clase de REST, las **consultas devuelven el `Observable`** para que el componente reaccione a la respuesta, mientras que los **comandos que no actualizan la vista hacen el `subscribe` dentro del propio servicio**.
+Los servicios ya no siembran datos: cada método hace una petición a la API REST con `HttpClient`, usando `baseUrl = http://localhost:8080/<recurso>`. Siguiendo el patrón de la clase de REST, las **consultas devuelven el `Observable`** para que el componente reaccione a la respuesta, mientras que los **comandos que no actualizan la vista hacen el `subscribe` dentro del propio servicio**.
 
 | Servicio | Método | Petición |
 |---|---|---|
+| `LoginService` | `autenticar(correo, contrasena)` | `POST /login`; devuelve `{rol, id}` |
 | `DuenoService` | `listarDuenos()` | `GET /dueno/all` |
 | `DuenoService` | `obtenerPorId(id)` | `GET /dueno/find/{id}` |
 | `DuenoService` | `buscarPorNombre(nombre)` | `GET /dueno/search/{nombre}` |
@@ -82,17 +91,20 @@ Los tres servicios ya no siembran datos: cada método hace una petición a la AP
 | `MascotaService` | `listarMascotas()` | `GET /mascota/all` |
 | `MascotaService` | `obtenerMascotaPorId(id)` | `GET /mascota/find/{id}` |
 | `MascotaService` | `buscarPorNombre(nombre)` | `GET /mascota/search/{nombre}` |
-| `MascotaService` | `listarPorDueno(duenoId)` | `GET /mascota/byDueno/{id}` |
+| `MascotaService` | `listarPorDueno(duenoId, nombre?)` | `GET /mascota/byDueno/{id}` (búsqueda con `?nombre=`) |
+| `MascotaService` | `obtenerPropia(id, duenoId)` | `GET /mascota/propia/{id}/{duenoId}` (valida la pertenencia) |
 | `MascotaService` | `listarMascotasActivas()` | `GET /mascota/activas` |
 | `MascotaService` | `guardarValidada(mascota)` | `POST /mascota/add` (sin id) o `PUT /mascota/update` (con id); comando |
 | `MascotaService` | `alternarEstado(id)` | `PUT /mascota/toggle/{id}`; devuelve el estado |
 | `MascotaService` | `eliminar(id)` | `DELETE /mascota/delete/{id}`; comando |
 | `TratamientoService` | `listarTratamientosPorMascota(id)` | `GET /tratamiento/byMascota/{id}` |
 | `TratamientoService` | `asignar(tratamiento)` | `POST /tratamiento/add`; devuelve la droga actualizada |
+| `DrogaService` | `listarDrogas()` | `GET /droga/all` |
+| `VeterinarioService` | `listarVeterinarios()` | `GET /veterinario/all` |
 
 En la creación se omite el `id` (`{ ...entidad, id: null }`) porque el backend trata un id nulo como registro nuevo; con `id` 0 lo tomaría como una edición (`merge`). Las reglas de negocio (cédula/correo únicos, dueño obligatorio, mascota activa y stock) viven ahora en el backend, así que el frontend ya no las replica.
 
-La ficha clínica encadena dos consultas con **`mergeMap`** (patrón del video): primero `obtenerMascotaPorId` y, con esa respuesta, `listarTratamientosPorMascota`, en un solo `subscribe`, en lugar de anidar un `subscribe` dentro de otro.
+La ficha clínica y el detalle del cliente encadenan dos consultas con **`mergeMap`** (patrón del video): primero la mascota (`obtenerMascotaPorId` / `obtenerPropia`) y, con esa respuesta, `listarTratamientosPorMascota`, en un solo `subscribe`, en lugar de anidar un `subscribe` dentro de otro.
 
 ## Decisiones
 
@@ -108,6 +120,10 @@ La ficha clínica encadena dos consultas con **`mergeMap`** (patrón del video):
 - **Las acciones de la tabla de clientes son botones, no enlaces.** La tabla emite un `output()` al componente padre en lugar de navegar. `Eliminar` pide confirmación con un `window.confirm` que anuncia cuántas mascotas se van, porque la cascada borra historial clínico y un clic equivocado no tiene vuelta atrás.
 - **Los enlaces sin página se quedan en `#`.** `Tratamientos` en el encabezado y `Logout` que vuelve al landing; el enlace `Clientes` lleva al listado.
 - **Fotografías.** El campo `imagen` guarda las mismas URLs del `DataLoader`. Son enlaces proxeados por `imgs.search.brave.com` que hoy responden **403**, así que las fotos se ven rotas en el listado. Es la única fuente de errores en la consola del navegador.
+- **Login: el rol lo resuelve el backend.** `POST /login` busca en veterinario → administrador → dueño y devuelve `{rol, id}`; el componente navega (veterinario → `/mascotas`, cliente → `/cliente/mascotas/{id}`, administrador → `/`). Es la migración del login de Thymeleaf a REST, **sin sesión ni guard**: el tema de autenticación del curso queda para la última clase.
+- **El login es el único punto con manejo de errores.** El video no maneja errores (asume que la consulta salió bien); aquí, para poder avisar "correo o contraseña incorrectos", `LoginRestController` traduce el `IllegalArgumentException` del service a un **401 con `{mensaje}`** y el componente lo muestra en el banner. Junto con el `error` callback del detalle del cliente y de asignar tratamiento y el `server.error.include-message=always` (que hace visible el mensaje de las demás excepciones), es la desviación deliberada del estilo del video.
+- **El portal del cliente va por ruta, no por query.** El login navega a `/cliente/mascotas/:idUsuario` (y el detalle a `.../detalle/:id`), en lugar del `?idUsuario=` del backend Thymeleaf. La identidad viaja en la URL y el backend valida la pertenencia de la mascota (`/mascota/propia/{id}/{duenoId}`), de modo que un cliente no ve mascotas de otro cambiando el id.
+- **Asignar tratamiento: `subscribe` en el componente.** A diferencia de los comandos "ciegos" (`guardarValidada`, `eliminar`), `asignar` devuelve la `Droga` con el stock ya descontado, así que el componente reacciona a esa respuesta para el modal "Tratamiento Aplicado" (misma regla del video: si hay que reaccionar, se hace desde la capa de arriba).
 
 ## Requisitos
 
@@ -158,6 +174,9 @@ Con el backend levantado (`mvn spring-boot:run`) y el frontend en `npm start`, s
 - **Listado de clientes** (`/clientes`): carga los **53 clientes** con `GET /dueno/all` y muestra el conteo de mascotas de cada uno.
 - **Ficha clínica** (`/mascotas/1`): encadena `GET /mascota/find/1` con `GET /tratamiento/byMascota/1` mediante `mergeMap` y muestra el historial de tratamientos.
 - **Alta de mascota**: guarda con `POST /mascota/add`; al volver al listado el contador pasa a **104** y aparece la mascota nueva.
+- **Login** (`/login`): con `ana@correo.com` / `dueño123` llama a `POST /login` y navega a `/cliente/mascotas/1`; con `carlos.gutierrez@vetopia.com` / `vet123` va a `/mascotas`; con credenciales incorrectas el backend responde **401** y el banner muestra "Correo o contraseña incorrectos…".
+- **Portal del cliente** (`/cliente/mascotas/1`): carga las mascotas de Ana con `GET /mascota/byDueno/1`; el detalle (`/cliente/mascotas/1/detalle/1`) encadena `GET /mascota/propia/1/1` con `GET /tratamiento/byMascota/1` mediante `mergeMap` y muestra el historial.
+- **Asignar tratamiento** (`/tratamiento/asignar`): carga las mascotas activas y las drogas, y al aplicar (`POST /tratamiento/add`) aparece el modal "Tratamiento Aplicado" con el stock descontado (Amoxicilina pasó de 100 a 99 y Max sumó un tratamiento).
 
 ## Estilos
 

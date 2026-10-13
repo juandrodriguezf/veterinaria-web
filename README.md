@@ -17,10 +17,12 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 ## Funcionalidades
 
-- **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño, listar las activas, crear, actualizar, alternar estado y eliminar.
+- **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño (con búsqueda opcional por nombre), listar las activas, consultar una mascota propia de un dueño, crear, actualizar, alternar estado y eliminar.
 - **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
 - **API REST de tratamientos y drogas**: consultar el historial de una mascota, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos.
 - **API REST de veterinarios y administradores**: listar, consultar por id y registrar.
+- **API REST de login**: autentica por correo y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal.
+- **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
 - **Documentación interactiva** de la API con **Swagger UI** y su especificación OpenAPI en JSON.
 - **Frontend Angular** que consume la API con `HttpClient` (ver [`frontend/`](frontend/README.md)).
 
@@ -43,7 +45,8 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/mascota/all` | Todas las mascotas |
 | `GET` | `/mascota/find/{id}` | Una mascota por id |
 | `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas) |
-| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño |
+| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (búsqueda opcional con `?nombre=`) |
+| `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño |
 | `GET` | `/mascota/activas` | Solo las mascotas activas |
 | `POST` | `/mascota/add` | Crea una mascota (dueño obligatorio, estado inicial Activo) |
 | `PUT` | `/mascota/update` | Actualiza una mascota |
@@ -69,6 +72,7 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/administrador/all` | Todos los administradores |
 | `GET` | `/administrador/find/{id}` | Un administrador por id |
 | `POST` | `/administrador/add` | Registra un administrador |
+| `POST` | `/login` | Autentica por correo y contraseña; devuelve `{rol, id}` o `401 {mensaje}` |
 
 La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
 
@@ -104,15 +108,17 @@ El backend queda en `http://localhost:8080`. Rutas útiles:
 
 La interfaz de usuario vive en el [frontend Angular](frontend/README.md) (`http://localhost:4200`), que consume esta API con `HttpClient`.
 
-## Clientes de demostración
+## Credenciales de demostración
 
-`DataLoader` siembra tres clientes de ejemplo con sus credenciales; el inicio de sesión es el último tema del curso y todavía no está implementado, así que por ahora solo sirven como datos de prueba.
+`DataLoader` siembra usuarios de ejemplo para los tres roles que resuelve el login (`POST /login`):
 
-| Cliente | Correo | Contraseña | Estado |
+| Rol | Usuario | Contraseña | Estado |
 |---|---|---|---|
-| Ana Rodríguez | `ana@correo.com` | `dueño123` | Activa |
-| Pedro Gómez | `pedro@correo.com` | `dueño123` | Activa |
-| María López | `maria@correo.com` | `dueño123` | Inactiva |
+| Veterinario | `carlos.gutierrez@vetopia.com` | `vet123` | — |
+| Administrador | `admin@vetopia.com` | `admin123` | — |
+| Cliente | `ana@correo.com` | `dueño123` | Activa |
+| Cliente | `pedro@correo.com` | `dueño123` | Activa |
+| Cliente | `maria@correo.com` | `dueño123` | Inactiva (no inicia sesión) |
 
 ## Diagrama de clases
 
@@ -129,19 +135,19 @@ Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma
 | Pantalla en Figma | Ruta en el frontend | Estado |
 |---|---|---|
 | Landing Page | `/` | Implementada |
-| Log In | — | No implementada |
-| Principal Cliente | — | No implementada |
-| Detalle mascota Cliente | — | No implementada |
+| Log In | `/login` | Implementada |
+| Principal Cliente | `/cliente/mascotas/:idUsuario` | Implementada |
+| Detalle mascota Cliente | `/cliente/mascotas/:idUsuario/detalle/:id` | Implementada |
 | Mascotas a Cargo | `/mascotas` | Implementada |
 | Ficha Clínica | `/mascotas/:id` | Implementada |
 | Registrar Nuevo Cliente (paso 1) | `/clientes/new` | Implementada |
 | Section 2: Pet Information (paso 2) | `/mascotas/new` | Implementada |
-| Asignar Nuevo Tratamiento | — | No implementada |
-| Tratamiento Aplicado (modal) | — | No implementada |
+| Asignar Nuevo Tratamiento | `/tratamiento/asignar` | Implementada |
+| Tratamiento Aplicado (modal) | misma ruta (modal de confirmación) | Implementada |
 | Dashboard Administrativo | — | Futura |
 | Gestión Veterinarios | — | Futura |
 
-Las pantallas del portal del cliente y de administrador quedan fuera de esta entrega, igual que la asignación de tratamientos y el inicio de sesión (el último tema del curso). El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
+Las dos pantallas de administrador del prototipo quedan fuera de esta entrega: hoy el login con rol administrador vuelve al landing. El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial Tratamientos`, `Registrar Nuevo Veterinario`, `Ver Perfil Completo` y recuperar contraseña).
 
 ## Frontend Angular
 
@@ -150,6 +156,7 @@ La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, co
 | Ruta | Descripción |
 |---|---|
 | `http://localhost:4200/` | Landing institucional |
+| `http://localhost:4200/login` | Inicio de sesión (rol veterinario, administrador o cliente) |
 | `http://localhost:4200/mascotas` | Listado de mascotas |
 | `http://localhost:4200/mascotas/new` | Registrar mascota |
 | `http://localhost:4200/mascotas/update/:id` | Editar mascota |
@@ -157,6 +164,9 @@ La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, co
 | `http://localhost:4200/clientes` | Listado de dueños |
 | `http://localhost:4200/clientes/new` | Registrar cliente |
 | `http://localhost:4200/clientes/update/:id` | Editar cliente |
+| `http://localhost:4200/cliente/mascotas/:idUsuario` | Portal del cliente: sus mascotas |
+| `http://localhost:4200/cliente/mascotas/:idUsuario/detalle/:id` | Detalle de una mascota del cliente |
+| `http://localhost:4200/tratamiento/asignar` | Asignar un tratamiento |
 
 ```bash
 cd frontend
