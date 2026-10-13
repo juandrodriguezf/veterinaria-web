@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.entities.Mascota;
@@ -63,10 +64,20 @@ public class MascotaRestController {
         return mascotaService.buscarPorNombre(nombre);
     }
 
-    @Operation(summary = "Lista las mascotas de un dueño.")
+    @Operation(summary = "Lista las mascotas de un dueño (opcionalmente filtradas por nombre).")
     @GetMapping("/byDueno/{duenoId}")
-    public List<Mascota> listarPorDueno(@PathVariable Integer duenoId) {
-        return mascotaService.listarMascotasPorDueno(duenoId);
+    public List<Mascota> listarPorDueno(@PathVariable Integer duenoId,
+                                        @RequestParam(name = "nombre", required = false) String nombre) {
+        // Un solo endpoint para el listado del portal del cliente y su
+        // búsqueda: buscarPorDuenoYNombre devuelve todo el listado del
+        // dueño cuando el término llega vacío.
+        return mascotaService.buscarPorDuenoYNombre(duenoId, nombre);
+    }
+
+    @Operation(summary = "Obtiene una mascota validando que pertenezca al dueño indicado.")
+    @GetMapping("/propia/{id}/{duenoId}")
+    public Mascota obtenerPropia(@PathVariable Integer id, @PathVariable Integer duenoId) {
+        return mascotaService.obtenerPropia(id, duenoId);
     }
 
     @Operation(summary = "Lista solo las mascotas activas (candidatas a tratamiento).")
