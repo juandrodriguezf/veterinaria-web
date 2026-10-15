@@ -5,17 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.vetopia.dto.AdministradorDTO;
-import com.vetopia.dto.DrogaDTO;
 import com.vetopia.dto.DrogaResumenDTO;
 import com.vetopia.dto.DuenoDTO;
 import com.vetopia.dto.DuenoResumenDTO;
 import com.vetopia.dto.MascotaDetalleDTO;
 import com.vetopia.dto.MascotaResumenDTO;
 import com.vetopia.dto.TratamientoDTO;
-import com.vetopia.dto.VeterinarioDTO;
 import com.vetopia.dto.VeterinarioResumenDTO;
-import com.vetopia.entities.Administrador;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
@@ -117,47 +113,12 @@ public class DtoMapper {
                 toDuenoResumenDTO(mascota.getDueno()));
     }
 
-    /** Droga -> DTO completo (inventario, sin colecciones anidadas). */
-    public DrogaDTO toDrogaDTO(Droga droga) {
-        if (droga == null) {
-            return null;
-        }
-        return new DrogaDTO(
-                droga.getId(),
-                droga.getNombre(),
-                droga.getPrecioCompra(),
-                droga.getPrecioVenta(),
-                droga.getUnidadesDisponibles(),
-                droga.getUnidadesVendidas());
-    }
-
     /** Droga -> resumen (para anidar en un tratamiento). */
     public DrogaResumenDTO toDrogaResumenDTO(Droga droga) {
         if (droga == null) {
             return null;
         }
         return new DrogaResumenDTO(droga.getId(), droga.getNombre());
-    }
-
-    /** Lista de drogas -> lista de DTO. */
-    public List<DrogaDTO> toDrogaDTOs(List<Droga> drogas) {
-        return drogas.stream().map(this::toDrogaDTO).toList();
-    }
-
-    /** Veterinario -> DTO (sin contraseña ni colecciones anidadas). */
-    public VeterinarioDTO toVeterinarioDTO(Veterinario veterinario) {
-        if (veterinario == null) {
-            return null;
-        }
-        return new VeterinarioDTO(
-                veterinario.getId(),
-                veterinario.getCedula(),
-                veterinario.getCorreo(),
-                veterinario.getEspecialidad(),
-                veterinario.getNumeroAtenciones(),
-                veterinario.getNombre(),
-                veterinario.getEstado(),
-                veterinario.getUrlFoto());
     }
 
     /** Veterinario -> resumen (para anidar en un tratamiento). */
@@ -169,28 +130,6 @@ public class DtoMapper {
                 veterinario.getId(),
                 veterinario.getNombre(),
                 veterinario.getEspecialidad());
-    }
-
-    /** Lista de veterinarios -> lista de DTO. */
-    public List<VeterinarioDTO> toVeterinarioDTOs(List<Veterinario> veterinarios) {
-        return veterinarios.stream().map(this::toVeterinarioDTO).toList();
-    }
-
-    /** Administrador -> DTO (sin contraseña ni colecciones anidadas). */
-    public AdministradorDTO toAdministradorDTO(Administrador administrador) {
-        if (administrador == null) {
-            return null;
-        }
-        return new AdministradorDTO(
-                administrador.getId(),
-                administrador.getCedula(),
-                administrador.getCorreo(),
-                administrador.getNombre());
-    }
-
-    /** Lista de administradores -> lista de DTO. */
-    public List<AdministradorDTO> toAdministradorDTOs(List<Administrador> administradores) {
-        return administradores.stream().map(this::toAdministradorDTO).toList();
     }
 
     /** Tratamiento -> DTO (droga y veterinario como resúmenes, mascota por id). */

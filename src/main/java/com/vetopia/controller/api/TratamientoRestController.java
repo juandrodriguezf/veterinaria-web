@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vetopia.dto.DrogaDTO;
 import com.vetopia.dto.TratamientoDTO;
+import com.vetopia.entities.Droga;
 import com.vetopia.entities.Tratamiento;
 import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.TratamientoService;
@@ -64,7 +64,7 @@ public class TratamientoRestController {
 
     @Operation(summary = "Asigna un tratamiento (valida mascota activa y stock; descuenta inventario).")
     @PostMapping("/add")
-    public DrogaDTO asignarTratamiento(@RequestBody Tratamiento tratamiento) {
-        return dtoMapper.toDrogaDTO(tratamientoService.asignar(tratamiento));
+    public Droga asignarTratamiento(@RequestBody Tratamiento tratamiento) {
+        return tratamientoService.asignar(tratamiento);
     }
 }
