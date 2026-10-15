@@ -55,17 +55,19 @@ export class ClientesFormularioComponent {
 
   guardar() {
     const formValue = this.duenoForm.value;
-    // Comando: el service hace el subscribe; el formulario regresa al listado.
-    this.duenoService.guardarValidada({
-      id: this.isEdit ? this.id : 0,
-      cedula: (formValue.cedula ?? '').trim(),
-      nombre: (formValue.nombre ?? '').trim(),
-      correo: (formValue.correo ?? '').trim(),
-      contrasena: formValue.contrasena ?? '',
-      celular: (formValue.celular ?? '').trim(),
-      estado: formValue.estado ?? 'Activo',
-      mascotas: [],
-    });
-    this.router.navigate(['/clientes']);
+    // Se navega dentro del next: al volver al listado, el guardado ya está
+    // confirmado y el cliente aparece de una vez.
+    this.duenoService
+      .guardarValidada({
+        id: this.isEdit ? this.id : 0,
+        cedula: (formValue.cedula ?? '').trim(),
+        nombre: (formValue.nombre ?? '').trim(),
+        correo: (formValue.correo ?? '').trim(),
+        contrasena: formValue.contrasena ?? '',
+        celular: (formValue.celular ?? '').trim(),
+        estado: formValue.estado ?? 'Activo',
+        mascotas: [],
+      })
+      .subscribe(() => this.router.navigate(['/clientes']));
   }
 }

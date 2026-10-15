@@ -86,9 +86,7 @@ export class ClientesListadoComponent {
     if (!window.confirm(mensaje)) {
       return;
     }
-    // Comando: el service hace el subscribe y el backend resuelve la
-    // cascada. La lista se actualiza al instante (patrón optimista del video).
-    this.duenoService.eliminar(dueno.id);
-    this.duenos = this.duenos.filter((registro) => registro.id !== dueno.id);
+    // Se recarga al confirmar el borrado, para reflejar la cascada.
+    this.duenoService.eliminar(dueno.id).subscribe(() => this.cargar());
   }
 }

@@ -74,21 +74,23 @@ export class MascotasFormularioComponent {
     if (!dueno) {
       return;
     }
-    // Comando: el service hace el subscribe; el formulario regresa al listado.
-    this.mascotaService.guardarValidada({
-      id: this.isEdit ? this.id : 0,
-      nombre: formValue.nombre ?? '',
-      especie: formValue.especie ?? '',
-      raza: formValue.raza ?? '',
-      sexo: formValue.sexo ?? '',
-      edad: formValue.edad ?? undefined,
-      pesoKg: formValue.pesoKg ?? undefined,
-      color: formValue.color ?? '',
-      imagen: formValue.imagen ?? '',
-      dueno,
-      estado: formValue.estado ?? 'Activo',
-      tratamientos: [],
-    });
-    this.router.navigate(['/mascotas']);
+    // Se navega dentro del next: al volver al listado, el guardado ya está
+    // confirmado y la mascota aparece de una vez.
+    this.mascotaService
+      .guardarValidada({
+        id: this.isEdit ? this.id : 0,
+        nombre: formValue.nombre ?? '',
+        especie: formValue.especie ?? '',
+        raza: formValue.raza ?? '',
+        sexo: formValue.sexo ?? '',
+        edad: formValue.edad ?? undefined,
+        pesoKg: formValue.pesoKg ?? undefined,
+        color: formValue.color ?? '',
+        imagen: formValue.imagen ?? '',
+        dueno,
+        estado: formValue.estado ?? 'Activo',
+        tratamientos: [],
+      })
+      .subscribe(() => this.router.navigate(['/mascotas']));
   }
 }
