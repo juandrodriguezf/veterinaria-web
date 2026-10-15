@@ -3,9 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
-import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
-import { MascotaService } from '../../service/mascota.service';
 import { ClienteTablaComponent } from './components/cliente-tabla/cliente-tabla.component';
 import { ClientesPageTitleComponent } from './components/page-title/page-title.component';
 
@@ -24,8 +22,6 @@ import { ClientesPageTitleComponent } from './components/page-title/page-title.c
 export class ClientesListadoComponent {
   private duenoService = inject(DuenoService);
 
-  private mascotaService = inject(MascotaService);
-
   nombreVeterinario: string = 'Carlos Gutiérrez';
 
   duenos: Dueno[] = [];
@@ -34,18 +30,8 @@ export class ClientesListadoComponent {
 
   cargando = false;
 
-  /**
-   * Caché de mascotas: la colección del dueño va con @JsonIgnore en el
-   * backend, así que el contador de mascotas de la tabla se arma aquí
-   * cruzando este listado (consulta aparte) con cada dueño.
-   */
-  private mascotas: Mascota[] = [];
-
   ngOnInit() {
-    this.mascotaService.listarMascotas().subscribe((mascotas) => {
-      this.mascotas = mascotas;
-      this.cargar();
-    });
+    this.cargar();
   }
 
   cargar() {
@@ -54,18 +40,10 @@ export class ClientesListadoComponent {
       ? this.duenoService.buscarPorNombre(this.nombre)
       : this.duenoService.listarDuenos();
     peticion.subscribe({
-      next: (duenos) => this.mostrar(duenos),
+      next: (duenos) => (this.duenos = duenos),
       error: () => (this.cargando = false),
       complete: () => (this.cargando = false),
     });
-  }
-
-  /** Adjunta a cada dueño sus mascotas (desde la caché) para el contador. */
-  private mostrar(duenos: Dueno[]) {
-    duenos.forEach((dueno) => {
-      dueno.mascotas = this.mascotas.filter((mascota) => mascota.dueno?.id === dueno.id);
-    });
-    this.duenos = duenos;
   }
 
   buscar() {
@@ -82,7 +60,7 @@ export class ClientesListadoComponent {
   }
 
   eliminar(dueno: Dueno) {
-    const total = dueno.mascotas.length;
+    const total = dueno.mascotaCount ?? 0;
     const mensaje =
       total === 0
         ? `¿Eliminar a ${dueno.nombre}?`

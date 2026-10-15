@@ -26,7 +26,7 @@ export class ClienteTablaComponent {
   }
 
   cantidadMascotas(dueno: Dueno) {
-    const total = dueno.mascotas.length;
+    const total = dueno.mascotaCount ?? 0;
     return total === 1 ? '1 mascota' : total + ' mascotas';
   }
 }
