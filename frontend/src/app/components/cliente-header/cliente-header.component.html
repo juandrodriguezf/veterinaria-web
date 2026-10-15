@@ -1,0 +1,16 @@
+<header class="sticky top-0 z-50 bg-[#0f1115] text-white">
+  <div class="max-w-portal-container-max mx-auto flex items-center justify-between px-portal-gutter py-portal-stack-md">
+    <a class="flex items-center gap-3" routerLink="/">
+      <img alt="Vetopia Logo" class="h-10 w-auto object-contain" src="images/logo_Vetopia.png"/>
+      <span class="hidden sm:block font-portal-label-md text-portal-label-md uppercase tracking-widest text-gray-300">{{ nombreCliente() }}</span>
+    </a>
+    <nav class="flex items-center gap-6 md:gap-8 font-portal-label-md text-portal-label-md uppercase tracking-widest">
+      <a [class]="claseMascotas()" [routerLink]="['/cliente/mascotas', idUsuario()]">Mascotas</a>
+      <a class="hidden sm:inline text-gray-300 hover:text-portal-primary-fixed transition-colors" href="#">Citas</a>
+      <a class="flex items-center gap-2 text-gray-300 hover:text-portal-error transition-colors" routerLink="/login">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+        Cerrar Sesión
+      </a>
+    </nav>
+  </div>
+</header>

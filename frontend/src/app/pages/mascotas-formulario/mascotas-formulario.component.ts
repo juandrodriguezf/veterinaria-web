@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
+import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Dueno } from '../../models/dueno.model';
 import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
@@ -9,7 +10,7 @@ import { MascotaService } from '../../service/mascota.service';
 
 @Component({
   selector: 'app-mascotas-formulario',
-  imports: [FooterPortalComponent, ReactiveFormsModule, RouterLink],
+  imports: [FooterPortalComponent, PortalHeaderComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './mascotas-formulario.component.html',
   styleUrl: './mascotas-formulario.component.scss',
 })

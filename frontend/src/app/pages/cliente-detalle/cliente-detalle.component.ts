@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { mergeMap } from 'rxjs';
+import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
 import { Mascota } from '../../models/mascota.model';
@@ -10,7 +11,7 @@ import { TratamientoService } from '../../service/tratamiento.service';
 
 @Component({
   selector: 'app-cliente-detalle',
-  imports: [RouterLink, FooterPortalComponent],
+  imports: [RouterLink, FooterPortalComponent, ClienteHeaderComponent],
   templateUrl: './cliente-detalle.component.html',
   styleUrl: './cliente-detalle.component.scss',
 })

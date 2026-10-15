@@ -2,13 +2,14 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
+import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Mascota } from '../../models/mascota.model';
 import { MascotaService } from '../../service/mascota.service';
 import { TratamientoService } from '../../service/tratamiento.service';
 
 @Component({
   selector: 'app-mascotas-ficha',
-  imports: [FooterPortalComponent, RouterLink],
+  imports: [FooterPortalComponent, PortalHeaderComponent, RouterLink],
   templateUrl: './mascotas-ficha.component.html',
   styleUrl: './mascotas-ficha.component.scss',
 })

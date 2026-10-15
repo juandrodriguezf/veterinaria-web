@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
+import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Dueno } from '../../models/dueno.model';
 import { DuenoService } from '../../service/dueno.service';
 import { ClienteTablaComponent } from './components/cliente-tabla/cliente-tabla.component';
@@ -14,6 +15,7 @@ import { ClientesPageTitleComponent } from './components/page-title/page-title.c
     ClientesPageTitleComponent,
     FooterPortalComponent,
     FormsModule,
+    PortalHeaderComponent,
     RouterLink,
   ],
   templateUrl: './clientes-listado.component.html',

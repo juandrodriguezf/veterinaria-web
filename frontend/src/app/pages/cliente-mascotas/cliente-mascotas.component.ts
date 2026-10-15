@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
 import { Mascota } from '../../models/mascota.model';
@@ -9,7 +10,7 @@ import { MascotaService } from '../../service/mascota.service';
 
 @Component({
   selector: 'app-cliente-mascotas',
-  imports: [FormsModule, RouterLink, FooterPortalComponent],
+  imports: [FormsModule, RouterLink, FooterPortalComponent, ClienteHeaderComponent],
   templateUrl: './cliente-mascotas.component.html',
   styleUrl: './cliente-mascotas.component.scss',
 })
