@@ -1,16 +1,9 @@
-import type { Administrador } from './administrador.model';
-import type { Tratamiento } from './tratamiento.model';
-
+/**
+ * Veterinario tal como lo devuelve la API: solo id, nombre y especialidad.
+ * El resto de campos no se expone porque ninguna pantalla los usa.
+ */
 export interface Veterinario {
   id: number;
-  cedula: string;
-  contrasena: string;
-  correo: string;
-  especialidad?: string;
-  numeroAtenciones: number;
   nombre: string;
-  estado: string;
-  urlFoto?: string;
-  administrador?: Administrador;
-  tratamientos: Tratamiento[];
+  especialidad?: string;
 }

@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { mergeMap } from 'rxjs';
+import { mergeMap, forkJoin, of } from 'rxjs';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Mascota } from '../../models/mascota.model';
+import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
 import { TratamientoService } from '../../service/tratamiento.service';
 import { FichaDatosComponent } from './components/ficha-datos/ficha-datos.component';
@@ -30,6 +31,8 @@ export class MascotasFichaComponent {
 
   private tratamientoService = inject(TratamientoService);
 
+  private duenoService = inject(DuenoService);
+
   private activatedRoute = inject(ActivatedRoute);
 
   nombreVeterinario: string = 'Carlos Gutiérrez';
@@ -40,21 +43,28 @@ export class MascotasFichaComponent {
 
   ngOnInit() {
     const id = Number(this.activatedRoute.snapshot.params['id']);
-    // Consultas encadenadas con mergeMap (patrón del video): primero la
-    // mascota y, con esa respuesta, su historial de tratamientos. Así se
-    // evita anidar un subscribe dentro de otro.
+    // Consultas encadenadas (patrón del video): primero la mascota y, con
+    // su id, el dueño (que ya no viaja anidado) y el historial de
+    // tratamientos en paralelo. Así se evita anidar un subscribe dentro de
+    // otro.
     this.mascotaService
       .obtenerMascotaPorId(id)
       .pipe(
         mergeMap((mascota) => {
           this.mascota = mascota;
-          // La colección de tratamientos va con @JsonIgnore: se pide aparte.
           this.mascota.tratamientos = [];
-          return this.tratamientoService.listarTratamientosPorMascota(mascota.id);
+          const dueno$ = mascota.duenoId
+            ? this.duenoService.obtenerPorId(mascota.duenoId)
+            : of(undefined);
+          return forkJoin({
+            dueno: dueno$,
+            tratamientos: this.tratamientoService.listarTratamientosPorMascota(mascota.id),
+          });
         }),
       )
-      .subscribe((tratamientos) => {
+      .subscribe(({ dueno, tratamientos }) => {
         if (this.mascota) {
+          this.mascota.dueno = dueno;
           this.mascota.tratamientos = tratamientos;
         }
       });

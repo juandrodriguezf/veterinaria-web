@@ -1,9 +1,7 @@
-import type { Mascota } from './mascota.model';
-
 /**
- * Cliente. El formulario lo usa como cuerpo (con contrasena y la colección
- * de mascotas vacía); la API lo devuelve sin contrasena y con el conteo de
- * mascotas (mascotaCount), que ya no hay que calcular cruzando listados.
+ * Cliente. La API lo devuelve sin contraseña (@JsonProperty WRITE_ONLY) y
+ * con el conteo de mascotas (mascotaCount) que ya trae el listado, sin
+ * tener que cruzar las mascotas. El formulario sí envía la contraseña.
  */
 export interface Dueno {
   id: number;
@@ -13,6 +11,5 @@ export interface Dueno {
   contrasena?: string;
   celular?: string;
   estado: string;
-  mascotas?: Mascota[];
   mascotaCount?: number;
 }

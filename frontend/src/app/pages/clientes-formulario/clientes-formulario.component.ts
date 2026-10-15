@@ -68,7 +68,6 @@ export class ClientesFormularioComponent {
         contrasena: formValue.contrasena ?? '',
         celular: (formValue.celular ?? '').trim(),
         estado: formValue.estado ?? 'Activo',
-        mascotas: [],
       })
       .subscribe(() => this.router.navigate(['/clientes']));
   }
