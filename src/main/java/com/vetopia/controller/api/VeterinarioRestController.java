@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.VeterinarioDTO;
 import com.vetopia.entities.Veterinario;
+import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.VeterinarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,16 +36,20 @@ public class VeterinarioRestController {
     @Autowired
     private VeterinarioService veterinarioService;
 
+    /** Traductor de entidades a DTO de respuesta. */
+    @Autowired
+    private DtoMapper dtoMapper;
+
     @Operation(summary = "Lista todos los veterinarios.")
     @GetMapping("/all")
-    public List<Veterinario> listarVeterinarios() {
-        return veterinarioService.listarVeterinarios();
+    public List<VeterinarioDTO> listarVeterinarios() {
+        return dtoMapper.toVeterinarioDTOs(veterinarioService.listarVeterinarios());
     }
 
     @Operation(summary = "Obtiene un veterinario por su identificador.")
     @GetMapping("/find/{id}")
-    public Veterinario obtenerVeterinario(@PathVariable Integer id) {
-        return veterinarioService.obtenerVeterinarioPorId(id);
+    public VeterinarioDTO obtenerVeterinario(@PathVariable Integer id) {
+        return dtoMapper.toVeterinarioDTO(veterinarioService.obtenerVeterinarioPorId(id));
     }
 
     @Operation(summary = "Registra un veterinario nuevo.")

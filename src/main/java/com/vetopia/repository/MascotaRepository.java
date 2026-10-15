@@ -27,6 +27,13 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
     List<Mascota> findByDuenoId(Integer duenoId);
 
     /**
+     * Cuenta las mascotas de un dueño sin traerlas todas. Spring Data
+     * implementa countBy... por la ruta mascota.dueno.id; lo usa el DTO
+     * del cliente para el conteo que muestra el listado de clientes.
+     */
+    long countByDuenoId(Integer duenoId);
+
+    /**
      * Mascotas cuyo nombre coincide exactamente con el término buscado,
      * sin distinguir mayúsculas/minúsculas (AC21: poder buscar una mascota
      * por su nombre). Es la consulta derivada del ejemplo del curso

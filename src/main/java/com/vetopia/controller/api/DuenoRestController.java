@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.DuenoDTO;
 import com.vetopia.entities.Dueno;
+import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.DuenoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,22 +39,26 @@ public class DuenoRestController {
     @Autowired
     private DuenoService duenoService;
 
+    /** Traductor de entidades a DTO de respuesta. */
+    @Autowired
+    private DtoMapper dtoMapper;
+
     @Operation(summary = "Lista todos los clientes.")
     @GetMapping("/all")
-    public List<Dueno> listarDuenos() {
-        return duenoService.listarDuenos();
+    public List<DuenoDTO> listarDuenos() {
+        return dtoMapper.toDuenoDTOs(duenoService.listarDuenos());
     }
 
     @Operation(summary = "Obtiene un cliente por su identificador.")
     @GetMapping("/find/{id}")
-    public Dueno obtenerDueno(@PathVariable Integer id) {
-        return duenoService.obtenerDuenoPorId(id);
+    public DuenoDTO obtenerDueno(@PathVariable Integer id) {
+        return dtoMapper.toDuenoDTO(duenoService.obtenerDuenoPorId(id));
     }
 
     @Operation(summary = "Busca clientes por nombre (coincidencia exacta, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
-    public List<Dueno> buscarPorNombre(@PathVariable String nombre) {
-        return duenoService.buscarPorNombre(nombre);
+    public List<DuenoDTO> buscarPorNombre(@PathVariable String nombre) {
+        return dtoMapper.toDuenoDTOs(duenoService.buscarPorNombre(nombre));
     }
 
     @Operation(summary = "Crea un cliente (valida cédula y correo únicos).")

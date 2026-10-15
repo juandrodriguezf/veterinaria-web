@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.AdministradorDTO;
 import com.vetopia.entities.Administrador;
+import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.AdministradorService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,16 +35,20 @@ public class AdministradorRestController {
     @Autowired
     private AdministradorService administradorService;
 
+    /** Traductor de entidades a DTO de respuesta. */
+    @Autowired
+    private DtoMapper dtoMapper;
+
     @Operation(summary = "Lista todos los administradores.")
     @GetMapping("/all")
-    public List<Administrador> listarAdministradores() {
-        return administradorService.listarAdministradores();
+    public List<AdministradorDTO> listarAdministradores() {
+        return dtoMapper.toAdministradorDTOs(administradorService.listarAdministradores());
     }
 
     @Operation(summary = "Obtiene un administrador por su identificador.")
     @GetMapping("/find/{id}")
-    public Administrador obtenerAdministrador(@PathVariable Integer id) {
-        return administradorService.obtenerAdministradorPorId(id);
+    public AdministradorDTO obtenerAdministrador(@PathVariable Integer id) {
+        return dtoMapper.toAdministradorDTO(administradorService.obtenerAdministradorPorId(id));
     }
 
     @Operation(summary = "Registra un administrador nuevo.")

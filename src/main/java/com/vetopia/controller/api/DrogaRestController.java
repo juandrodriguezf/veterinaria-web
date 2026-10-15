@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.DrogaDTO;
 import com.vetopia.entities.Droga;
+import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.DrogaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,16 +37,20 @@ public class DrogaRestController {
     @Autowired
     private DrogaService drogaService;
 
+    /** Traductor de entidades a DTO de respuesta. */
+    @Autowired
+    private DtoMapper dtoMapper;
+
     @Operation(summary = "Lista todas las drogas del inventario.")
     @GetMapping("/all")
-    public List<Droga> listarDrogas() {
-        return drogaService.listarDrogas();
+    public List<DrogaDTO> listarDrogas() {
+        return dtoMapper.toDrogaDTOs(drogaService.listarDrogas());
     }
 
     @Operation(summary = "Obtiene una droga por su identificador.")
     @GetMapping("/find/{id}")
-    public Droga obtenerDroga(@PathVariable Integer id) {
-        return drogaService.obtenerDrogaPorId(id);
+    public DrogaDTO obtenerDroga(@PathVariable Integer id) {
+        return dtoMapper.toDrogaDTO(drogaService.obtenerDrogaPorId(id));
     }
 
     @Operation(summary = "Registra una droga nueva en el inventario.")
