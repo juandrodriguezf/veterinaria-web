@@ -84,9 +84,9 @@
         <div class="bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-8 mt-portal-stack-lg">
           <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface mb-1">Historial de Tratamientos</h2>
           <p class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant mb-6">Medicamentos suministrados y médico tratante.</p>
-          @if (m.tratamientos.length) {
+          @if (m.tratamientos?.length) {
             <ul class="divide-y divide-portal-surface-container-high">
-              @for (tratamiento of m.tratamientos; track $index) {
+              @for (tratamiento of m.tratamientos ?? []; track $index) {
                 <li class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-3 py-4">
                   <div>
                     <p class="font-portal-body-lg text-portal-body-lg font-bold text-portal-on-surface mb-1">Tratamiento con {{ tratamiento.droga.nombre }}</p>

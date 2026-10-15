@@ -1,6 +1,11 @@
-import type { Dueno } from './dueno.model';
+import type { DuenoResumen } from './dueno-resumen.model';
 import type { Tratamiento } from './tratamiento.model';
 
+/**
+ * Mascota tal como la devuelve la API. Los listados traen el resumen (sin
+ * dueño); la ficha trae el dueño resumido. El historial de tratamientos
+ * llega en una consulta aparte y el componente lo asigna.
+ */
 export interface Mascota {
   id: number;
   nombre: string;
@@ -13,7 +18,7 @@ export interface Mascota {
   color?: string;
   fechaIngreso?: string;
   enfermedad?: string;
-  dueno: Dueno;
+  dueno?: DuenoResumen;
   estado: string;
-  tratamientos: Tratamiento[];
+  tratamientos?: Tratamiento[];
 }

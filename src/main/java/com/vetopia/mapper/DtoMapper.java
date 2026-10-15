@@ -9,12 +9,16 @@ import com.vetopia.dto.AdministradorDTO;
 import com.vetopia.dto.DrogaDTO;
 import com.vetopia.dto.DrogaResumenDTO;
 import com.vetopia.dto.DuenoDTO;
+import com.vetopia.dto.DuenoResumenDTO;
+import com.vetopia.dto.MascotaDetalleDTO;
+import com.vetopia.dto.MascotaResumenDTO;
 import com.vetopia.dto.TratamientoDTO;
 import com.vetopia.dto.VeterinarioDTO;
 import com.vetopia.dto.VeterinarioResumenDTO;
 import com.vetopia.entities.Administrador;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
+import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.repository.MascotaRepository;
@@ -55,6 +59,62 @@ public class DtoMapper {
     /** Lista de dueños -> lista de DTO. */
     public List<DuenoDTO> toDuenoDTOs(List<Dueno> duenos) {
         return duenos.stream().map(this::toDuenoDTO).toList();
+    }
+
+    /** Dueño -> resumen (para anidar en la ficha de una mascota). */
+    public DuenoResumenDTO toDuenoResumenDTO(Dueno dueno) {
+        if (dueno == null) {
+            return null;
+        }
+        return new DuenoResumenDTO(
+                dueno.getId(),
+                dueno.getNombre(),
+                dueno.getCelular(),
+                dueno.getCorreo());
+    }
+
+    /** Mascota -> resumen (para los listados, sin anidar el dueño). */
+    public MascotaResumenDTO toMascotaResumenDTO(Mascota mascota) {
+        if (mascota == null) {
+            return null;
+        }
+        return new MascotaResumenDTO(
+                mascota.getId(),
+                mascota.getNombre(),
+                mascota.getEspecie(),
+                mascota.getRaza(),
+                mascota.getEdad(),
+                mascota.getSexo(),
+                mascota.getImagen(),
+                mascota.getPesoKg(),
+                mascota.getColor(),
+                mascota.getEstado());
+    }
+
+    /** Lista de mascotas -> lista de resúmenes. */
+    public List<MascotaResumenDTO> toMascotaResumenDTOs(List<Mascota> mascotas) {
+        return mascotas.stream().map(this::toMascotaResumenDTO).toList();
+    }
+
+    /** Mascota -> detalle (resumen + datos clínicos + dueño resumido). */
+    public MascotaDetalleDTO toMascotaDetalleDTO(Mascota mascota) {
+        if (mascota == null) {
+            return null;
+        }
+        return new MascotaDetalleDTO(
+                mascota.getId(),
+                mascota.getNombre(),
+                mascota.getEspecie(),
+                mascota.getRaza(),
+                mascota.getEdad(),
+                mascota.getSexo(),
+                mascota.getImagen(),
+                mascota.getPesoKg(),
+                mascota.getColor(),
+                mascota.getFechaIngreso(),
+                mascota.getEnfermedad(),
+                mascota.getEstado(),
+                toDuenoResumenDTO(mascota.getDueno()));
     }
 
     /** Droga -> DTO completo (inventario, sin colecciones anidadas). */

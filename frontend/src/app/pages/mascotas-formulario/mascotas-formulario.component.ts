@@ -63,7 +63,7 @@ export class MascotasFormularioComponent {
       pesoKg: mascota.pesoKg ?? null,
       color: mascota.color ?? '',
       imagen: mascota.imagen ?? '',
-      dueno: `${mascota.dueno.id}`,
+      dueno: mascota.dueno ? `${mascota.dueno.id}` : '',
       estado: mascota.estado,
     });
   }
