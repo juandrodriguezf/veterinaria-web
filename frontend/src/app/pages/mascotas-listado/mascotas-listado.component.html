@@ -24,23 +24,14 @@
       <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
         <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
         <div class="flex items-center gap-4">
-          @if (!cargando) {
-            <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
-          }
+          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
           <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/mascotas/new">
             Agregar mascota
             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">pets</span>
           </a>
         </div>
       </div>
-      @if (cargando) {
-        <div class="px-6 py-16 text-center">
-          <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-portal-outline-variant animate-spin" style="font-variation-settings: 'FILL' 0;">progress_activity</span>
-          <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">Cargando mascotas…</p>
-        </div>
-      } @else {
-        <app-mascota-tabla (mascotaSeleccionada)="alternarEstado($event)" [mascotas]="mascotas" [nombre]="nombre"></app-mascota-tabla>
-      }
+      <app-mascota-tabla (mascotaSeleccionada)="alternarEstado($event)" [mascotas]="mascotas" [nombre]="nombre"></app-mascota-tabla>
     </section>
   </main>
 

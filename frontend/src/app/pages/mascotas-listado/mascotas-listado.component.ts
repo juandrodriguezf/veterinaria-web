@@ -30,23 +30,16 @@ export class MascotasListadoComponent {
 
   nombre: string = '';
 
-  cargando = false;
-
   ngOnInit() {
     this.cargar();
   }
 
   /** Carga el listado completo o el filtrado por nombre (según el término). */
   cargar() {
-    this.cargando = true;
     const peticion = this.nombre.trim()
       ? this.mascotaService.buscarPorNombre(this.nombre)
       : this.mascotaService.listarMascotas();
-    peticion.subscribe({
-      next: (data) => (this.mascotas = data),
-      error: () => (this.cargando = false),
-      complete: () => (this.cargando = false),
-    });
+    peticion.subscribe((data) => (this.mascotas = data));
   }
 
   buscar() {

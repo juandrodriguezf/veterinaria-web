@@ -30,22 +30,15 @@ export class ClientesListadoComponent {
 
   nombre: string = '';
 
-  cargando = false;
-
   ngOnInit() {
     this.cargar();
   }
 
   cargar() {
-    this.cargando = true;
     const peticion = this.nombre.trim()
       ? this.duenoService.buscarPorNombre(this.nombre)
       : this.duenoService.listarDuenos();
-    peticion.subscribe({
-      next: (duenos) => (this.duenos = duenos),
-      error: () => (this.cargando = false),
-      complete: () => (this.cargando = false),
-    });
+    peticion.subscribe((duenos) => (this.duenos = duenos));
   }
 
   buscar() {
