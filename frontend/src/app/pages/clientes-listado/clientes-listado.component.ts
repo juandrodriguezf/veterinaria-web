@@ -32,6 +32,8 @@ export class ClientesListadoComponent {
 
   nombre: string = '';
 
+  cargando = false;
+
   /**
    * Caché de mascotas: la colección del dueño va con @JsonIgnore en el
    * backend, así que el contador de mascotas de la tabla se arma aquí
@@ -47,11 +49,15 @@ export class ClientesListadoComponent {
   }
 
   cargar() {
-    if (this.nombre.trim()) {
-      this.duenoService.buscarPorNombre(this.nombre).subscribe((duenos) => this.mostrar(duenos));
-    } else {
-      this.duenoService.listarDuenos().subscribe((duenos) => this.mostrar(duenos));
-    }
+    this.cargando = true;
+    const peticion = this.nombre.trim()
+      ? this.duenoService.buscarPorNombre(this.nombre)
+      : this.duenoService.listarDuenos();
+    peticion.subscribe({
+      next: (duenos) => this.mostrar(duenos),
+      error: () => (this.cargando = false),
+      complete: () => (this.cargando = false),
+    });
   }
 
   /** Adjunta a cada dueño sus mascotas (desde la caché) para el contador. */
