@@ -1,0 +1,58 @@
+<div [formGroup]="form()" class="bg-portal-surface-container-lowest p-8 rounded-portal-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-portal-outline-variant">
+  <div class="border-b border-portal-surface-container-highest pb-4 mb-6">
+    <div class="flex items-center gap-3">
+      <div class="w-5 h-5 bg-portal-primary rounded-full"></div>
+      <h2 class="text-portal-headline-lg font-portal-headline-lg text-portal-on-surface">Información del Cliente</h2>
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="cedula">Cédula (ID)</label>
+        <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="cedula" id="cedula" placeholder="e.g. 1234567890" type="text"/>
+        @if (form().get('cedula')?.touched && form().get('cedula')?.invalid) {
+          <small class="text-portal-error">La cédula es obligatoria.</small>
+        }
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="nombre">Nombre Completo</label>
+        <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="nombre" id="nombre" placeholder="e.g. Maria Gonzalez" type="text"/>
+        @if (form().get('nombre')?.touched && form().get('nombre')?.invalid) {
+          <small class="text-portal-error">El nombre del cliente es obligatorio.</small>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="correo">Email</label>
+        <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="correo" id="correo" placeholder="maria@example.com" type="email"/>
+        @if (form().get('correo')?.touched && form().get('correo')?.invalid) {
+          <small class="text-portal-error">El correo es obligatorio y debe ser válido.</small>
+        }
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="contrasena">Contraseña</label>
+        <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="contrasena" id="contrasena" placeholder="Credencial para el login del cliente" type="password"/>
+        <p class="font-portal-body-sm text-portal-body-sm text-portal-on-surface-variant">
+          Al editar, si deja este campo vacío se conserva la contraseña actual.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="celular">Número de Teléfono</label>
+        <input class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface placeholder:text-portal-on-surface-variant/60 focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="celular" id="celular" placeholder="+1 (555) 000-0000" type="tel"/>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest" for="estado">Estado</label>
+        <select class="w-full px-4 py-3 bg-portal-background rounded-portal border border-portal-outline-variant text-portal-on-surface focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent" formControlName="estado" id="estado">
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

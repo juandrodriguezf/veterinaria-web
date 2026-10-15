@@ -1,0 +1,27 @@
+<div class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-portal-on-surface/40 backdrop-blur-sm">
+  <div class="w-full max-w-md bg-portal-surface-container-lowest rounded-portal-xl shadow-[0px_25px_50px_-12px_rgba(0,0,0,0.25)] border border-portal-outline-variant/20 overflow-hidden">
+    <div class="p-8 flex flex-col items-center">
+      <div class="w-24 h-24 rounded-full bg-portal-primary-container flex items-center justify-center mb-8">
+        <span class="material-symbols-outlined text-5xl text-portal-primary">check_circle</span>
+      </div>
+      <h2 class="font-portal-headline-xl-mobile text-portal-headline-xl-mobile text-portal-on-surface text-center mb-4">Tratamiento Aplicado</h2>
+      <div class="text-center mb-8">
+        <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+          Se ha descontado <span class="font-semibold text-portal-on-surface">1</span> unidad de <span class="font-semibold text-portal-on-surface">{{ droga().nombre }}</span>.
+        </p>
+        <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface font-semibold mt-1">
+          Stock restante: {{ droga().unidadesDisponibles }} unidades.
+        </p>
+      </div>
+      <div class="w-full max-w-sm flex flex-col gap-2">
+        <a class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-portal-primary-container px-6 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" [routerLink]="['/mascotas', mascotaId()]">
+          Volver a la Ficha
+          <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </a>
+        <button (click)="cerrar.emit()" class="w-full py-4 px-6 border border-portal-outline text-portal-on-surface font-portal-button text-portal-button uppercase text-center rounded-full hover:bg-portal-surface-container-high transition-colors" type="button">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

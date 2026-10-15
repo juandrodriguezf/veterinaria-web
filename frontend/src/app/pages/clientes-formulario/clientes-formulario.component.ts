@@ -5,10 +5,11 @@ import { FooterPortalComponent } from '../../components/footer-portal/footer-por
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Dueno } from '../../models/dueno.model';
 import { DuenoService } from '../../service/dueno.service';
+import { ClienteCamposComponent } from './components/cliente-campos/cliente-campos.component';
 
 @Component({
   selector: 'app-clientes-formulario',
-  imports: [FooterPortalComponent, PortalHeaderComponent, ReactiveFormsModule, RouterLink],
+  imports: [FooterPortalComponent, PortalHeaderComponent, ClienteCamposComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './clientes-formulario.component.html',
   styleUrl: './clientes-formulario.component.scss',
 })

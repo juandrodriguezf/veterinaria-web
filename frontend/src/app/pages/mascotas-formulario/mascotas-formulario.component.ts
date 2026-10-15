@@ -7,10 +7,11 @@ import { Dueno } from '../../models/dueno.model';
 import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
+import { MascotaCamposComponent } from './components/mascota-campos/mascota-campos.component';
 
 @Component({
   selector: 'app-mascotas-formulario',
-  imports: [FooterPortalComponent, PortalHeaderComponent, ReactiveFormsModule, RouterLink],
+  imports: [FooterPortalComponent, PortalHeaderComponent, MascotaCamposComponent, ReactiveFormsModule, RouterLink],
   templateUrl: './mascotas-formulario.component.html',
   styleUrl: './mascotas-formulario.component.scss',
 })

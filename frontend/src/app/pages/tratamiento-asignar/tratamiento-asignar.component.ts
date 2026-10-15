@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Droga } from '../../models/droga.model';
@@ -8,10 +7,12 @@ import { Mascota } from '../../models/mascota.model';
 import { DrogaService } from '../../service/droga.service';
 import { MascotaService } from '../../service/mascota.service';
 import { TratamientoService } from '../../service/tratamiento.service';
+import { TratamientoFormComponent } from './components/tratamiento-form/tratamiento-form.component';
+import { TratamientoModalComponent } from './components/tratamiento-modal/tratamiento-modal.component';
 
 @Component({
   selector: 'app-tratamiento-asignar',
-  imports: [ReactiveFormsModule, RouterLink, FooterPortalComponent, PortalHeaderComponent],
+  imports: [FooterPortalComponent, PortalHeaderComponent, TratamientoFormComponent, TratamientoModalComponent],
   templateUrl: './tratamiento-asignar.component.html',
   styleUrl: './tratamiento-asignar.component.scss',
 })

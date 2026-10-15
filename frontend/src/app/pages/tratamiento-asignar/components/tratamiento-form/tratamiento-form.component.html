@@ -1,0 +1,54 @@
+<form (ngSubmit)="aplicar.emit()" [formGroup]="form()" class="bg-portal-surface-container-lowest p-6 md:p-10 rounded-portal-xl shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-portal-surface-container-highest">
+  <div class="flex items-center justify-between p-4 bg-portal-surface-container-low rounded-full border border-portal-surface-container-highest">
+    <div>
+      <span class="font-portal-label-md text-portal-label-md text-portal-on-surface-variant uppercase tracking-widest">Veterinario Responsable</span>
+      <p class="font-portal-body-md text-portal-body-md text-portal-on-surface font-semibold">{{ nombreVeterinario() }}</p>
+    </div>
+    <div class="p-2 bg-portal-primary-container/30 rounded-full">
+      <span class="material-symbols-outlined text-portal-primary text-xl">verified</span>
+    </div>
+  </div>
+
+  <div class="mt-6 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="font-portal-body-md text-portal-body-md text-portal-on-surface" for="mascotaId">Selector de Mascota</label>
+        <select class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
+                formControlName="mascotaId" id="mascotaId">
+          <option value="">Seleccionar paciente activo...</option>
+          @for (mascota of mascotas(); track $index) {
+            <option [value]="mascota.id">{{ mascota.nombre }}</option>
+          }
+        </select>
+        <p class="text-xs text-portal-on-surface-variant">Solo aparecen las mascotas activas (hospitalizadas).</p>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="font-portal-body-md text-portal-body-md text-portal-on-surface" for="fecha">Fecha de Aplicación</label>
+        <input class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
+               formControlName="fecha" id="fecha" type="date"/>
+      </div>
+    </div>
+
+    <hr class="border-portal-surface-container-highest"/>
+
+    <div class="flex flex-col gap-1">
+      <label class="font-portal-body-md text-portal-body-md text-portal-on-surface" for="drogaId">Medicamento / Droga</label>
+      <select class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
+              formControlName="drogaId" id="drogaId">
+        <option value="">Seleccionar medicamento...</option>
+        @for (droga of drogas(); track $index) {
+          <option [value]="droga.id">{{ droga.nombre }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-portal-surface-container-highest">
+      <a class="px-8 py-4 rounded-full border border-portal-surface-container-highest text-portal-on-surface font-portal-button text-portal-button uppercase hover:bg-portal-surface-container-high transition-colors" routerLink="/mascotas">Cancelar</a>
+      <button [disabled]="!form().valid" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-8 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary disabled:opacity-60" type="submit">
+        Aplicar Tratamiento
+        <span class="material-symbols-outlined text-lg">check_circle</span>
+      </button>
+    </div>
+  </div>
+</form>
