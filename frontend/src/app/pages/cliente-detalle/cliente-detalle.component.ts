@@ -8,10 +8,12 @@ import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
 import { TratamientoService } from '../../service/tratamiento.service';
+import { DetalleHistorialComponent } from './components/detalle-historial/detalle-historial.component';
+import { DetalleMascotaComponent } from './components/detalle-mascota/detalle-mascota.component';
 
 @Component({
   selector: 'app-cliente-detalle',
-  imports: [RouterLink, FooterPortalComponent, ClienteHeaderComponent],
+  imports: [RouterLink, FooterPortalComponent, ClienteHeaderComponent, DetalleMascotaComponent, DetalleHistorialComponent],
   templateUrl: './cliente-detalle.component.html',
   styleUrl: './cliente-detalle.component.scss',
 })
@@ -59,22 +61,6 @@ export class ClienteDetalleComponent {
           this.mensajeError = 'No encontramos ninguna mascota registrada a tu nombre.';
         },
       });
-  }
-
-  descripcionEdad(mascota: Mascota) {
-    if (mascota.edad === undefined) {
-      return 'No registrada';
-    }
-    if (mascota.edad < 1) {
-      const meses = Math.max(1, Math.round(mascota.edad * 12));
-      return meses + (meses === 1 ? ' mes' : ' meses');
-    }
-    const anios = Math.floor(mascota.edad);
-    return anios + (anios === 1 ? ' año' : ' años');
-  }
-
-  descripcionPeso(mascota: Mascota) {
-    return mascota.pesoKg === undefined ? 'No registrado' : mascota.pesoKg.toFixed(1) + ' kg';
   }
 
   numeroPaciente(mascota: Mascota) {

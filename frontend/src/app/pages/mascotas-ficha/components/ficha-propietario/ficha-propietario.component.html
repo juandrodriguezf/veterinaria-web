@@ -1,0 +1,23 @@
+<div class="p-8 h-full min-w-0 overflow-hidden bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+  <div class="flex items-center gap-3 pb-4 mb-4 border-b border-portal-surface-container-high">
+    <span class="flex h-11 w-11 items-center justify-center rounded-full bg-portal-surface-container-high text-portal-on-surface-variant">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+    </span>
+    <h3 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Propietario</h3>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Nombre</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface break-words">{{ dueno()?.nombre }}</dd>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Teléfono</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface break-words">{{ dueno()?.celular }}</dd>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Email</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg text-portal-on-surface break-words">{{ dueno()?.correo }}</dd>
+    </div>
+  </div>
+  <a class="mt-6 inline-flex w-full items-center justify-center rounded-full border border-portal-outline px-8 py-2 font-portal-button text-portal-button uppercase tracking-widest text-portal-on-surface transition-colors hover:bg-portal-surface-container-low" href="#">Ver Perfil Completo</a>
+</div>

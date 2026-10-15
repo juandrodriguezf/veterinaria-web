@@ -1,0 +1,36 @@
+<div class="flex flex-wrap items-center justify-between gap-portal-stack-md mb-portal-stack-lg">
+  <div>
+    <h1 class="font-portal-headline-xl text-portal-headline-xl text-portal-on-surface mb-2">Ficha Clínica: {{ mascota().nombre }}</h1>
+    <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">Registro médico completo y vinculación de propietario.</p>
+  </div>
+  <div class="flex items-center gap-4 p-4 bg-portal-surface-container-lowest rounded-full border border-portal-surface-container-highest shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+    <div>
+      <p class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Estado del Paciente</p>
+      @if (mascota().estado === 'Activo') {
+        <span class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container/20 px-4 py-1.5 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-primary">
+          <span class="inline-block h-2 w-2 rounded-full bg-portal-primary"></span>
+          Activo
+        </span>
+      } @else {
+        <span class="inline-flex items-center gap-2 rounded-full bg-portal-error-container/20 px-4 py-1.5 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-error">
+          <span class="inline-block h-2 w-2 rounded-full bg-portal-error"></span>
+          Inactivo
+        </span>
+      }
+    </div>
+    <div class="pl-4">
+      <button (click)="alternar.emit()" class="flex items-center gap-2" type="button">
+        @if (mascota().estado === 'Activo') {
+          <span class="relative inline-flex h-[24px] w-[44px] items-center rounded-full bg-portal-primary">
+            <span class="absolute right-[2px] inline-block h-5 w-5 rounded-full bg-white shadow"></span>
+          </span>
+        } @else {
+          <span class="relative inline-flex h-[24px] w-[44px] items-center rounded-full bg-portal-surface-container-high">
+            <span class="absolute left-[2px] inline-block h-5 w-5 rounded-full bg-portal-on-surface shadow"></span>
+          </span>
+        }
+        <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Dar de alta / Reingresar</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="flex flex-col sm:flex-row items-start min-w-0 gap-6 p-8 h-full overflow-hidden bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
+  @if (mascota().imagen) {
+    <img [alt]="'Foto de ' + mascota().nombre" class="h-32 w-32 rounded-full border border-portal-surface-container-highest object-cover shadow-[0px_1px_2px_rgba(0,0,0,0.05)]" [src]="mascota().imagen"/>
+  } @else {
+    <div aria-label="Sin fotografía disponible" class="flex h-32 w-32 shrink-0 items-center justify-center rounded-full bg-portal-surface-container-high text-portal-outline shadow-[0px_1px_2px_rgba(0,0,0,0.05)]" role="img">
+      <span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 0;">pets</span>
+    </div>
+  }
+  <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-8">
+    <div class="col-span-2">
+      <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface flex items-center gap-2">{{ mascota().nombre }}</h2>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Especie / Raza</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().especie }} / {{ mascota().raza }}</dd>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Edad</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().edad | edadDescripcion }}</dd>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Peso Actual</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().pesoKg | pesoDescripcion }}</dd>
+    </div>
+    <div>
+      <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Sexo</dt>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().sexo || 'No registrado' }}</dd>
+    </div>
+  </div>
+</div>

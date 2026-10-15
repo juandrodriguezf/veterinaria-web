@@ -1,10 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../../models/mascota.model';
+import { EdadDescripcionPipe } from '../../../../pipes/edad-descripcion.pipe';
 
 @Component({
   selector: 'app-mascota-tabla',
-  imports: [RouterLink],
+  imports: [RouterLink, EdadDescripcionPipe],
   templateUrl: './mascota-tabla.component.html',
   styleUrl: './mascota-tabla.component.scss',
 })
@@ -21,17 +22,5 @@ export class MascotaTablaComponent {
 
   numeroPaciente(mascota: Mascota) {
     return mascota.id.toString().padStart(4, '0');
-  }
-
-  descripcionEdad(mascota: Mascota) {
-    if (mascota.edad === undefined) {
-      return 'No registrada';
-    }
-    if (mascota.edad < 1) {
-      const meses = Math.max(1, Math.round(mascota.edad * 12));
-      return meses + (meses === 1 ? ' mes' : ' meses');
-    }
-    const anios = Math.floor(mascota.edad);
-    return anios + (anios === 1 ? ' año' : ' años');
   }
 }

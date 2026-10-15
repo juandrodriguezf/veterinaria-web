@@ -6,10 +6,22 @@ import { PortalHeaderComponent } from '../../components/portal-header/portal-hea
 import { Mascota } from '../../models/mascota.model';
 import { MascotaService } from '../../service/mascota.service';
 import { TratamientoService } from '../../service/tratamiento.service';
+import { FichaDatosComponent } from './components/ficha-datos/ficha-datos.component';
+import { FichaEncabezadoComponent } from './components/ficha-encabezado/ficha-encabezado.component';
+import { FichaHistorialComponent } from './components/ficha-historial/ficha-historial.component';
+import { FichaPropietarioComponent } from './components/ficha-propietario/ficha-propietario.component';
 
 @Component({
   selector: 'app-mascotas-ficha',
-  imports: [FooterPortalComponent, PortalHeaderComponent, RouterLink],
+  imports: [
+    RouterLink,
+    FooterPortalComponent,
+    PortalHeaderComponent,
+    FichaEncabezadoComponent,
+    FichaDatosComponent,
+    FichaPropietarioComponent,
+    FichaHistorialComponent,
+  ],
   templateUrl: './mascotas-ficha.component.html',
   styleUrl: './mascotas-ficha.component.scss',
 })
@@ -46,26 +58,6 @@ export class MascotasFichaComponent {
           this.mascota.tratamientos = tratamientos;
         }
       });
-  }
-
-  descripcionEdad(mascota: Mascota) {
-    if (mascota.edad === undefined) {
-      return 'No registrada';
-    }
-    if (mascota.edad < 1) {
-      const meses = Math.max(1, Math.round(mascota.edad * 12));
-      return meses + (meses === 1 ? ' mes' : ' meses');
-    }
-    const anios = Math.floor(mascota.edad);
-    return anios + (anios === 1 ? ' año' : ' años');
-  }
-
-  descripcionPeso(mascota: Mascota) {
-    return mascota.pesoKg === undefined ? 'No registrado' : mascota.pesoKg.toFixed(1) + ' kg';
-  }
-
-  descripcionSexo(mascota: Mascota) {
-    return mascota.sexo ? mascota.sexo : 'No registrado';
   }
 
   alternarEstado() {

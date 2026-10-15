@@ -41,7 +41,7 @@
           </td>
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.especie }}</td>
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ mascota.raza }}</td>
-          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ descripcionEdad(mascota) }}</td>
+          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.edad | edadDescripcion }}</td>
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.sexo }}</td>
           <td class="px-6 py-4">
             <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
