@@ -1,11 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../../models/mascota.model';
-import { EdadDescripcionPipe } from '../../../../pipes/edad-descripcion.pipe';
+import { descripcionEdad } from '../../../../utils/mascota.utils';
 
 @Component({
   selector: 'app-mascota-tabla',
-  imports: [RouterLink, EdadDescripcionPipe],
+  imports: [RouterLink],
   templateUrl: './mascota-tabla.component.html',
   styleUrl: './mascota-tabla.component.scss',
 })
@@ -15,6 +15,8 @@ export class MascotaTablaComponent {
   nombre = input<string>();
 
   mascotaSeleccionada = output<Mascota>();
+
+  readonly descripcionEdad = descripcionEdad;
 
   seleccionar(mascota: Mascota) {
     this.mascotaSeleccionada.emit(mascota);

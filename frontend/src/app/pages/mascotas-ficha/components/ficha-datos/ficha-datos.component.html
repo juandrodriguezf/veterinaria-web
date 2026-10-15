@@ -16,11 +16,11 @@
     </div>
     <div>
       <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Edad</dt>
-      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().edad | edadDescripcion }}</dd>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ descripcionEdad(mascota().edad) }}</dd>
     </div>
     <div>
       <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Peso Actual</dt>
-      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().pesoKg | pesoDescripcion }}</dd>
+      <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ descripcionPeso(mascota().pesoKg) }}</dd>
     </div>
     <div>
       <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Sexo</dt>

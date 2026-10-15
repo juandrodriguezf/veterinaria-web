@@ -1,7 +1,6 @@
 import { Component, input } from '@angular/core';
 import { Mascota } from '../../../../models/mascota.model';
-import { EdadDescripcionPipe } from '../../../../pipes/edad-descripcion.pipe';
-import { PesoDescripcionPipe } from '../../../../pipes/peso-descripcion.pipe';
+import { descripcionEdad, descripcionPeso } from '../../../../utils/mascota.utils';
 
 /**
  * Tarjeta con los datos de la mascota (foto, especie/raza, edad, peso y
@@ -9,9 +8,12 @@ import { PesoDescripcionPipe } from '../../../../pipes/peso-descripcion.pipe';
  */
 @Component({
   selector: 'app-ficha-datos',
-  imports: [EdadDescripcionPipe, PesoDescripcionPipe],
   templateUrl: './ficha-datos.component.html',
 })
 export class FichaDatosComponent {
   mascota = input.required<Mascota>();
+
+  readonly descripcionEdad = descripcionEdad;
+
+  readonly descripcionPeso = descripcionPeso;
 }
