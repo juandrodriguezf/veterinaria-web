@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,6 +60,7 @@ public class Dueno {
     private String correo;
 
     /** Contraseña de acceso del dueño. */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 255)
     private String contrasena;
 
@@ -79,4 +82,13 @@ public class Dueno {
     @OneToMany(mappedBy = "dueno")
     @Builder.Default
     private List<Mascota> mascotas = new ArrayList<>();
+
+    /**
+     * Número de mascotas del dueño para el listado de clientes. No es una
+     * columna (JPA la ignora con @Transient): la calcula el service con un
+     * count() y se serializa como dato de apoyo, de modo que el listado no
+     * tenga que traer todas las mascotas solo para contarlas.
+     */
+    @Transient
+    private Integer mascotaCount;
 }

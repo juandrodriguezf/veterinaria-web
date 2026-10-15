@@ -7,6 +7,7 @@ import java.util.List;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -98,6 +99,7 @@ public class Mascota {
      * elimina, el service retira antes sus mascotas (borrado en cascada
      * por capas, como en el ejemplo del docente).
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
     @JoinColumn(name = "dueno_id", nullable = false)
     private Dueno dueno;
@@ -146,5 +148,16 @@ public class Mascota {
         }
         long anios = (long) Math.floor(edad);
         return anios + (anios == 1 ? " año" : " años");
+    }
+
+    /**
+     * Expone SOLO el id del dueño en la API: el objeto Dueno completo viaja
+     * como WRITE_ONLY (se acepta al crear/editar, pero no se serializa),
+     * así el listado no arrastra al cliente y la ficha lo pide aparte.
+     * Al leerlo desde otras clases Java sigue usándose getDueno().
+     */
+    @JsonProperty("duenoId")
+    public Integer getDuenoId() {
+        return dueno != null ? dueno.getId() : null;
     }
 }

@@ -94,4 +94,11 @@ public interface MascotaService {
      * mascotas activas.
      */
     List<Mascota> listarMascotasActivas();
+
+    /**
+     * Cuenta las mascotas del dueño indicado sin traerlas todas (consulta
+     * derivada countBy...). Lo usa el listado de clientes para mostrar el
+     * número de mascotas sin cruzar el listado completo.
+     */
+    long contarMascotasPorDueno(Integer duenoId);
 }

@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vetopia.dto.TratamientoDTO;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Tratamiento;
-import com.vetopia.mapper.DtoMapper;
 import com.vetopia.service.TratamientoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,26 +38,22 @@ public class TratamientoRestController {
     @Autowired
     private TratamientoService tratamientoService;
 
-    /** Traductor de entidades a DTO de respuesta. */
-    @Autowired
-    private DtoMapper dtoMapper;
-
     @Operation(summary = "Lista todos los tratamientos.")
     @GetMapping("/all")
-    public List<TratamientoDTO> listarTratamientos() {
-        return dtoMapper.toTratamientoDTOs(tratamientoService.listarTratamientos());
+    public List<Tratamiento> listarTratamientos() {
+        return tratamientoService.listarTratamientos();
     }
 
     @Operation(summary = "Obtiene un tratamiento por su identificador.")
     @GetMapping("/find/{id}")
-    public TratamientoDTO obtenerTratamiento(@PathVariable Integer id) {
-        return dtoMapper.toTratamientoDTO(tratamientoService.obtenerTratamientoPorId(id));
+    public Tratamiento obtenerTratamiento(@PathVariable Integer id) {
+        return tratamientoService.obtenerTratamientoPorId(id);
     }
 
     @Operation(summary = "Lista el historial de tratamientos de una mascota.")
     @GetMapping("/byMascota/{mascotaId}")
-    public List<TratamientoDTO> listarPorMascota(@PathVariable Integer mascotaId) {
-        return dtoMapper.toTratamientoDTOs(tratamientoService.listarTratamientosPorMascota(mascotaId));
+    public List<Tratamiento> listarPorMascota(@PathVariable Integer mascotaId) {
+        return tratamientoService.listarTratamientosPorMascota(mascotaId);
     }
 
     @Operation(summary = "Asigna un tratamiento (valida mascota activa y stock; descuenta inventario).")

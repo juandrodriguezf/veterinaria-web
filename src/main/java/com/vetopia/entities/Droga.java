@@ -50,10 +50,12 @@ public class Droga {
     private String nombre;
 
     /** Precio de compra del medicamento. */
+    @JsonIgnore
     @Column(nullable = false)
     private Double precioCompra;
 
     /** Precio de venta del medicamento. */
+    @JsonIgnore
     @Column(nullable = false)
     private Double precioVenta;
 
@@ -62,6 +64,7 @@ public class Droga {
     private Integer unidadesDisponibles;
 
     /** Unidades vendidas acumuladas. */
+    @JsonIgnore
     @Column(nullable = false)
     private Integer unidadesVendidas;
 

@@ -21,17 +21,20 @@ import com.vetopia.entities.Mascota;
 public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
 
     /**
-     * Mascotas de un dueño (Dueno 1 -- 0..* Mascota). Spring Data recorre
-     * la ruta mascota.dueno.id desde el nombre del método.
+     * Mascotas de un dueño (Dueno 1 -- 0..* Mascota). El guion bajo
+     * (findByDueno_Id) separa explícitamente la ruta mascota.dueno.id: la
+     * entidad Mascota también expone un getter getDuenoId() para la API
+     * (JSON), así que sin el "_" Spring Data confundiría "duenoId" con una
+     * propiedad inexistente en vez de recorrer la relación.
      */
-    List<Mascota> findByDuenoId(Integer duenoId);
+    List<Mascota> findByDueno_Id(Integer duenoId);
 
     /**
-     * Cuenta las mascotas de un dueño sin traerlas todas. Spring Data
-     * implementa countBy... por la ruta mascota.dueno.id; lo usa el DTO
-     * del cliente para el conteo que muestra el listado de clientes.
+     * Cuenta las mascotas de un dueño sin traerlas todas (countByDueno_Id
+     * recorre la ruta mascota.dueno.id); lo usa el conteo que muestra el
+     * listado de clientes.
      */
-    long countByDuenoId(Integer duenoId);
+    long countByDueno_Id(Integer duenoId);
 
     /**
      * Mascotas cuyo nombre coincide exactamente con el término buscado,

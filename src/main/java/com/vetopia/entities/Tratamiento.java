@@ -2,7 +2,7 @@ package com.vetopia.entities;
 
 import java.time.LocalDate;
 
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,6 +55,7 @@ public class Tratamiento {
      * desvincula sus tratamientos en lugar de borrarlos, de modo que el
      * historial clinico se conserva aunque quede sin mascota.
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
     @JoinColumn(name = "mascota_id", nullable = true)
     private Mascota mascota;

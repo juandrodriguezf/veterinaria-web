@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,14 +50,17 @@ public class Veterinario {
     private Integer id;
 
     /** Número de documento de identidad del veterinario (único). */
+    @JsonIgnore
     @Column(nullable = false, unique = true, length = 20)
     private String cedula;
 
     /** Contraseña de acceso del veterinario. */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 255)
     private String contrasena;
 
     /** Correo electrónico del veterinario (único; es el usuario del login). */
+    @JsonIgnore
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
 
@@ -65,6 +69,7 @@ public class Veterinario {
     private String especialidad;
 
     /** Cantidad de atenciones acumuladas por el veterinario. */
+    @JsonIgnore
     @Column(nullable = false)
     private Integer numeroAtenciones;
 
@@ -73,10 +78,12 @@ public class Veterinario {
     private String nombre;
 
     /** Estado del veterinario (Activo / Inactivo). */
+    @JsonIgnore
     @Column(nullable = false, length = 20)
     private String estado;
 
     /** URL de la foto del veterinario (dato opcional). */
+    @JsonIgnore
     @Column(length = 500)
     private String urlFoto;
 
@@ -85,6 +92,7 @@ public class Veterinario {
      * Mientras no exista flujo de administradores en el portal queda en
      * null y la columna admite nulo.
      */
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "administrador_id")
     private Administrador administrador;

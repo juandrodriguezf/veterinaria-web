@@ -179,7 +179,7 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la consulta.");
         }
-        return mascotaRepository.findByDuenoId(duenoId);
+        return mascotaRepository.findByDueno_Id(duenoId);
     }
 
     /**
@@ -226,5 +226,18 @@ public class MascotaServiceImpl implements MascotaService {
     @Override
     public List<Mascota> listarMascotasActivas() {
         return List.copyOf(mascotaRepository.findByEstado("Activo"));
+    }
+
+    /**
+     * {@inheritDoc}
+     * Consulta derivada countByDuenoId: cuenta en la base sin materializar
+     * las mascotas, para el conteo que muestra el listado de clientes.
+     */
+    @Override
+    public long contarMascotasPorDueno(Integer duenoId) {
+        if (duenoId == null) {
+            throw new IllegalArgumentException("No se especificó el dueño del conteo.");
+        }
+        return mascotaRepository.countByDueno_Id(duenoId);
     }
 }

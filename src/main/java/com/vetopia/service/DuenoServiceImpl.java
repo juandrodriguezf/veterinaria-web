@@ -34,7 +34,9 @@ public class DuenoServiceImpl implements DuenoService {
 
     @Override
     public List<Dueno> listarDuenos() {
-        return List.copyOf(duenoRepository.findAll());
+        List<Dueno> duenos = List.copyOf(duenoRepository.findAll());
+        duenos.forEach(this::cargarConteoMascotas);
+        return duenos;
     }
 
     /**
@@ -49,7 +51,9 @@ public class DuenoServiceImpl implements DuenoService {
         if (nombre == null || nombre.isBlank()) {
             return listarDuenos();
         }
-        return duenoRepository.findByNombreIgnoreCase(nombre.trim());
+        List<Dueno> duenos = duenoRepository.findByNombreIgnoreCase(nombre.trim());
+        duenos.forEach(this::cargarConteoMascotas);
+        return duenos;
     }
 
     @Override
@@ -65,9 +69,22 @@ public class DuenoServiceImpl implements DuenoService {
         }
         // Si el id válido no existe en la base, el manejo global de
         // errores presenta la página amable con la causa exacta.
-        return duenoRepository.findById(id).orElseThrow(
+        Dueno dueno = duenoRepository.findById(id).orElseThrow(
                 () -> new RecursoNoEncontradoException(
                         "No encontramos ningún cliente registrado con el identificador \"" + id + "\"."));
+        cargarConteoMascotas(dueno);
+        return dueno;
+    }
+
+    /**
+     * Completa el conteo de mascotas con el que el listado de clientes
+     * muestra "N mascotas" sin tener que traer todas las mascotas. El dato
+     * vive en un campo @Transient del dueño; aquí se rellena con un count().
+     */
+    private void cargarConteoMascotas(Dueno dueno) {
+        if (dueno != null && dueno.getId() != null) {
+            dueno.setMascotaCount((int) mascotaService.contarMascotasPorDueno(dueno.getId()));
+        }
     }
 
     @Override
