@@ -11,6 +11,14 @@
           <app-ficha-propietario [dueno]="m.dueno"></app-ficha-propietario>
         </div>
 
+        <div class="flex justify-end mb-4">
+          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-6 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary"
+             [queryParams]="{ mascotaId: m.id }" routerLink="/tratamiento/asignar">
+            Asignar tratamiento
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">vaccines</span>
+          </a>
+        </div>
+
         <app-ficha-historial [tratamientos]="m.tratamientos"></app-ficha-historial>
       </section>
     } @else {

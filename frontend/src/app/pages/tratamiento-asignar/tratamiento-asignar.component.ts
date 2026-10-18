@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Droga } from '../../models/droga.model';
@@ -22,6 +23,8 @@ export class TratamientoAsignarComponent {
   private drogaService = inject(DrogaService);
 
   private tratamientoService = inject(TratamientoService);
+
+  private activatedRoute = inject(ActivatedRoute);
 
   nombreVeterinario = 'Carlos Gutiérrez';
 
@@ -54,9 +57,24 @@ export class TratamientoAsignarComponent {
 
   ngOnInit() {
     // Solo las mascotas activas (hospitalizadas) pueden recibir tratamiento.
-    this.mascotaService.listarMascotasActivas().subscribe((data) => (this.mascotas = data));
+    this.mascotaService.listarMascotasActivas().subscribe((data) => {
+      this.mascotas = data;
+      this.preseleccionarMascota();
+    });
     this.cargarDrogas();
     this.filtroMedicamento.valueChanges.subscribe(() => this.aplicarFiltroMedicamento());
+  }
+
+  /**
+   * Si se llegó desde la ficha de una mascota (query param mascotaId), la
+   * deja seleccionada en el formulario. Solo aplica si la mascota está
+   * activa, porque el selector únicamente ofrece mascotas hospitalizadas.
+   */
+  private preseleccionarMascota() {
+    const mascotaId = Number(this.activatedRoute.snapshot.queryParamMap.get('mascotaId'));
+    if (mascotaId && this.mascotas.some((mascota) => mascota.id === mascotaId)) {
+      this.form.patchValue({ mascotaId: String(mascotaId) });
+    }
   }
 
   /** Sin medicamentos con stock no hay nada que asignar: el formulario se bloquea. */
