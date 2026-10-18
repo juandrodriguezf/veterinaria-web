@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.vetopia.entities.Administrador;
@@ -28,8 +29,10 @@ import com.vetopia.repository.VeterinarioRepository;
  * de dueños está vacía, de modo que los datos capturados por el usuario
  * sobrevivan a los reinicios hasta que se decida recrear la base.
  *
- * Orden de siembra (respetando las FK): dueños -> mascotas -> drogas ->
- * veterinarios -> tratamientos -> Administrador.
+ * Orden de siembra (respetando las FK): dueños -> mascotas -> veterinarios
+ * -> tratamientos -> Administrador. Las drogas del inventario no se siembran
+ * aquí: las carga DrogaExcelLoader desde el Excel antes de que corra este
+ * cargador (@Order), y los tratamientos las referencian por nombre.
  *
  * A las 3 familias semilla originales (Ana/Pedro/María, con las
  * credenciales de prueba de los portales) se suman 50 clientes y 100
@@ -39,6 +42,7 @@ import com.vetopia.repository.VeterinarioRepository;
  * del curso).
  */
 @Component
+@Order(2)
 public class DataLoader implements CommandLineRunner {
 
     /** Semilla fija del generador . */
@@ -107,19 +111,6 @@ public class DataLoader implements CommandLineRunner {
                 .dueno(maria).estado("Activo")
                 .build());
 
-        // ---- Drogas del inventario (5 para cumplir el estándar de
-        // al menos 5 objetos por tabla) ----
-        drogaRepository.save(Droga.builder().nombre("Amoxicilina")
-                .precioCompra(8000.0).precioVenta(15000.0).unidadesDisponibles(100).unidadesVendidas(0).build());
-        drogaRepository.save(Droga.builder().nombre("Ivermectina")
-                .precioCompra(12000.0).precioVenta(22000.0).unidadesDisponibles(50).unidadesVendidas(0).build());
-        drogaRepository.save(Droga.builder().nombre("Metronidazol")
-                .precioCompra(6000.0).precioVenta(11000.0).unidadesDisponibles(75).unidadesVendidas(0).build());
-        drogaRepository.save(Droga.builder().nombre("Rimadyl")
-                .precioCompra(10000.0).precioVenta(18000.0).unidadesDisponibles(60).unidadesVendidas(0).build());
-        drogaRepository.save(Droga.builder().nombre("Doxiciclina")
-                .precioCompra(9000.0).precioVenta(16000.0).unidadesDisponibles(60).unidadesVendidas(0).build());
-
         // ---- Veterinarios (5 activos para cumplir el estándar de
         // al menos 5 objetos por tabla) ----
         sembrarVeterinarios();
@@ -132,38 +123,40 @@ public class DataLoader implements CommandLineRunner {
         mascotaRepository.saveAll(mascotasGeneradas);
 
         // ---- Tratamientos (tabla intermedia con entidades reales;
-        // 5 en total para cumplir el estándar de al menos 5 por tabla) ----
+        // 5 en total para cumplir el estándar de al menos 5 por tabla).
+        // Las drogas se resuelven por nombre contra el inventario cargado
+        // desde Excel, no por un id fijo.
         Mascota luna = mascotaRepository.findById(2).orElseThrow();
         Mascota max = mascotaRepository.findById(1).orElseThrow();
         Mascota rocky = mascotaRepository.findById(3).orElseThrow();
         veterinarioRepository.findById(4).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-25"))
                 .mascota(luna)
-                .droga(drogaRepository.findById(4).orElseThrow())
+                .droga(droga("TILOSINA"))
                 .veterinario(veterinario)
                 .build()));
         veterinarioRepository.findById(5).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-27"))
                 .mascota(max)
-                .droga(drogaRepository.findById(5).orElseThrow())
+                .droga(droga("METROTAB"))
                 .veterinario(veterinario)
                 .build()));
         tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-10"))
                 .mascota(luna)
-                .droga(drogaRepository.findById(1).orElseThrow())
+                .droga(droga("AMOXICILINA"))
                 .veterinario(carlos)
                 .build());
         tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-15"))
                 .mascota(max)
-                .droga(drogaRepository.findById(2).orElseThrow())
+                .droga(droga("DOXICICLINA"))
                 .veterinario(laura)
                 .build());
         tratamientoRepository.save(Tratamiento.builder()
                 .fecha(LocalDate.parse("2026-08-20"))
                 .mascota(rocky)
-                .droga(drogaRepository.findById(3).orElseThrow())
+                .droga(droga("TETRACICLINA"))
                 .veterinario(jorge)
                 .build());
 
@@ -179,6 +172,16 @@ public class DataLoader implements CommandLineRunner {
                 .correo("inventario@vetopia.com").contrasena("inventario123").nombre("Control de Inventario").build());
         administradorRepository.save(Administrador.builder().cedula("1000000005")
                 .correo("calidad@vetopia.com").contrasena("calidad123").nombre("Auditoría Clínica").build());
+    }
+
+    /**
+     * Resuelve una droga del inventario cargado desde Excel por su nombre,
+     * de modo que los tratamientos semilla no dependan de un id fijo.
+     */
+    private Droga droga(String nombre) {
+        return drogaRepository.findByNombre(nombre).orElseThrow(
+                () -> new IllegalStateException(
+                        "No se encontró la droga \"" + nombre + "\" en el inventario del Excel."));
     }
 
     /**

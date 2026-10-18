@@ -20,4 +20,13 @@ public interface DrogaService {
 
     /** Guarda (registra) una droga nueva. El id lo asigna el repositorio. */
     void guardar(Droga droga);
+
+    /**
+     * Carga el inventario de medicamentos desde el archivo fijo de Excel
+     * (resources/data/medicamentos.xlsx) y devuelve cuántas drogas quedaron
+     * registradas. El nombre es la clave del inventario: si ya existe se
+     * actualizan precios y unidades, y si no se registra una droga nueva
+     * (upsert por nombre).
+     */
+    int cargarDesdeExcel();
 }
