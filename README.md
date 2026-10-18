@@ -19,7 +19,7 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 
 - **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño (con búsqueda opcional por nombre), listar las activas, consultar una mascota propia de un dueño, crear, actualizar, alternar estado y eliminar.
 - **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
-- **API REST de tratamientos y drogas**: consultar el historial de una mascota, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos.
+- **API REST de tratamientos y drogas**: consultar el historial de una mascota, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
 - **API REST de veterinarios y administradores**: listar, consultar por id y registrar.
 - **API REST de login**: autentica por correo y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal.
 - **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
@@ -33,7 +33,9 @@ Cada capa se comunica únicamente con la capa inferior y las dependencias se ges
 - **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
 - Lombok
 - **springdoc-openapi** para documentar la API (Swagger UI en `/swagger-ui/index.html` y OpenAPI en `/v3/api-docs`)
-- `DataLoader` (`CommandLineRunner`) siembra datos de prueba al arrancar si la base está vacía (50 clientes, 100 perros generados con `Random(41)`, semilla del ejemplo del curso)
+- **Apache POI** para leer el inventario de medicamentos desde un Excel fijo (`resources/data/medicamentos.xlsx`)
+- `DrogaExcelLoader` (`CommandLineRunner`) carga el inventario de drogas desde ese Excel al arrancar con **upsert por nombre**: si el nombre ya existe actualiza precios y unidades, y si no registra la droga
+- `DataLoader` (`CommandLineRunner`) siembra el resto de los datos de prueba al arrancar si la base está vacía (53 clientes, 103 mascotas —100 perros generados con `Random(41)`, semilla del ejemplo del curso—, 5 veterinarios, 5 administradores y 5 tratamientos que referencian drogas del Excel)
 - La interfaz (Tailwind CSS con la paleta Material Design M3 de `docs/color-palette/paleta-colores-vetopia.jpeg` y Google Fonts) vive en el frontend Angular
 
 ## API REST
@@ -78,12 +80,13 @@ La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`
 
 ## Datos de prueba
 
-Al arrancar con la base vacía, `DataLoader` siembra:
+Al arrancar, la aplicación carga los datos de prueba:
 
+- **523 drogas**: el inventario completo se lee del Excel fijo `resources/data/medicamentos.xlsx` con `DrogaExcelLoader` (upsert por nombre)
 - **53 clientes** (los 3 clientes semilla + 50 generados, cadencia de 1 inactivo cada 10)
 - **103 mascotas**: Max, Luna y Rocky + 100 perros generados (edades 0.3–12 años, pesos 2–45 kg, 8 enfermedades de ejemplo, cadencia de 1 inactiva cada 9)
-- 3 drogas del inventario, 3 veterinarios y 3 administradores
-- 3 tratamientos de ejemplo conectando mascota × droga × veterinario
+- **5 veterinarios** y **5 administradores**
+- **5 tratamientos** de ejemplo conectando mascota × droga × veterinario (las drogas se resuelven por nombre contra el inventario del Excel)
 
 ## Requisitos
 
@@ -180,19 +183,21 @@ El detalle de la estructura, los servicios HTTP, las decisiones de diseño y las
 
 ```
 Vetopia/
-├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Web, JPA, H2, Lombok, springdoc)
+├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Web, JPA, H2, Lombok, springdoc, POI)
 ├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
 ├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
     │   ├── DataLoader.java                  # Siembra datos de prueba al arranque (CommandLineRunner)
+    │   ├── DrogaExcelLoader.java            # Carga el inventario de drogas desde el Excel (CommandLineRunner)
     │   ├── controller/api/                  # Controladores REST (@RestController) por recurso
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
     │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
     │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
     │   └── errors/                          # RecursoNoEncontradoException
     └── resources/
+        ├── data/medicamentos.xlsx           # Inventario de medicamentos que carga DrogaExcelLoader
         ├── application.properties           # Puerto y perfil activo (h2)
         └── application-h2.properties        # Datasource H2 en archivo, consola y ddl-auto
 ```
