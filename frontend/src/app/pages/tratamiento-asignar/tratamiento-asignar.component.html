@@ -20,8 +20,10 @@
 
         <app-tratamiento-form
           [form]="form"
+          [filtro]="filtroMedicamento"
           [mascotas]="mascotas"
-          [drogas]="drogas"
+          [drogas]="drogasFiltradas"
+          [sinMedicamentos]="sinMedicamentos"
           [nombreVeterinario]="nombreVeterinario"
           (aplicar)="aplicar()"></app-tratamiento-form>
       </div>
