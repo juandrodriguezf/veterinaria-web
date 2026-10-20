@@ -33,12 +33,6 @@ export class TratamientoAsignarComponent {
   /** Inventario con unidades disponibles: sin stock no se puede asignar. */
   drogas: Droga[] = [];
 
-  /** Medicamentos que coinciden con el texto del buscador. */
-  drogasFiltradas: Droga[] = [];
-
-  /** Buscador del selector de medicamentos. */
-  filtroMedicamento = new FormControl('');
-
   fechaHoy = new Date().toISOString().substring(0, 10);
 
   mensajeError = '';
@@ -62,7 +56,6 @@ export class TratamientoAsignarComponent {
       this.preseleccionarMascota();
     });
     this.cargarDrogas();
-    this.filtroMedicamento.valueChanges.subscribe(() => this.aplicarFiltroMedicamento());
   }
 
   /**
@@ -117,15 +110,6 @@ export class TratamientoAsignarComponent {
   private cargarDrogas() {
     this.drogaService.listarDrogas().subscribe((data) => {
       this.drogas = data.filter((droga) => (droga.unidadesDisponibles ?? 0) > 0);
-      this.aplicarFiltroMedicamento();
     });
-  }
-
-  /** Reduce el selector de medicamentos al texto del buscador (sin distinguir mayúsculas). */
-  private aplicarFiltroMedicamento() {
-    const texto = (this.filtroMedicamento.value ?? '').trim().toLowerCase();
-    this.drogasFiltradas = texto
-      ? this.drogas.filter((droga) => droga.nombre.toLowerCase().includes(texto))
-      : this.drogas;
   }
 }

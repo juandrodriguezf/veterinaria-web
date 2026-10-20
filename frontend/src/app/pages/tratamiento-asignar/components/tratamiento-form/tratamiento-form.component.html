@@ -33,24 +33,60 @@
     <hr class="border-portal-surface-container-highest"/>
 
     <div class="flex flex-col gap-2">
-      <label class="font-portal-body-md text-portal-body-md text-portal-on-surface" for="drogaId">Medicamento / Droga</label>
+      <label class="font-portal-body-md text-portal-body-md text-portal-on-surface" for="filtroMedicamento">Medicamento / Droga</label>
 
       @if (sinMedicamentos()) {
         <p class="rounded-portal-xl border border-portal-error bg-portal-error-container px-4 py-3 font-portal-body-md text-portal-body-md text-portal-on-error-container" role="alert">
           No hay medicamentos disponibles: sin unidades en inventario no se puede asignar un tratamiento.
         </p>
       } @else {
-        <input [formControl]="filtro()"
-               class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
-               id="filtroMedicamento" placeholder="Buscar medicamento..." type="text"/>
-        <select class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
-                formControlName="drogaId" id="drogaId">
-          <option value="">Seleccionar medicamento...</option>
-          @for (droga of drogas(); track $index) {
-            <option [value]="droga.id">{{ droga.nombre }} · {{ droga.unidadesDisponibles }} disp.</option>
+        <div class="relative">
+          <input [value]="busqueda()"
+                 (input)="alEscribir($any($event.target).value)"
+                 (focus)="alEnfocar()"
+                 (keydown)="alTeclear($event)"
+                 [attr.aria-activedescendant]="resaltado() >= 0 ? 'medicamento-' + resaltado() : null"
+                 [attr.aria-expanded]="abierto()"
+                 aria-autocomplete="list"
+                 aria-controls="listaMedicamentos"
+                 autocomplete="off"
+                 class="w-full px-3 py-2 bg-portal-surface-container-lowest text-portal-on-surface border border-portal-outline rounded focus:outline-none focus:ring-2 focus:ring-portal-primary focus:border-transparent"
+                 id="filtroMedicamento"
+                 placeholder="Buscar medicamento..."
+                 role="combobox"
+                 type="text"/>
+
+          @if (abierto()) {
+            <ul class="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded border border-portal-outline bg-portal-surface-container-lowest shadow-[0px_10px_30px_rgba(0,0,0,0.12)]"
+                id="listaMedicamentos"
+                role="listbox">
+              @if (coincidencias().length === 0) {
+                <li class="px-3 py-2 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">
+                  Sin coincidencias para «{{ busqueda() }}».
+                </li>
+              } @else {
+                @for (droga of coincidencias(); track droga.id; let i = $index) {
+                  <li [id]="'medicamento-' + i"
+                      [attr.aria-selected]="i === resaltado()"
+                      [class]="i === resaltado()
+                        ? 'cursor-pointer bg-portal-primary-container/40 px-3 py-2 font-portal-body-md text-portal-body-md text-portal-on-primary-container'
+                        : 'cursor-pointer px-3 py-2 font-portal-body-md text-portal-body-md text-portal-on-surface hover:bg-portal-surface-container-low'"
+                      (click)="seleccionar(droga)"
+                      (mousedown)="$event.preventDefault()"
+                      role="option">
+                    {{ droga.nombre }} · {{ droga.unidadesDisponibles }} disp.
+                  </li>
+                }
+                @if (totalCoincidencias() > coincidencias().length) {
+                  <li class="px-3 py-2 text-xs text-portal-on-surface-variant">
+                    Mostrando los primeros {{ coincidencias().length }} de {{ totalCoincidencias() }}. Escribe para filtrar.
+                  </li>
+                }
+              }
+            </ul>
           }
-        </select>
-        <p class="text-xs text-portal-on-surface-variant">Solo aparecen los medicamentos con unidades disponibles.</p>
+        </div>
+        <p class="text-xs text-portal-on-surface-variant">Escribe para filtrar y elige un medicamento. Solo aparecen los que tienen unidades disponibles.</p>
       }
     </div>
 
