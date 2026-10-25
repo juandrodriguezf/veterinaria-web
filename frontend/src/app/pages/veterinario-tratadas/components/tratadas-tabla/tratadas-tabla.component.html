@@ -1,0 +1,44 @@
+<div class="overflow-x-auto">
+  <table class="w-full min-w-[640px] text-left">
+    <thead>
+      <tr class="bg-portal-surface-container-low uppercase">
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Mascota</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Tratamientos</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Última atención</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (filas()?.length === 0) {
+        <tr>
+          <td class="px-6 py-16 text-center" colspan="3">
+            <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-portal-outline-variant" style="font-variation-settings: 'FILL' 0;">{{ termino()?.trim() ? 'search_off' : 'pets' }}</span>
+            @if (termino()?.trim()) {
+              <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">No se encontraron mascotas con "{{ termino() }}".</p>
+            } @else {
+              <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">Aún no has tratado mascotas.</p>
+            }
+          </td>
+        </tr>
+      }
+      @for (fila of filas(); track $index) {
+        <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <span class="flex h-9 w-9 items-center justify-center rounded-full bg-portal-primary/10 text-portal-primary">
+                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">pets</span>
+              </span>
+              <div>
+                <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.nombre }}</p>
+                @if (fila.mascotaId !== null) {
+                  <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant">Paciente N° {{ codigoPaciente(fila) }}</p>
+                }
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ tratamientos(fila) }}</td>
+          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ fila.ultimaFecha }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

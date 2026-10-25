@@ -8,14 +8,14 @@
           <div class="p-4 bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
             <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
               <div class="flex items-center gap-3">
-                <span class="rounded-full bg-portal-primary/10 px-3 py-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-primary">{{ tratamiento.veterinario.especialidad }}</span>
+                <span class="rounded-full bg-portal-primary/10 px-3 py-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-primary">{{ tratamiento.veterinarioEspecialidad || 'Sin especialidad' }}</span>
               </div>
               <span class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ tratamiento.fecha }}</span>
             </div>
-            <h4 class="font-portal-body-lg text-portal-body-lg font-bold text-portal-on-surface mb-2">Tratamiento con {{ tratamiento.droga.nombre }}</h4>
+            <h4 class="font-portal-body-lg text-portal-body-lg font-bold text-portal-on-surface mb-2">Tratamiento con {{ tratamiento.drogaNombre }}</h4>
             <div class="flex items-center gap-2 pt-4 border-t border-portal-surface-container-high">
               <span class="material-symbols-outlined text-portal-on-surface-variant" style="font-variation-settings: 'FILL' 0;">verified_user</span>
-              <span class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ tratamiento.veterinario.nombre }} - {{ tratamiento.veterinario.especialidad }}</span>
+              <span class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ tratamiento.veterinarioNombre || 'Veterinario retirado' }}{{ tratamiento.veterinarioEspecialidad ? ' - ' + tratamiento.veterinarioEspecialidad : '' }}</span>
             </div>
           </div>
         </div>

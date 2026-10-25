@@ -9,6 +9,7 @@ import { ClientesFormularioComponent } from './pages/clientes-formulario/cliente
 import { ClienteMascotasComponent } from './pages/cliente-mascotas/cliente-mascotas.component';
 import { ClienteDetalleComponent } from './pages/cliente-detalle/cliente-detalle.component';
 import { TratamientoAsignarComponent } from './pages/tratamiento-asignar/tratamiento-asignar.component';
+import { VeterinarioTratadasComponent } from './pages/veterinario-tratadas/veterinario-tratadas.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminVeterinariosListadoComponent } from './pages/admin-veterinarios-listado/admin-veterinarios-listado.component';
 import { AdminVeterinariosFormularioComponent } from './pages/admin-veterinarios-formulario/admin-veterinarios-formulario.component';
@@ -77,5 +78,9 @@ export const routes: Routes = [
   {
     path: 'tratamiento/asignar',
     component: TratamientoAsignarComponent,
+  },
+  {
+    path: 'veterinario/tratadas',
+    component: VeterinarioTratadasComponent,
   },
 ];

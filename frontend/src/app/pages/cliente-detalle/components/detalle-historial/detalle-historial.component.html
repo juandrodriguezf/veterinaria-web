@@ -6,8 +6,8 @@
       @for (tratamiento of tratamientos() ?? []; track $index) {
         <li class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-3 py-4">
           <div>
-            <p class="font-portal-body-lg text-portal-body-lg font-bold text-portal-on-surface mb-1">Tratamiento con {{ tratamiento.droga.nombre }}</p>
-            <p class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ tratamiento.veterinario.nombre }} - {{ tratamiento.veterinario.especialidad }}</p>
+            <p class="font-portal-body-lg text-portal-body-lg font-bold text-portal-on-surface mb-1">Tratamiento con {{ tratamiento.drogaNombre }}</p>
+            <p class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ tratamiento.veterinarioNombre || 'Veterinario retirado' }}{{ tratamiento.veterinarioEspecialidad ? ' - ' + tratamiento.veterinarioEspecialidad : '' }}</p>
           </div>
           <span class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ tratamiento.fecha }}</span>
         </li>

@@ -36,6 +36,15 @@ export class TratamientoService {
   }
 
   /**
+   * Tratamientos aplicados por un veterinario (GET /byVeterinario/{id}).
+   * Alimenta la pestaña "Tratadas" del portal: la página agrupa el
+   * resultado por mascota para mostrar a quiénes ha atendido.
+   */
+  listarTratamientosPorVeterinario(veterinarioId: number): Observable<Tratamiento[]> {
+    return this.http.get<Tratamiento[]>(`${this.baseUrl}/byVeterinario/${veterinarioId}`);
+  }
+
+  /**
    * Asigna un tratamiento: el backend valida mascota activa y stock,
    * descuenta una unidad del inventario y devuelve la Droga actualizada.
    */

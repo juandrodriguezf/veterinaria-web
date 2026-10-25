@@ -1,14 +1,18 @@
-import type { Droga } from './droga.model';
-import type { Veterinario } from './veterinario.model';
-
 /**
- * Tratamiento tal como lo devuelve la API. La mascota va marcada como
- * WRITE_ONLY en el backend (solo se envía al crear el tratamiento), y la
- * droga y el veterinario llegan recortados a lo que la pantalla usa.
+ * MODELO - Tratamiento
+ * Tal como lo devuelve la API: datos planos de la droga, del veterinario y
+ * de la mascota (el backend ya no anida las entidades, ver @JsonProperty en
+ * Tratamiento). Los nombres quedan nulos cuando la mascota o el veterinario
+ * fueron retirados del sistema.
  */
 export interface Tratamiento {
   id: number;
   fecha: string;
-  droga: Droga;
-  veterinario: Veterinario;
+  drogaId: number | null;
+  drogaNombre: string | null;
+  veterinarioId: number | null;
+  veterinarioNombre: string | null;
+  veterinarioEspecialidad: string | null;
+  mascotaId: number | null;
+  mascotaNombre: string | null;
 }

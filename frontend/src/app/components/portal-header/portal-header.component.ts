@@ -15,13 +15,13 @@ import { RouterLink } from '@angular/router';
 })
 export class PortalHeaderComponent {
   /** Pestaña activa del portal (para resaltar el enlace correspondiente). */
-  activo = input<'mascotas' | 'clientes' | 'tratamientos'>();
+  activo = input<'mascotas' | 'clientes' | 'tratamientos' | 'tratadas'>();
 
   /** Nombre del veterinario; si llega, se muestran la campana y el avatar. */
   usuario = input<string>('');
 
   /** Clases del enlace según sea o no la pestaña activa. */
-  clasePestana(pestana: 'mascotas' | 'clientes' | 'tratamientos') {
+  clasePestana(pestana: 'mascotas' | 'clientes' | 'tratamientos' | 'tratadas') {
     return this.activo() === pestana
       ? 'text-portal-primary font-portal-body-md text-portal-body-md font-bold border-b-2 border-portal-primary pb-1'
       : 'text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md';

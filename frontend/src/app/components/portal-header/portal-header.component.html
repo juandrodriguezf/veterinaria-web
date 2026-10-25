@@ -7,6 +7,7 @@
       <a [class]="clasePestana('mascotas')" [attr.aria-current]="activo() === 'mascotas' ? 'page' : null" routerLink="/mascotas">Pacientes</a>
       <a [class]="clasePestana('clientes')" [attr.aria-current]="activo() === 'clientes' ? 'page' : null" routerLink="/clientes">Clientes</a>
       <a [class]="clasePestana('tratamientos')" [attr.aria-current]="activo() === 'tratamientos' ? 'page' : null" routerLink="/tratamiento/asignar">Tratamientos</a>
+      <a [class]="clasePestana('tratadas')" [attr.aria-current]="activo() === 'tratadas' ? 'page' : null" routerLink="/veterinario/tratadas">Tratadas</a>
     </div>
     <div class="flex items-center gap-4">
       @if (usuario()) {
