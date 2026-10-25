@@ -1,5 +1,6 @@
 package com.vetopia.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,11 @@ public interface TratamientoRepository extends JpaRepository<Tratamiento, Intege
      * relación de su id por el getter calculado "veterinarioId".
      */
     List<Tratamiento> findByVeterinario_Id(Integer veterinarioId);
+
+    /**
+     * Tratamientos aplicados desde una fecha (incluida). Alimenta los KPIs
+     * del dashboard del administrador: cantidad del último mes y tabla por
+     * medicamento, que el service agrupa en memoria.
+     */
+    List<Tratamiento> findByFechaGreaterThanEqual(LocalDate fecha);
 }

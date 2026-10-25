@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.ResumenDashboard;
 import com.vetopia.entities.Administrador;
 import com.vetopia.service.AdministradorService;
+import com.vetopia.service.DashboardService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,6 +34,16 @@ public class AdministradorRestController {
     /** Servicio de administradores (flujo obligatorio: Controller -> Service). */
     @Autowired
     private AdministradorService administradorService;
+
+    /** Servicio del dashboard (calcula los KPIs del negocio). */
+    @Autowired
+    private DashboardService dashboardService;
+
+    @Operation(summary = "Calcula los indicadores del dashboard del administrador.")
+    @GetMapping("/dashboard")
+    public ResumenDashboard obtenerDashboard() {
+        return dashboardService.generarResumen();
+    }
 
     @Operation(summary = "Lista todos los administradores.")
     @GetMapping("/all")

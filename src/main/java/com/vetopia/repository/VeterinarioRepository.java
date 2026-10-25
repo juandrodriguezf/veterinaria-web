@@ -45,4 +45,10 @@ public interface VeterinarioRepository extends JpaRepository<Veterinario, Intege
      */
     List<Veterinario> findByCedulaContainingIgnoreCaseOrNombreContainingIgnoreCase(
             String cedula, String nombre);
+
+    /**
+     * Cuenta los veterinarios en un estado determinado (Activo/Inactivo).
+     * Alimenta los KPIs del dashboard del administrador.
+     */
+    long countByEstado(String estado);
 }

@@ -51,4 +51,11 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
      * pues solo las mascotas hospitalizadas (activas) pueden recibirlo.
      */
     List<Mascota> findByEstado(String estado);
+
+    /**
+     * Cuenta las mascotas en un estado determinado sin traerlas todas.
+     * Alimenta el KPI de mascotas activas (en tratamiento) del dashboard
+     * del administrador.
+     */
+    long countByEstado(String estado);
 }
