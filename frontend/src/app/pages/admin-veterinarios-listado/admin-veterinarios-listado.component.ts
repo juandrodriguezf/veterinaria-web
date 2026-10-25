@@ -36,16 +36,25 @@ export class AdminVeterinariosListadoComponent {
   /** Término de la barra de búsqueda (cédula o nombre). */
   termino: string = '';
 
+  /** Total de veterinarios sin filtro, para no confundirlo con los resultados. */
+  totalVeterinarios = 0;
+
   ngOnInit() {
     this.cargar();
   }
 
   /** Carga el listado completo o el filtrado, según el término. */
   cargar() {
-    const peticion = this.termino.trim()
+    const filtro = this.termino.trim();
+    const peticion = filtro
       ? this.veterinarioService.buscar(this.termino)
       : this.veterinarioService.listarVeterinarios();
-    peticion.subscribe((veterinarios) => (this.veterinarios = veterinarios));
+    peticion.subscribe((veterinarios) => {
+      this.veterinarios = veterinarios;
+      if (!filtro) {
+        this.totalVeterinarios = veterinarios.length;
+      }
+    });
   }
 
   buscar() {
@@ -59,6 +68,14 @@ export class AdminVeterinariosListadoComponent {
 
   /** Alterna Activo/Inactivo y recarga para reflejar el nuevo estado. */
   alternarEstado(veterinario: Veterinario) {
+    if (
+      veterinario.estado === 'Activo' &&
+      !window.confirm(
+        `¿Desactivar a ${veterinario.nombre}? No podrá iniciar sesión hasta que lo actives de nuevo.`,
+      )
+    ) {
+      return;
+    }
     this.veterinarioService.alternarEstado(veterinario.id).subscribe(() => this.cargar());
   }
 

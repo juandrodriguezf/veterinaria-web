@@ -30,16 +30,25 @@ export class MascotasListadoComponent {
 
   nombre: string = '';
 
+  /** Total de mascotas sin filtro, para no confundirlo con los resultados. */
+  totalMascotas = 0;
+
   ngOnInit() {
     this.cargar();
   }
 
   /** Carga el listado completo o el filtrado por nombre (según el término). */
   cargar() {
-    const peticion = this.nombre.trim()
+    const filtro = this.nombre.trim();
+    const peticion = filtro
       ? this.mascotaService.buscarPorNombre(this.nombre)
       : this.mascotaService.listarMascotas();
-    peticion.subscribe((data) => (this.mascotas = data));
+    peticion.subscribe((data) => {
+      this.mascotas = data;
+      if (!filtro) {
+        this.totalMascotas = data.length;
+      }
+    });
   }
 
   buscar() {
@@ -52,6 +61,14 @@ export class MascotasListadoComponent {
   }
 
   alternarEstado(mascota: Mascota) {
+    if (
+      mascota.estado === 'Activo' &&
+      !window.confirm(
+        `¿Desactivar a ${mascota.nombre}? No podrá recibir tratamientos hasta que la actives de nuevo.`,
+      )
+    ) {
+      return;
+    }
     this.mascotaService.alternarEstado(mascota.id).subscribe(() => this.cargar());
   }
 }

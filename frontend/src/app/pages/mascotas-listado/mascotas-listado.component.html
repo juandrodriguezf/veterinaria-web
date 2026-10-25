@@ -24,7 +24,13 @@
       <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
         <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
         <div class="flex items-center gap-4">
-          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
+          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">
+            @if (nombre.trim()) {
+              {{ mascotas.length }} de {{ totalMascotas }} {{ totalMascotas === 1 ? 'mascota' : 'mascotas' }}
+            } @else {
+              {{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}
+            }
+          </span>
           <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/mascotas/new">
             Agregar mascota
             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">pets</span>

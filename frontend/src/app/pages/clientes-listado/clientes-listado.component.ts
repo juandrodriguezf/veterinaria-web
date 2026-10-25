@@ -30,15 +30,24 @@ export class ClientesListadoComponent {
 
   nombre: string = '';
 
+  /** Total de clientes sin filtro, para no confundirlo con los resultados. */
+  totalDuenos = 0;
+
   ngOnInit() {
     this.cargar();
   }
 
   cargar() {
-    const peticion = this.nombre.trim()
+    const filtro = this.nombre.trim();
+    const peticion = filtro
       ? this.duenoService.buscarPorNombre(this.nombre)
       : this.duenoService.listarDuenos();
-    peticion.subscribe((duenos) => (this.duenos = duenos));
+    peticion.subscribe((duenos) => {
+      this.duenos = duenos;
+      if (!filtro) {
+        this.totalDuenos = duenos.length;
+      }
+    });
   }
 
   buscar() {
@@ -51,6 +60,14 @@ export class ClientesListadoComponent {
   }
 
   alternarEstado(dueno: Dueno) {
+    if (
+      dueno.estado === 'Activo' &&
+      !window.confirm(
+        `¿Desactivar a ${dueno.nombre}? No podrá acceder al portal hasta que lo actives de nuevo.`,
+      )
+    ) {
+      return;
+    }
     this.duenoService.alternarEstado(dueno.id).subscribe(() => this.cargar());
   }
 
