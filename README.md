@@ -48,7 +48,7 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 |---|---|---|
 | `GET` | `/mascota/all` | Todas las mascotas |
 | `GET` | `/mascota/find/{id}` | Una mascota por id |
-| `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas) |
+| `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas) |
 | `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (búsqueda opcional con `?nombre=`) |
 | `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño |
 | `GET` | `/mascota/activas` | Solo las mascotas activas |

@@ -184,10 +184,11 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * Búsqueda por coincidencia exacta del nombre sin distinguir
-     * mayúsculas/minúsculas (findByNombreIgnoreCase: la consulta derivada
-     * del ejemplo del curso más el IgnoreCase que el proyecto ya usa en
-     * credenciales). Cuando el término llega nulo o vacío se delega al
+     * Búsqueda por coincidencia parcial del nombre sin distinguir
+     * mayúsculas/minúsculas (findByNombreContainingIgnoreCase: la consulta
+     * derivada del ejemplo del curso más las palabras clave Containing e
+     * IgnoreCase que el proyecto ya usa en credenciales y en la búsqueda de
+     * veterinarios). Cuando el término llega nulo o vacío se delega al
      * listado completo (un solo endpoint para listado y búsqueda).
      */
     @Override
@@ -195,7 +196,7 @@ public class MascotaServiceImpl implements MascotaService {
         if (nombre == null || nombre.isBlank()) {
             return listarMascotas();
         }
-        return mascotaRepository.findByNombreIgnoreCase(nombre.trim());
+        return mascotaRepository.findByNombreContainingIgnoreCase(nombre.trim());
     }
 
     /**
