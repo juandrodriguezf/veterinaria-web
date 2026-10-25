@@ -48,9 +48,10 @@ public interface DuenoRepository extends JpaRepository<Dueno, Integer> {
     Dueno findByCedula(String cedula);
 
     /**
-     * Clientes cuyo nombre coincide exactamente con el término buscado,
-     * sin distinguir mayúsculas/minúsculas (AC21: buscar un cliente por
-     * su nombre). Es la misma consulta derivada que usa MascotaRepository.
+     * Clientes cuyo nombre contiene el término buscado, sin distinguir
+     * mayúsculas/minúsculas (AC21: buscar un cliente por su nombre). Usa
+     * la misma coincidencia parcial que MascotaRepository y la búsqueda
+     * de veterinarios, para no exigir el nombre completo.
      */
-    List<Dueno> findByNombreIgnoreCase(String nombre);
+    List<Dueno> findByNombreContainingIgnoreCase(String nombre);
 }

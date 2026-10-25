@@ -16,10 +16,10 @@ public interface DuenoService {
     List<Dueno> listarDuenos();
 
     /**
-     * Busca dueños cuyo nombre coincida exactamente con el término dado,
-     * sin distinguir mayúsculas/minúsculas (AC21). Si el término es nulo
-     * o vacío, devuelve el listado completo para que el mismo endpoint
-     * sirva búsqueda y listado, igual que el buscarPorNombre de mascotas.
+     * Busca dueños cuyo nombre contenga el término dado, sin distinguir
+     * mayúsculas/minúsculas (AC21). Si el término es nulo o vacío,
+     * devuelve el listado completo para que el mismo endpoint sirva
+     * búsqueda y listado, igual que el buscarPorNombre de mascotas.
      */
     List<Dueno> buscarPorNombre(String nombre);
 

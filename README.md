@@ -58,7 +58,7 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `DELETE` | `/mascota/delete/{id}` | Elimina una mascota (desvincula su historial) |
 | `GET` | `/dueno/all` | Todos los clientes |
 | `GET` | `/dueno/find/{id}` | Un cliente por id |
-| `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia exacta, sin distinguir mayúsculas) |
+| `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia parcial, sin distinguir mayúsculas) |
 | `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos) |
 | `PUT` | `/dueno/update` | Actualiza un cliente |
 | `PUT` | `/dueno/toggle/{id}` | Alterna el estado y lo devuelve |

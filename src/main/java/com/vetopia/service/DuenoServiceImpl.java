@@ -41,17 +41,18 @@ public class DuenoServiceImpl implements DuenoService {
 
     /**
      * {@inheritDoc}
-     * Búsqueda por coincidencia exacta del nombre sin distinguir
-     * mayúsculas/minúsculas (findByNombreIgnoreCase). Cuando el término
-     * llega nulo o vacío se delega al listado completo (un solo endpoint
-     * para listado y búsqueda).
+     * Búsqueda por coincidencia parcial del nombre sin distinguir
+     * mayúsculas/minúsculas (findByNombreContainingIgnoreCase), igual que
+     * la barra de mascotas y la de veterinarios. Cuando el término llega
+     * nulo o vacío se delega al listado completo (un solo endpoint para
+     * listado y búsqueda).
      */
     @Override
     public List<Dueno> buscarPorNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
             return listarDuenos();
         }
-        List<Dueno> duenos = duenoRepository.findByNombreIgnoreCase(nombre.trim());
+        List<Dueno> duenos = duenoRepository.findByNombreContainingIgnoreCase(nombre.trim());
         duenos.forEach(this::cargarConteoMascotas);
         return duenos;
     }
