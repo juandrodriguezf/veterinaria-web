@@ -125,40 +125,52 @@ public class DataLoader implements CommandLineRunner {
         // ---- Tratamientos (tabla intermedia con entidades reales;
         // 5 en total para cumplir el estándar de al menos 5 por tabla).
         // Las drogas se resuelven por nombre contra el inventario cargado
-        // desde Excel, no por un id fijo.
+        // desde Excel, no por un id fijo. Las fechas son recientes (dentro
+        // del último mes) para que el dashboard del administrador muestre
+        // datos, y cada tratamiento ajusta el inventario como lo haría la
+        // asignación real (una unidad menos disponible y una más vendida).
         Mascota luna = mascotaRepository.findById(2).orElseThrow();
         Mascota max = mascotaRepository.findById(1).orElseThrow();
         Mascota rocky = mascotaRepository.findById(3).orElseThrow();
-        veterinarioRepository.findById(4).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
-                .fecha(LocalDate.parse("2026-08-25"))
-                .mascota(luna)
-                .droga(droga("TILOSINA"))
-                .veterinario(veterinario)
-                .build()));
-        veterinarioRepository.findById(5).ifPresent(veterinario -> tratamientoRepository.save(Tratamiento.builder()
-                .fecha(LocalDate.parse("2026-08-27"))
-                .mascota(max)
-                .droga(droga("METROTAB"))
-                .veterinario(veterinario)
-                .build()));
+        veterinarioRepository.findById(4).ifPresent(veterinario -> {
+            tratamientoRepository.save(Tratamiento.builder()
+                    .fecha(LocalDate.now().minusDays(3))
+                    .mascota(luna)
+                    .droga(droga("TILOSINA"))
+                    .veterinario(veterinario)
+                    .build());
+            registrarVenta(droga("TILOSINA"));
+        });
+        veterinarioRepository.findById(5).ifPresent(veterinario -> {
+            tratamientoRepository.save(Tratamiento.builder()
+                    .fecha(LocalDate.now().minusDays(6))
+                    .mascota(max)
+                    .droga(droga("METROTAB"))
+                    .veterinario(veterinario)
+                    .build());
+            registrarVenta(droga("METROTAB"));
+        });
         tratamientoRepository.save(Tratamiento.builder()
-                .fecha(LocalDate.parse("2026-08-10"))
+                .fecha(LocalDate.now().minusDays(12))
                 .mascota(luna)
                 .droga(droga("AMOXICILINA"))
                 .veterinario(carlos)
                 .build());
+        registrarVenta(droga("AMOXICILINA"));
         tratamientoRepository.save(Tratamiento.builder()
-                .fecha(LocalDate.parse("2026-08-15"))
+                .fecha(LocalDate.now().minusDays(18))
                 .mascota(max)
                 .droga(droga("DOXICICLINA"))
                 .veterinario(laura)
                 .build());
+        registrarVenta(droga("DOXICICLINA"));
         tratamientoRepository.save(Tratamiento.builder()
-                .fecha(LocalDate.parse("2026-08-20"))
+                .fecha(LocalDate.now().minusDays(25))
                 .mascota(rocky)
                 .droga(droga("TETRACICLINA"))
                 .veterinario(jorge)
                 .build());
+        registrarVenta(droga("TETRACICLINA"));
 
         // Administradores al final (no dependen de nadie; 5 para cumplir
         // el estándar de al menos 5 objetos por tabla).
@@ -182,6 +194,20 @@ public class DataLoader implements CommandLineRunner {
         return drogaRepository.findByNombre(nombre).orElseThrow(
                 () -> new IllegalStateException(
                         "No se encontró la droga \"" + nombre + "\" en el inventario del Excel."));
+    }
+
+    /**
+     * Ajusta el inventario de una droga semilla como lo haría asignar():
+     * una unidad menos disponible y una más vendida. Así los KPIs de
+     * ventas, ganancias y el top de medicamentos arrancan con datos
+     * coherentes con los tratamientos sembrados.
+     */
+    private void registrarVenta(Droga droga) {
+        int disponibles = droga.getUnidadesDisponibles() == null ? 0 : droga.getUnidadesDisponibles();
+        droga.setUnidadesDisponibles(Math.max(0, disponibles - 1));
+        droga.setUnidadesVendidas(
+                (droga.getUnidadesVendidas() == null ? 0 : droga.getUnidadesVendidas()) + 1);
+        drogaRepository.save(droga);
     }
 
     /**

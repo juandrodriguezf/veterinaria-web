@@ -177,6 +177,12 @@ public class TratamientoServiceImpl implements TratamientoService {
         }
         guardar(tratamiento);
         droga.setUnidadesDisponibles(stockRestante);
+        // La unidad que sale del stock se registra como vendida: así las
+        // ventas y ganancias del dashboard reflejan cada tratamiento y el
+        // top de medicamentos se calcula con datos reales.
+        droga.setUnidadesVendidas(
+                (droga.getUnidadesVendidas() == null ? 0 : droga.getUnidadesVendidas())
+                        + unidadesDescontadas);
         drogaService.guardar(droga);
         // Cada tratamiento aplicado cuenta como una atención del
         // veterinario responsable: se acumula en su contador dentro de la
