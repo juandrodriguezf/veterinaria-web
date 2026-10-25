@@ -49,7 +49,7 @@ public class DuenoRestController {
         return duenoService.obtenerDuenoPorId(id);
     }
 
-    @Operation(summary = "Busca clientes por nombre (coincidencia exacta, sin distinguir mayúsculas).")
+    @Operation(summary = "Busca clientes por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
     public List<Dueno> buscarPorNombre(@PathVariable String nombre) {
         return duenoService.buscarPorNombre(nombre);
