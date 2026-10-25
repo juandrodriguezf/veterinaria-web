@@ -26,6 +26,9 @@ export class ClientesFormularioComponent {
 
   mensajeError = '';
 
+  /** true cuando el id de la URL no corresponde a un cliente existente. */
+  errorCarga = false;
+
   duenoForm = new FormGroup({
     id: new FormControl(0),
     cedula: new FormControl('', [Validators.required]),
@@ -42,21 +45,27 @@ export class ClientesFormularioComponent {
       return;
     }
     this.isEdit = true;
-    this.duenoService.obtenerPorId(this.id).subscribe((dueno) =>
-      this.duenoForm.patchValue({
-        id: dueno.id,
-        cedula: dueno.cedula,
-        nombre: dueno.nombre,
-        correo: dueno.correo,
-        contrasena: '',
-        celular: dueno.celular ?? '',
-        estado: dueno.estado,
-      }),
-    );
+    this.duenoService.obtenerPorId(this.id).subscribe({
+      next: (dueno) =>
+        this.duenoForm.patchValue({
+          id: dueno.id,
+          cedula: dueno.cedula,
+          nombre: dueno.nombre,
+          correo: dueno.correo,
+          contrasena: '',
+          celular: dueno.celular ?? '',
+          estado: dueno.estado,
+        }),
+      error: (error) => {
+        this.errorCarga = true;
+        this.mensajeError = error?.error?.mensaje ?? 'No encontramos el cliente solicitado.';
+      },
+    });
   }
 
   guardar() {
     const formValue = this.duenoForm.value;
+    this.mensajeError = '';
     // Se navega dentro del next: al volver al listado, el guardado ya está
     // confirmado y el cliente aparece de una vez.
     this.duenoService
@@ -69,6 +78,12 @@ export class ClientesFormularioComponent {
         celular: (formValue.celular ?? '').trim(),
         estado: formValue.estado ?? 'Activo',
       })
-      .subscribe(() => this.router.navigate(['/clientes']));
+      .subscribe({
+        next: () => this.router.navigate(['/clientes']),
+        error: (error) => {
+          this.mensajeError =
+            error?.error?.mensaje ?? 'No se pudo guardar el cliente. Verifica los datos e intenta de nuevo.';
+        },
+      });
   }
 }

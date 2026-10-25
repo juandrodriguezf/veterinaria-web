@@ -95,7 +95,9 @@ export class TratamientoAsignarComponent {
         },
         error: (error) => {
           this.mensajeError =
-            error?.error?.message ?? 'No se pudo aplicar el tratamiento. Verifica el stock del medicamento.';
+            error?.error?.mensaje ??
+            error?.error?.message ??
+            'No se pudo aplicar el tratamiento. Verifica el stock del medicamento.';
         },
       });
   }

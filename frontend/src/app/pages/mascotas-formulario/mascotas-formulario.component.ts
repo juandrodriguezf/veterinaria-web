@@ -30,6 +30,12 @@ export class MascotasFormularioComponent {
 
   id: number = 0;
 
+  /** Mensaje del backend al cargar o guardar la mascota. */
+  mensajeError = '';
+
+  /** true cuando el id de la URL no corresponde a una mascota existente. */
+  errorCarga = false;
+
   mascotaForm = new FormGroup({
     id: new FormControl(0),
     nombre: new FormControl('', [Validators.required]),
@@ -51,7 +57,13 @@ export class MascotasFormularioComponent {
       return;
     }
     this.isEdit = true;
-    this.mascotaService.obtenerMascotaPorId(this.id).subscribe((mascota) => this.precargar(mascota));
+    this.mascotaService.obtenerMascotaPorId(this.id).subscribe({
+      next: (mascota) => this.precargar(mascota),
+      error: (error) => {
+        this.errorCarga = true;
+        this.mensajeError = error?.error?.mensaje ?? 'No encontramos la mascota solicitada.';
+      },
+    });
   }
 
   private precargar(mascota: Mascota) {
@@ -76,6 +88,7 @@ export class MascotasFormularioComponent {
     if (!dueno) {
       return;
     }
+    this.mensajeError = '';
     // Se navega dentro del next: al volver al listado, el guardado ya está
     // confirmado y la mascota aparece de una vez.
     this.mascotaService
@@ -93,6 +106,12 @@ export class MascotasFormularioComponent {
         estado: formValue.estado ?? 'Activo',
         tratamientos: [],
       })
-      .subscribe(() => this.router.navigate(['/mascotas']));
+      .subscribe({
+        next: () => this.router.navigate(['/mascotas']),
+        error: (error) => {
+          this.mensajeError =
+            error?.error?.mensaje ?? 'No se pudo guardar la mascota. Verifica los datos e intenta de nuevo.';
+        },
+      });
   }
 }

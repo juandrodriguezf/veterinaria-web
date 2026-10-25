@@ -42,6 +42,9 @@ export class AdminVeterinariosFormularioComponent {
   /** Mensaje del backend (por ejemplo, cédula o correo repetidos). */
   mensajeError = '';
 
+  /** true cuando el id de la URL no corresponde a un veterinario existente. */
+  errorCarga = false;
+
   veterinarioForm = new FormGroup({
     id: new FormControl(0),
     cedula: new FormControl('', [Validators.required]),
@@ -58,17 +61,23 @@ export class AdminVeterinariosFormularioComponent {
       return;
     }
     this.isEdit = true;
-    this.veterinarioService.obtenerPorId(this.id).subscribe((veterinario) =>
-      this.veterinarioForm.patchValue({
-        id: veterinario.id,
-        cedula: veterinario.cedula,
-        nombre: veterinario.nombre,
-        correo: veterinario.correo,
-        especialidad: veterinario.especialidad ?? '',
-        contrasena: '',
-        estado: veterinario.estado,
-      }),
-    );
+    this.veterinarioService.obtenerPorId(this.id).subscribe({
+      next: (veterinario) =>
+        this.veterinarioForm.patchValue({
+          id: veterinario.id,
+          cedula: veterinario.cedula,
+          nombre: veterinario.nombre,
+          correo: veterinario.correo,
+          especialidad: veterinario.especialidad ?? '',
+          contrasena: '',
+          estado: veterinario.estado,
+        }),
+      error: (error) => {
+        this.errorCarga = true;
+        this.mensajeError =
+          error?.error?.mensaje ?? 'No encontramos el veterinario solicitado.';
+      },
+    });
   }
 
   guardar() {
