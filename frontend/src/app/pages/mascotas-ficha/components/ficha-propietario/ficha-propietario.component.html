@@ -19,5 +19,8 @@
       <dd class="font-portal-body-lg text-portal-body-lg text-portal-on-surface break-words">{{ dueno()?.correo }}</dd>
     </div>
   </div>
-  <a class="mt-6 inline-flex w-full items-center justify-center rounded-full border border-portal-outline px-8 py-2 font-portal-button text-portal-button uppercase tracking-widest text-portal-on-surface transition-colors hover:bg-portal-surface-container-low" href="#">Ver Perfil Completo</a>
+  @if (dueno()?.id; as duenoId) {
+    <a class="mt-6 inline-flex w-full items-center justify-center rounded-full border border-portal-outline px-8 py-2 font-portal-button text-portal-button uppercase tracking-widest text-portal-on-surface transition-colors hover:bg-portal-surface-container-low"
+       [routerLink]="['/clientes/update', duenoId]">Ver Perfil Completo</a>
+  }
 </div>
