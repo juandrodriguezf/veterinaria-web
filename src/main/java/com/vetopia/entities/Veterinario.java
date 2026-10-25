@@ -49,8 +49,10 @@ public class Veterinario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** Número de documento de identidad del veterinario (único). */
-    @JsonIgnore
+    /**
+     * Número de documento de identidad del veterinario (único). Viaja en
+     * la API porque el portal del administrador busca por este dato.
+     */
     @Column(nullable = false, unique = true, length = 20)
     private String cedula;
 
@@ -59,8 +61,10 @@ public class Veterinario {
     @Column(nullable = false, length = 255)
     private String contrasena;
 
-    /** Correo electrónico del veterinario (único; es el usuario del login). */
-    @JsonIgnore
+    /**
+     * Correo electrónico del veterinario (único; es el usuario del login).
+     * Viaja en la API para que el administrador lo consulte y lo edite.
+     */
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
 
@@ -69,7 +73,6 @@ public class Veterinario {
     private String especialidad;
 
     /** Cantidad de atenciones acumuladas por el veterinario. */
-    @JsonIgnore
     @Column(nullable = false)
     private Integer numeroAtenciones;
 
@@ -77,13 +80,14 @@ public class Veterinario {
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    /** Estado del veterinario (Activo / Inactivo). */
-    @JsonIgnore
+    /**
+     * Estado del veterinario (Activo / Inactivo). El administrador lo
+     * alterna desde su portal y un veterinario inactivo no puede entrar.
+     */
     @Column(nullable = false, length = 20)
     private String estado;
 
     /** URL de la foto del veterinario (dato opcional). */
-    @JsonIgnore
     @Column(length = 500)
     private String urlFoto;
 
