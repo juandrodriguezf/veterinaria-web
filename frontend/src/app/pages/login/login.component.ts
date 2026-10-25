@@ -25,8 +25,16 @@ export class LoginComponent {
 
   ingresar() {
     this.mensajeError = '';
+    // Validación local: si falta un campo no se consulta la API y el aviso
+    // aparece de inmediato, igual que el mensaje del backend.
+    const identificador = this.correo.trim();
+    if (!identificador || !this.contrasena) {
+      this.mensajeError = 'Ingresa tu cédula o correo y tu contraseña para continuar.';
+      return;
+    }
+    this.correo = identificador;
     // Consulta: el componente reacciona a la respuesta y navega según el rol.
-    this.loginService.autenticar(this.correo, this.contrasena).subscribe({
+    this.loginService.autenticar(identificador, this.contrasena).subscribe({
       next: (resultado) => this.navegarPorRol(resultado.rol, resultado.id),
       error: (error) => {
         // El backend responde 401 con el mensaje exacto del service.
