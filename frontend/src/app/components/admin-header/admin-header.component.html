@@ -3,14 +3,14 @@
     <a class="flex items-center" routerLink="/">
       <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
     </a>
-    <div class="hidden md:flex items-center gap-8">
+    <div class="hidden md:flex items-center gap-6 lg:gap-8">
       <a [class]="clasePestana('dashboard')" [attr.aria-current]="activo() === 'dashboard' ? 'page' : null" routerLink="/admin/dashboard">Dashboard</a>
       <a [class]="clasePestana('veterinarios')" [attr.aria-current]="activo() === 'veterinarios' ? 'page' : null" routerLink="/admin/veterinarios">Veterinarios</a>
     </div>
     <div class="flex items-center gap-4">
       @if (usuario()) {
         <div class="flex items-center gap-3">
-          <div class="hidden sm:flex flex-col items-end">
+          <div class="hidden lg:flex flex-col items-end">
             <span class="font-portal-label-md text-portal-label-md text-white">{{ usuario() }}</span>
             <span class="text-xs uppercase tracking-widest text-gray-400">Administrador</span>
           </div>
@@ -18,6 +18,31 @@
         </div>
       }
       <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+      <button
+        aria-controls="menu-administrador"
+        [attr.aria-expanded]="menuAbierto()"
+        [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+        class="md:hidden p-2 text-portal-on-surface-variant"
+        type="button"
+        (click)="alternarMenu()"
+      >
+        <span class="material-symbols-outlined">{{ menuAbierto() ? 'close' : 'menu' }}</span>
+      </button>
     </div>
   </div>
+  @if (menuAbierto()) {
+    <div id="menu-administrador" class="md:hidden absolute top-full inset-x-0 bg-[#0f1115] border-t border-white/10 shadow-lg px-portal-gutter py-3 flex flex-col">
+      <a [attr.aria-current]="activo() === 'dashboard' ? 'page' : null" [class]="clasePestanaMovil('dashboard')" routerLink="/admin/dashboard" (click)="cerrarMenu()">Dashboard</a>
+      <a [attr.aria-current]="activo() === 'veterinarios' ? 'page' : null" [class]="clasePestanaMovil('veterinarios')" routerLink="/admin/veterinarios" (click)="cerrarMenu()">Veterinarios</a>
+      <div class="flex flex-col gap-3 pt-4">
+        @if (usuario()) {
+          <div class="flex flex-col">
+            <span class="font-portal-label-md text-portal-label-md text-white">{{ usuario() }}</span>
+            <span class="text-xs uppercase tracking-widest text-gray-400">Administrador</span>
+          </div>
+        }
+        <a class="inline-flex justify-center px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider" routerLink="/" (click)="cerrarMenu()">Logout</a>
+      </div>
+    </div>
+  }
 </nav>

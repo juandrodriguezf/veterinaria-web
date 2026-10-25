@@ -3,7 +3,7 @@
     <a class="flex items-center" routerLink="/">
       <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
     </a>
-    <div class="hidden md:flex items-center gap-8">
+    <div class="hidden md:flex items-center gap-6 lg:gap-8">
       <a [class]="clasePestana('mascotas')" [attr.aria-current]="activo() === 'mascotas' ? 'page' : null" routerLink="/mascotas">Pacientes</a>
       <a [class]="clasePestana('clientes')" [attr.aria-current]="activo() === 'clientes' ? 'page' : null" routerLink="/clientes">Clientes</a>
       <a [class]="clasePestana('tratamientos')" [attr.aria-current]="activo() === 'tratamientos' ? 'page' : null" routerLink="/tratamiento/asignar">Tratamientos</a>
@@ -11,22 +11,41 @@
     </div>
     <div class="flex items-center gap-4">
       @if (usuario()) {
-        <button aria-label="Notifications" class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors text-white" type="button">
+        <button aria-label="Notifications" class="hidden xl:flex items-center justify-center w-10 h-10 rounded-full hover:bg-white/10 transition-colors text-white" type="button">
           <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
         </button>
         <div class="flex items-center gap-3">
-          <div class="hidden sm:flex flex-col items-end">
+          <div class="hidden xl:flex flex-col items-end">
             <span class="font-portal-label-md text-portal-label-md text-white">{{ usuario() }}</span>
           </div>
           <div class="w-10 h-10 rounded-full bg-portal-primary-container text-portal-on-primary-container flex items-center justify-center font-bold">V</div>
         </div>
       }
       <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
-      @if (usuario()) {
-        <button class="md:hidden p-2 text-portal-on-surface-variant" type="button">
-          <span class="material-symbols-outlined">menu</span>
-        </button>
-      }
+      <button
+        aria-controls="menu-portal-veterinario"
+        [attr.aria-expanded]="menuAbierto()"
+        [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+        class="md:hidden p-2 text-portal-on-surface-variant"
+        type="button"
+        (click)="alternarMenu()"
+      >
+        <span class="material-symbols-outlined">{{ menuAbierto() ? 'close' : 'menu' }}</span>
+      </button>
     </div>
   </div>
+  @if (menuAbierto()) {
+    <div id="menu-portal-veterinario" class="md:hidden absolute top-full inset-x-0 bg-[#0f1115] border-t border-white/10 shadow-lg px-portal-gutter py-3 flex flex-col">
+      <a [attr.aria-current]="activo() === 'mascotas' ? 'page' : null" [class]="clasePestanaMovil('mascotas')" routerLink="/mascotas" (click)="cerrarMenu()">Pacientes</a>
+      <a [attr.aria-current]="activo() === 'clientes' ? 'page' : null" [class]="clasePestanaMovil('clientes')" routerLink="/clientes" (click)="cerrarMenu()">Clientes</a>
+      <a [attr.aria-current]="activo() === 'tratamientos' ? 'page' : null" [class]="clasePestanaMovil('tratamientos')" routerLink="/tratamiento/asignar" (click)="cerrarMenu()">Tratamientos</a>
+      <a [attr.aria-current]="activo() === 'tratadas' ? 'page' : null" [class]="clasePestanaMovil('tratadas')" routerLink="/veterinario/tratadas" (click)="cerrarMenu()">Tratadas</a>
+      <div class="flex flex-col gap-3 pt-4">
+        @if (usuario()) {
+          <span class="font-portal-label-md text-portal-label-md text-white">{{ usuario() }}</span>
+        }
+        <a class="inline-flex justify-center px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider" routerLink="/" (click)="cerrarMenu()">Logout</a>
+      </div>
+    </div>
+  }
 </nav>
