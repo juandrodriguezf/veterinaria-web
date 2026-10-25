@@ -19,7 +19,17 @@ public interface TratamientoRepository extends JpaRepository<Tratamiento, Intege
     /**
      * Tratamientos aplicados a una mascota: soporta que el service los
      * desvincule (FK a nulo) antes de eliminar la mascota, conservando
-     * el historial clínico.
+     * el historial clínico. El guion bajo separa la relación de su id
+     * (igual que en MascotaRepository) porque la entidad expone un
+     * getter calculado "mascotaId" para la API.
      */
-    List<Tratamiento> findByMascotaId(Integer mascotaId);
+    List<Tratamiento> findByMascota_Id(Integer mascotaId);
+
+    /**
+     * Tratamientos aplicados por un veterinario: alimenta la pestaña
+     * "Tratadas" del portal y permite desvincular el historial (FK a
+     * nulo) antes de eliminar al veterinario. El guion bajo separa la
+     * relación de su id por el getter calculado "veterinarioId".
+     */
+    List<Tratamiento> findByVeterinario_Id(Integer veterinarioId);
 }

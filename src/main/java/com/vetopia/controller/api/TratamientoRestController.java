@@ -56,6 +56,12 @@ public class TratamientoRestController {
         return tratamientoService.listarTratamientosPorMascota(mascotaId);
     }
 
+    @Operation(summary = "Lista los tratamientos aplicados por un veterinario.")
+    @GetMapping("/byVeterinario/{veterinarioId}")
+    public List<Tratamiento> listarPorVeterinario(@PathVariable Integer veterinarioId) {
+        return tratamientoService.listarTratamientosPorVeterinario(veterinarioId);
+    }
+
     @Operation(summary = "Asigna un tratamiento (valida mascota activa y stock; descuenta inventario).")
     @PostMapping("/add")
     public Droga asignarTratamiento(@RequestBody Tratamiento tratamiento) {

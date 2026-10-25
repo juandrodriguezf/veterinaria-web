@@ -51,7 +51,7 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     /**
      * {@inheritDoc}
-     * Consulta derivada findByMascotaId: como la colección de la entidad
+     * Consulta derivada findByMascota_Id: como la colección de la entidad
      * viaja con @JsonIgnore en la API REST, el historial clínico se pide
      * aparte por el id de la mascota.
      */
@@ -60,12 +60,12 @@ public class TratamientoServiceImpl implements TratamientoService {
         if (mascotaId == null) {
             throw new IllegalArgumentException("No se especificó la mascota del historial.");
         }
-        return tratamientoRepository.findByMascotaId(mascotaId);
+        return tratamientoRepository.findByMascota_Id(mascotaId);
     }
 
     /**
      * {@inheritDoc}
-     * Consulta derivada findByMascotaId y deja la referencia en nulo: el
+     * Consulta derivada findByMascota_Id y deja la referencia en nulo: el
      * tratamiento sobrevive a la eliminacion de la mascota, asi que el
      * historial clinico no se pierde. Hibernate confirma los UPDATE de la
      * FK antes del DELETE de la mascota dentro de la misma transaccion.
@@ -73,9 +73,37 @@ public class TratamientoServiceImpl implements TratamientoService {
     @Override
     @Transactional
     public void desvincularDeMascota(Integer mascotaId) {
-        for (Tratamiento tratamiento : tratamientoRepository.findByMascotaId(mascotaId)) {
+        for (Tratamiento tratamiento : tratamientoRepository.findByMascota_Id(mascotaId)) {
             tratamiento.setMascota(null);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * Igual que con la mascota, la FK del veterinario pasa a nulo y el
+     * tratamiento se conserva: el historial clinico no se pierde cuando
+     * el administrador retira a un veterinario del sistema.
+     */
+    @Override
+    @Transactional
+    public void desvincularDeVeterinario(Integer veterinarioId) {
+        for (Tratamiento tratamiento : tratamientoRepository.findByVeterinario_Id(veterinarioId)) {
+            tratamiento.setVeterinario(null);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * Consulta derivada findByVeterinario_Id: la pestaña "Tratadas" agrupa
+     * estos tratamientos por mascota para mostrar a quiénes ha atendido
+     * el veterinario.
+     */
+    @Override
+    public List<Tratamiento> listarTratamientosPorVeterinario(Integer veterinarioId) {
+        if (veterinarioId == null) {
+            throw new IllegalArgumentException("No se especificó el veterinario del historial.");
+        }
+        return tratamientoRepository.findByVeterinario_Id(veterinarioId);
     }
 
     @Override

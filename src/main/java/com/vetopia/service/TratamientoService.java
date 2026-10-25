@@ -23,6 +23,13 @@ public interface TratamientoService {
      */
     List<Tratamiento> listarTratamientosPorMascota(Integer mascotaId);
 
+    /**
+     * Lista los tratamientos aplicados por un veterinario. Alimenta la
+     * pestaña "Tratadas" del portal, donde cada veterinario consulta las
+     * mascotas que ha atendido anteriormente.
+     */
+    List<Tratamiento> listarTratamientosPorVeterinario(Integer veterinarioId);
+
     /** Obtiene un tratamiento validando previamente el identificador. */
     Tratamiento obtenerTratamientoPorId(Integer id);
 
@@ -35,6 +42,13 @@ public interface TratamientoService {
      * conserva cuando la mascota (o su dueno) se elimina.
      */
     void desvincularDeMascota(Integer mascotaId);
+
+    /**
+     * Desvincula del veterinario los tratamientos que aplico, dejando la
+     * referencia en nulo en vez de borrarlos: el historial clinico se
+     * conserva cuando el administrador elimina al veterinario.
+     */
+    void desvincularDeVeterinario(Integer veterinarioId);
 
     /**
      * Registra la asignación del tratamiento aplicando las reglas de

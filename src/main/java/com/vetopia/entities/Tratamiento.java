@@ -63,18 +63,67 @@ public class Tratamiento {
     /**
      * Droga utilizada en el tratamiento (Tratamiento 0..* -- 1 Droga).
      * Sin cascada: el historial clínico no debe borrarse si se retira
-     * una droga del inventario.
+     * una droga del inventario. La relación solo se acepta al crear el
+     * tratamiento; en la API viajan los datos planos (drogaId y
+     * drogaNombre) para no devolver objetos anidados.
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
     @JoinColumn(name = "droga_id", nullable = false)
     private Droga droga;
 
     /**
      * Veterinario que realizó el tratamiento (Veterinario 1 -- 0..*
-     * Tratamiento). Sin cascada: el historial sobrevive a los cambios
-     * de personal.
+     * Tratamiento). La columna admite nulo: si el administrador elimina
+     * al veterinario, el service desvincula sus tratamientos en lugar de
+     * borrarlos, de modo que el historial clínico se conserva aunque
+     * quede sin responsable. En la API viajan los datos planos
+     * (veterinarioId, veterinarioNombre y veterinarioEspecialidad).
      */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne
-    @JoinColumn(name = "veterinario_id", nullable = false)
+    @JoinColumn(name = "veterinario_id", nullable = true)
     private Veterinario veterinario;
+
+    /** Expone SOLO el id de la droga: el objeto completo no viaja en la API. */
+    @JsonProperty("drogaId")
+    public Integer getDrogaId() {
+        return droga != null ? droga.getId() : null;
+    }
+
+    /** Expone el nombre de la droga para el historial, sin anidar el objeto. */
+    @JsonProperty("drogaNombre")
+    public String getDrogaNombre() {
+        return droga != null ? droga.getNombre() : null;
+    }
+
+    /** Expone SOLO el id del veterinario responsable. */
+    @JsonProperty("veterinarioId")
+    public Integer getVeterinarioId() {
+        return veterinario != null ? veterinario.getId() : null;
+    }
+
+    /** Expone el nombre del veterinario; es nulo si fue retirado del sistema. */
+    @JsonProperty("veterinarioNombre")
+    public String getVeterinarioNombre() {
+        return veterinario != null ? veterinario.getNombre() : null;
+    }
+
+    /** Expone la especialidad del veterinario; es nula si fue retirado. */
+    @JsonProperty("veterinarioEspecialidad")
+    public String getVeterinarioEspecialidad() {
+        return veterinario != null ? veterinario.getEspecialidad() : null;
+    }
+
+    /** Expone SOLO el id de la mascota tratada. */
+    @JsonProperty("mascotaId")
+    public Integer getMascotaId() {
+        return mascota != null ? mascota.getId() : null;
+    }
+
+    /** Expone el nombre de la mascota; es nulo si la mascota se eliminó. */
+    @JsonProperty("mascotaNombre")
+    public String getMascotaNombre() {
+        return mascota != null ? mascota.getNombre() : null;
+    }
 }
