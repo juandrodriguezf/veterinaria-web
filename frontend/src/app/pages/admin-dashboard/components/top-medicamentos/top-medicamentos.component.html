@@ -1,0 +1,32 @@
+<section class="h-full rounded-xl border border-portal-surface-container-highest bg-portal-surface-container-lowest shadow-[0px_10px_30px_rgba(0,0,0,0.04)]">
+  <header class="flex items-center justify-between gap-4 border-b border-portal-surface-container-high p-6">
+    <div>
+      <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Top medicamentos</h2>
+      <p class="mt-1 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">Los 3 con más unidades vendidas.</p>
+    </div>
+    <span class="material-symbols-outlined text-portal-primary" style="font-variation-settings: 'FILL' 0;">leaderboard</span>
+  </header>
+
+  <div class="p-6">
+    @if (!filas().length) {
+      <div class="py-8 text-center text-portal-on-surface-variant">
+        <span class="mx-auto mb-2 block material-symbols-outlined text-4xl text-portal-outline-variant" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+        <p class="font-portal-body-md text-portal-body-md">Todavía no hay unidades vendidas.</p>
+      </div>
+    }
+    @for (fila of filas(); track $index) {
+      <div class="mb-5 last:mb-0">
+        <div class="mb-2 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-portal-primary-container font-portal-label-md text-portal-label-md font-bold text-portal-on-primary-container">{{ $index + 1 }}</span>
+            <span class="truncate font-portal-body-md text-portal-body-md text-portal-on-surface">{{ fila.nombre }}</span>
+          </div>
+          <span class="shrink-0 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ fila.cantidad }} uds.</span>
+        </div>
+        <div class="h-2 w-full overflow-hidden rounded-full bg-portal-surface-container-high">
+          <div class="h-full rounded-full bg-portal-primary" [style.width.%]="porcentaje(fila)"></div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

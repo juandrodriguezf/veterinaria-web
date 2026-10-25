@@ -1,0 +1,49 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <app-admin-header [usuario]="nombreAdministrador" activo="dashboard"></app-admin-header>
+
+  <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+    <header class="mb-portal-stack-md flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Dashboard</h1>
+        <p class="mt-2 font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+          Indicadores de la veterinaria: tratamientos, personal, pacientes e inventario.
+        </p>
+      </div>
+      <button (click)="cargar()" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="button">
+        <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">refresh</span>
+        Actualizar
+      </button>
+    </header>
+
+    @if (mensajeError) {
+      <div class="mb-portal-stack-md flex items-start gap-3 rounded-xl border border-portal-error/30 bg-portal-error-container/40 p-4" role="alert">
+        <span class="material-symbols-outlined mt-0.5 text-portal-error">error</span>
+        <p class="font-portal-body-md text-portal-body-md text-portal-on-error-container">{{ mensajeError }}</p>
+      </div>
+    }
+
+    @if (resumen; as datos) {
+      <section class="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <app-kpi-card titulo="Tratamientos (último mes)" [valor]="formatearNumero(datos.tratamientosUltimoMes)" icono="vaccines"></app-kpi-card>
+        <app-kpi-card titulo="Veterinarios activos" [valor]="formatearNumero(datos.veterinariosActivos)" icono="medical_services" detalle="En la plataforma"></app-kpi-card>
+        <app-kpi-card titulo="Veterinarios inactivos" [valor]="formatearNumero(datos.veterinariosInactivos)" icono="person_off" detalle="Fuera de servicio"></app-kpi-card>
+        <app-kpi-card titulo="Mascotas totales" [valor]="formatearNumero(datos.mascotasTotales)" icono="pets" detalle="Registradas en la veterinaria"></app-kpi-card>
+        <app-kpi-card titulo="Mascotas activas" [valor]="formatearNumero(datos.mascotasActivas)" icono="monitor_heart" detalle="En tratamiento"></app-kpi-card>
+        <app-kpi-card titulo="Ventas totales" [valor]="formatearMoneda(datos.ventasTotales)" icono="payments"></app-kpi-card>
+        <app-kpi-card titulo="Ganancias totales" [valor]="formatearMoneda(datos.gananciasTotales)" icono="trending_up"></app-kpi-card>
+      </section>
+
+      <section class="mt-portal-stack-md grid gap-6 lg:grid-cols-2">
+        <app-kpi-medicamentos [filas]="datos.tratamientosPorMedicamento"></app-kpi-medicamentos>
+        <app-top-medicamentos [filas]="datos.topMedicamentos"></app-top-medicamentos>
+      </section>
+    } @else if (!mensajeError) {
+      <div class="flex items-center gap-3 rounded-xl border border-portal-surface-container-highest bg-portal-surface-container-lowest p-6">
+        <span class="material-symbols-outlined animate-spin text-portal-primary">progress_activity</span>
+        <p class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant">Cargando indicadores…</p>
+      </div>
+    }
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

@@ -9,6 +9,7 @@ import { ClientesFormularioComponent } from './pages/clientes-formulario/cliente
 import { ClienteMascotasComponent } from './pages/cliente-mascotas/cliente-mascotas.component';
 import { ClienteDetalleComponent } from './pages/cliente-detalle/cliente-detalle.component';
 import { TratamientoAsignarComponent } from './pages/tratamiento-asignar/tratamiento-asignar.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,10 @@ export const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'admin/dashboard',
+    component: AdminDashboardComponent,
   },
   {
     path: 'mascotas',

@@ -1,0 +1,36 @@
+<section class="h-full rounded-xl border border-portal-surface-container-highest bg-portal-surface-container-lowest shadow-[0px_10px_30px_rgba(0,0,0,0.04)]">
+  <header class="flex items-center justify-between gap-4 border-b border-portal-surface-container-high p-6">
+    <div>
+      <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Tratamientos por medicamento</h2>
+      <p class="mt-1 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">Administrados en el último mes.</p>
+    </div>
+    <span class="material-symbols-outlined text-portal-primary" style="font-variation-settings: 'FILL' 0;">medication</span>
+  </header>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead>
+        <tr class="bg-portal-surface-container-low uppercase">
+          <th class="px-6 py-3 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Medicamento</th>
+          <th class="px-6 py-3 text-right font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (!filas().length) {
+          <tr>
+            <td class="px-6 py-12 text-center text-portal-on-surface-variant" colspan="2">
+              <span class="mx-auto mb-2 block material-symbols-outlined text-4xl text-portal-outline-variant" style="font-variation-settings: 'FILL' 0;">medication_liquid</span>
+              <p class="font-portal-body-md text-portal-body-md">Sin tratamientos registrados en el último mes.</p>
+            </td>
+          </tr>
+        }
+        @for (fila of filas(); track $index) {
+          <tr class="border-b border-portal-surface-container-high last:border-0 hover:bg-portal-surface-container-low">
+            <td class="px-6 py-3 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ fila.nombre }}</td>
+            <td class="px-6 py-3 text-right font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.cantidad }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -44,8 +44,9 @@ export class LoginComponent {
         this.router.navigate(['/cliente/mascotas', id]);
         break;
       case 'ADMINISTRADOR':
+        this.router.navigate(['/admin/dashboard']);
+        break;
       default:
-        // El panel del administrador todavía no existe: vuelve al landing.
         this.router.navigate(['/']);
     }
   }

@@ -1,0 +1,12 @@
+<div class="h-full rounded-xl border border-portal-surface-container-highest bg-portal-surface-container-lowest p-6 shadow-[0px_10px_30px_rgba(0,0,0,0.04)]">
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0">
+      <p class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ titulo() }}</p>
+      <p class="mt-3 break-words font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">{{ valor() }}</p>
+      @if (detalle()) {
+        <p class="mt-1 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ detalle() }}</p>
+      }
+    </div>
+    <span class="material-symbols-outlined shrink-0 rounded-full bg-portal-primary/10 p-3 text-portal-primary" style="font-variation-settings: 'FILL' 0;">{{ icono() }}</span>
+  </div>
+</div>
