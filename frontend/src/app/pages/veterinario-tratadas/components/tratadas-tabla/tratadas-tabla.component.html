@@ -28,9 +28,14 @@
                 <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">pets</span>
               </span>
               <div>
-                <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.nombre }}</p>
                 @if (fila.mascotaId !== null) {
+                  <a [attr.aria-label]="'Ver ficha de ' + fila.nombre" [routerLink]="['/mascotas', fila.mascotaId]" class="inline-flex items-center gap-1 font-portal-label-md text-portal-label-md text-portal-on-surface transition-colors hover:text-portal-primary hover:underline">
+                    {{ fila.nombre }}
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                  </a>
                   <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant">Paciente N° {{ codigoPaciente(fila) }}</p>
+                } @else {
+                  <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.nombre }}</p>
                 }
               </div>
             </div>

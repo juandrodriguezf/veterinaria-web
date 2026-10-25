@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MascotaTratada } from '../../../../models/mascota-tratada.model';
 
 /**
@@ -7,6 +8,7 @@ import { MascotaTratada } from '../../../../models/mascota-tratada.model';
  */
 @Component({
   selector: 'app-tratadas-tabla',
+  imports: [RouterLink],
   templateUrl: './tratadas-tabla.component.html',
   styleUrl: './tratadas-tabla.component.scss',
 })
