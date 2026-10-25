@@ -172,6 +172,12 @@ public class DataLoader implements CommandLineRunner {
                 .build());
         registrarVenta(droga("TETRACICLINA"));
 
+        // La siembra guarda los tratamientos directo en el repositorio, sin
+        // pasar por TratamientoService (que es quien incrementa el contador
+        // en la asignación real). Se sincroniza al final para que el listado
+        // del administrador muestre las atenciones sembradas.
+        sincronizarAtenciones();
+
         // Administradores al final (no dependen de nadie; 5 para cumplir
         // el estándar de al menos 5 objetos por tabla).
         administradorRepository.save(Administrador.builder().cedula("1000000001")
@@ -194,6 +200,21 @@ public class DataLoader implements CommandLineRunner {
         return drogaRepository.findByNombre(nombre).orElseThrow(
                 () -> new IllegalStateException(
                         "No se encontró la droga \"" + nombre + "\" en el inventario del Excel."));
+    }
+
+    /**
+     * Ajusta el contador de atenciones de cada veterinario al número de
+     * tratamientos sembrados. Sin esto los veterinarios quedan en 0 aunque
+     * tengan historial, porque la siembra no usa el service de asignación
+     * (el único que incrementa el contador en la operación normal).
+     */
+    private void sincronizarAtenciones() {
+        for (Veterinario veterinario : veterinarioRepository.findAll()) {
+            int atenciones = tratamientoRepository
+                    .findByVeterinario_Id(veterinario.getId()).size();
+            veterinario.setNumeroAtenciones(atenciones);
+            veterinarioRepository.save(veterinario);
+        }
     }
 
     /**
