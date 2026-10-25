@@ -49,7 +49,13 @@ public class AdministradorServiceImpl implements AdministradorService {
     }
 
     @Override
-    public Administrador obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        return administradorRepository.findByCorreoIgnoreCaseAndContrasena(correo, contrasena);
+    public Administrador obtenerPorCorreoYContrasena(String identificador, String contrasena) {
+        // El formulario acepta correo o cédula: se busca primero por correo y,
+        // si no hay coincidencia, por documento.
+        Administrador porCorreo = administradorRepository
+                .findByCorreoIgnoreCaseAndContrasena(identificador, contrasena);
+        return porCorreo != null
+                ? porCorreo
+                : administradorRepository.findByCedulaAndContrasena(identificador, contrasena);
     }
 }

@@ -108,10 +108,16 @@ public class VeterinarioServiceImpl implements VeterinarioService {
     }
 
     @Override
-    public Veterinario obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        // Política del portal: solo un veterinario "Activo" inicia sesión.
-        return veterinarioRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
-                correo, contrasena, "Activo");
+    public Veterinario obtenerPorCorreoYContrasena(String identificador, String contrasena) {
+        // El formulario acepta correo o cédula: se busca primero por correo y,
+        // si no hay coincidencia, por documento. Política del portal: solo un
+        // veterinario "Activo" inicia sesión.
+        Veterinario porCorreo = veterinarioRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
+                identificador, contrasena, "Activo");
+        return porCorreo != null
+                ? porCorreo
+                : veterinarioRepository.findByCedulaAndContrasenaAndEstado(
+                        identificador, contrasena, "Activo");
     }
 
     /**

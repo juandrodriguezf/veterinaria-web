@@ -26,6 +26,14 @@ public interface VeterinarioRepository extends JpaRepository<Veterinario, Intege
             String estado);
 
     /**
+     * Veterinario por cédula y credenciales, solo si está "Activo": permite
+     * iniciar sesión con el documento, igual que con el correo.
+     */
+    Veterinario findByCedulaAndContrasenaAndEstado(String cedula,
+            String contrasena,
+            String estado);
+
+    /**
      * Veterinario por correo: soporta la validación de unicidad en el
      * service (un correo no puede repetirse entre veterinarios).
      */

@@ -27,10 +27,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * anotaciones @PostMapping con @RequestBody.
  *
  * El controller es delgado: delega la autenticación en LoginService, que
- * recorre las tres tablas (Veterinario, Administrador, Dueño) y devuelve
- * el rol y el id. Cuando las credenciales no coinciden, el service lanza
- * IllegalArgumentException y aquí se traduce a un 401 con el mensaje, para
- * que el formulario de login lo muestre.
+ * recorre las tres tablas (Veterinario, Administrador, Dueño) aceptando
+ * correo o cédula, y devuelve el rol y el id. Cuando las credenciales no
+ * coinciden, el service lanza IllegalArgumentException y aquí se traduce a
+ * un 401 con el mensaje, para que el formulario de login lo muestre.
  *
  * Flujo estricto: Controller -> Service -> Repository.
  */
@@ -44,7 +44,7 @@ public class LoginRestController {
     @Autowired
     private LoginService loginService;
 
-    @Operation(summary = "Autentica por correo y contraseña y devuelve el rol y el id del usuario.")
+    @Operation(summary = "Autentica por correo o cédula y contraseña y devuelve el rol y el id del usuario.")
     @PostMapping
     public ResponseEntity<?> autenticar(@RequestBody LoginRequest credenciales) {
         try {

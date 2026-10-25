@@ -30,7 +30,7 @@ export class LoginComponent {
       next: (resultado) => this.navegarPorRol(resultado.rol, resultado.id),
       error: (error) => {
         // El backend responde 401 con el mensaje exacto del service.
-        this.mensajeError = error?.error?.mensaje ?? 'Correo o contraseña incorrectos. Verifica tus credenciales.';
+        this.mensajeError = error?.error?.mensaje ?? 'Cédula, correo o contraseña incorrectos. Verifica tus credenciales.';
       },
     });
   }

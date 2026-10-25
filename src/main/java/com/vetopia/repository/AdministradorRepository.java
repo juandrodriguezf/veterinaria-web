@@ -15,4 +15,10 @@ public interface AdministradorRepository extends JpaRepository<Administrador, In
 
     /** Administrador cuyas credenciales coinciden, o null si no existe. */
     Administrador findByCorreoIgnoreCaseAndContrasena(String correo, String contrasena);
+
+    /**
+     * Administrador por cédula y contraseña: alternativa al correo para
+     * iniciar sesión con el documento.
+     */
+    Administrador findByCedulaAndContrasena(String cedula, String contrasena);
 }

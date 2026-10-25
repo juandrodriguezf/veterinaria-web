@@ -35,11 +35,11 @@ public interface VeterinarioService {
     void guardar(Veterinario veterinario);
 
     /**
-     * Busca un veterinario por correo y contraseña (para login). Solo
-     * devuelve el registro si su estado es "Activo": un veterinario
+     * Busca un veterinario por correo o cédula y contraseña (para login).
+     * Solo devuelve el registro si su estado es "Activo": un veterinario
      * desactivado por el administrador no puede ingresar al portal.
      */
-    Veterinario obtenerPorCorreoYContrasena(String correo, String contrasena);
+    Veterinario obtenerPorCorreoYContrasena(String identificador, String contrasena);
 
     /**
      * Alterna el estado del veterinario (Activo <-> Inactivo) y devuelve

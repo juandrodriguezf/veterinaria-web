@@ -130,10 +130,16 @@ public class DuenoServiceImpl implements DuenoService {
     }
 
     @Override
-    public Dueno obtenerPorCorreoYContrasena(String correo, String contrasena) {
-        // Misma política del portal: solo un cliente "Activo" inicia sesión.
-        return duenoRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
-                correo, contrasena, "Activo");
+    public Dueno obtenerPorCorreoYContrasena(String identificador, String contrasena) {
+        // El formulario acepta correo o cédula: se busca primero por correo y,
+        // si no hay coincidencia, por documento. Misma política del portal:
+        // solo un cliente "Activo" inicia sesión.
+        Dueno porCorreo = duenoRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
+                identificador, contrasena, "Activo");
+        return porCorreo != null
+                ? porCorreo
+                : duenoRepository.findByCedulaAndContrasenaAndEstado(
+                        identificador, contrasena, "Activo");
     }
 
     /**

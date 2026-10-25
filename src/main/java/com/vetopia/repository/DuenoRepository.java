@@ -27,6 +27,15 @@ public interface DuenoRepository extends JpaRepository<Dueno, Integer> {
                                                         String estado);
 
     /**
+     * Cliente por cédula y credenciales, solo si está "Activo": es la
+     * alternativa al correo para iniciar sesión con el número de documento,
+     * como ofrece el formulario.
+     */
+    Dueno findByCedulaAndContrasenaAndEstado(String cedula,
+                                             String contrasena,
+                                             String estado);
+
+    /**
      * Cliente por correo: soporta la validación de unicidad en
      * el service (un correo no puede repetirse entre clientes).
      */

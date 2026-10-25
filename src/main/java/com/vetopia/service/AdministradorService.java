@@ -21,6 +21,6 @@ public interface AdministradorService {
     /** Guarda (registra) un administrador nuevo. El id lo asigna el repositorio. */
     void guardar(Administrador administrador);
 
-    /** Busca un administrador por correo y contraseña (para login). */
-    Administrador obtenerPorCorreoYContrasena(String correo, String contrasena);
+    /** Busca un administrador por correo o cédula y contraseña (para login). */
+    Administrador obtenerPorCorreoYContrasena(String identificador, String contrasena);
 }
