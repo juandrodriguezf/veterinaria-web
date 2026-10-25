@@ -1,0 +1,29 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <nav class="w-full top-0 sticky bg-[#0f1115] shadow-sm z-50">
+    <div class="flex items-center w-full px-portal-gutter max-w-portal-container-max mx-auto h-20">
+      <a class="flex items-center" routerLink="/">
+        <img alt="Vetopia Logo" class="h-8 w-auto object-contain" src="images/logo_Vetopia.png"/>
+      </a>
+    </div>
+  </nav>
+
+  <main class="flex-1 flex items-center justify-center px-4 py-16">
+    <div class="w-full max-w-lg text-center">
+      <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-portal-error-container text-portal-on-error-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-4xl">explore_off</span>
+      </div>
+      <h1 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface mb-3">Página no encontrada</h1>
+      <p class="font-portal-body-md text-portal-body-md text-portal-on-surface-variant mb-8">{{ mensaje }}</p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a class="inline-flex px-6 py-3 rounded-full bg-portal-primary-container text-portal-on-primary-container font-portal-button text-portal-button uppercase tracking-wider transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/">
+          Volver al inicio
+        </a>
+        <a class="inline-flex px-6 py-3 rounded-full border border-portal-outline text-portal-on-surface font-portal-button text-portal-button uppercase tracking-wider transition-colors hover:bg-portal-surface-container-high" routerLink="/login">
+          Iniciar sesión
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

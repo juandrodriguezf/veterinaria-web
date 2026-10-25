@@ -13,6 +13,7 @@ import { VeterinarioTratadasComponent } from './pages/veterinario-tratadas/veter
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminVeterinariosListadoComponent } from './pages/admin-veterinarios-listado/admin-veterinarios-listado.component';
 import { AdminVeterinariosFormularioComponent } from './pages/admin-veterinarios-formulario/admin-veterinarios-formulario.component';
+import { ErrorComponent } from './pages/error/error.component';
 
 export const routes: Routes = [
   {
@@ -82,5 +83,13 @@ export const routes: Routes = [
   {
     path: 'veterinario/tratadas',
     component: VeterinarioTratadasComponent,
+  },
+  {
+    path: 'error',
+    component: ErrorComponent,
+  },
+  {
+    path: '**',
+    component: ErrorComponent,
   },
 ];
