@@ -1,0 +1,44 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <app-admin-header [usuario]="nombreAdministrador" activo="veterinarios"></app-admin-header>
+
+  <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+    <header class="mb-portal-stack-md">
+      <h1 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Veterinarios</h1>
+      <p class="mt-2 font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+        Gestiona al personal: cédula, correo, especialidad y estado laboral.
+      </p>
+    </header>
+
+    <section class="mb-portal-stack-md">
+      <form (ngSubmit)="buscar()" class="flex flex-wrap items-center gap-3">
+        <div class="relative flex-1 min-w-[240px] max-w-sm">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+          <input [(ngModel)]="termino" class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+                 name="termino" placeholder="Buscar por cédula o nombre..." type="text"/>
+        </div>
+        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+          Buscar
+        </button>
+        <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
+          Limpiar
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-portal-surface-container-lowest rounded-DEFAULT border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
+        <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de veterinarios</h2>
+        <div class="flex items-center gap-4">
+          <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ veterinarios.length === 1 ? '1 veterinario' : veterinarios.length + ' veterinarios' }}</span>
+          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/admin/veterinarios/new">
+            Agregar veterinario
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person_add</span>
+          </a>
+        </div>
+      </div>
+      <app-veterinario-tabla (veterinarioEliminado)="eliminar($event)" (veterinarioSeleccionado)="alternarEstado($event)" [termino]="termino" [veterinarios]="veterinarios"></app-veterinario-tabla>
+    </section>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

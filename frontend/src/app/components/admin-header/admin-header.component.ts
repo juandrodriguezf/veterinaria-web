@@ -14,13 +14,13 @@ import { RouterLink } from '@angular/router';
 })
 export class AdminHeaderComponent {
   /** Pestaña activa del portal (para resaltar el enlace correspondiente). */
-  activo = input<'dashboard'>();
+  activo = input<'dashboard' | 'veterinarios'>();
 
   /** Nombre del administrador que se muestra junto al logo. */
   usuario = input<string>('');
 
   /** Clases del enlace según sea o no la pestaña activa. */
-  clasePestana(pestana: 'dashboard') {
+  clasePestana(pestana: 'dashboard' | 'veterinarios') {
     return this.activo() === pestana
       ? 'text-portal-primary font-portal-body-md text-portal-body-md font-bold border-b-2 border-portal-primary pb-1'
       : 'text-gray-400 hover:text-portal-primary transition-colors font-portal-body-md text-portal-body-md';

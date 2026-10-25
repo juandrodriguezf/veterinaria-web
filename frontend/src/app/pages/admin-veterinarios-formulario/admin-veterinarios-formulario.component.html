@@ -1,0 +1,34 @@
+<div class="bg-portal-background text-portal-on-background font-portal-body-md min-h-screen flex flex-col">
+  <app-admin-header [usuario]="nombreAdministrador" activo="veterinarios"></app-admin-header>
+
+  <main class="flex-1">
+    <div class="max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
+      <div class="mb-portal-stack-lg">
+        <h1 class="text-portal-headline-xl font-portal-headline-xl text-portal-on-surface mb-1">{{ isEdit ? 'Editar Veterinario' : 'Registrar Nuevo Veterinario' }}</h1>
+        <p class="text-portal-body-lg font-portal-body-lg text-portal-on-surface-variant">Completa los datos del personal veterinario</p>
+      </div>
+
+      @if (mensajeError) {
+        <div class="mb-6 p-4 rounded-portal-xl border border-portal-error bg-portal-error-container text-portal-on-error-container" role="alert">
+          <p class="text-portal-body-md font-portal-body-md">{{ mensajeError }}</p>
+        </div>
+      }
+
+      <form (ngSubmit)="guardar()" [formGroup]="veterinarioForm" class="flex flex-col gap-portal-stack-lg">
+        <input formControlName="id" type="hidden"/>
+
+        <app-veterinario-campos [form]="veterinarioForm"></app-veterinario-campos>
+
+        <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-portal-outline-variant">
+          <a class="px-6 py-3 rounded-full border border-portal-outline text-portal-on-surface font-portal-button text-portal-button uppercase hover:bg-portal-surface-container-high transition-colors" routerLink="/admin/veterinarios">Cancelar</a>
+          <button [disabled]="!veterinarioForm.valid" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-8 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary disabled:opacity-60" type="submit">
+            <span class="material-symbols-outlined text-lg">save</span>
+            <span>{{ isEdit ? 'Actualizar Veterinario' : 'Registrar Veterinario' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <app-footer-portal></app-footer-portal>
+</div>

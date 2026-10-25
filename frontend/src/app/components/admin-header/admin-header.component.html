@@ -5,6 +5,7 @@
     </a>
     <div class="hidden md:flex items-center gap-8">
       <a [class]="clasePestana('dashboard')" [attr.aria-current]="activo() === 'dashboard' ? 'page' : null" routerLink="/admin/dashboard">Dashboard</a>
+      <a [class]="clasePestana('veterinarios')" [attr.aria-current]="activo() === 'veterinarios' ? 'page' : null" routerLink="/admin/veterinarios">Veterinarios</a>
     </div>
     <div class="flex items-center gap-4">
       @if (usuario()) {

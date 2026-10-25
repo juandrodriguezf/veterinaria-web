@@ -1,0 +1,58 @@
+<div class="overflow-x-auto">
+  <table class="w-full min-w-[860px] text-left">
+    <thead>
+      <tr class="bg-portal-surface-container-low uppercase">
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Nombre</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Cédula</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Correo</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Estado</th>
+        <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (veterinarios()?.length === 0) {
+        <tr>
+          <td class="px-6 py-16 text-center" colspan="5">
+            <span class="mx-auto mb-3 block material-symbols-outlined text-5xl text-portal-outline-variant" style="font-variation-settings: 'FILL' 0;">{{ termino()?.trim() ? 'search_off' : 'medical_services' }}</span>
+            @if (termino()?.trim()) {
+              <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">No se encontraron veterinarios con "{{ termino() }}".</p>
+            } @else {
+              <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">Aún no hay veterinarios registrados.</p>
+            }
+          </td>
+        </tr>
+      }
+      @for (veterinario of veterinarios(); track $index) {
+        <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+          <td class="px-6 py-4">
+            <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ veterinario.nombre }}</p>
+            <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant">{{ veterinario.especialidad || 'Sin especialidad' }} · {{ atenciones(veterinario) }}</p>
+          </td>
+          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ veterinario.cedula }}</td>
+          <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface-variant">{{ veterinario.correo }}</td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full px-3 py-1 font-portal-label-md text-portal-label-md uppercase tracking-widest"
+                  [class]="veterinario.estado === 'Activo' ? 'bg-portal-primary-container text-portal-on-primary-container' : 'bg-portal-surface-container-high text-portal-outline'">{{ veterinario.estado }}</span>
+          </td>
+          <td class="px-6 py-4">
+            <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
+              <a [attr.aria-label]="'Editar veterinario ' + veterinario.nombre" class="inline-flex items-center gap-2 rounded-full bg-portal-secondary-container px-4 py-2 font-portal-button text-portal-button uppercase text-portal-on-secondary-container transition-colors hover:bg-portal-secondary hover:text-portal-on-secondary" [routerLink]="['/admin/veterinarios/update', veterinario.id]">
+                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">edit</span>
+                Editar
+              </a>
+              <button (click)="seleccionar(veterinario)" [class]="veterinario.estado === 'Activo' ? 'bg-portal-error-container text-portal-on-error-container hover:bg-portal-error hover:text-portal-on-error' : 'bg-portal-primary-container text-portal-on-primary-container hover:bg-portal-primary hover:text-portal-on-primary'"
+                      class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors" type="button">
+                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">{{ veterinario.estado === 'Activo' ? 'person_off' : 'person' }}</span>
+                <span>{{ veterinario.estado === 'Activo' ? 'Desactivar' : 'Activar' }}</span>
+              </button>
+              <button (click)="solicitarEliminacion(veterinario)" [attr.aria-label]="'Eliminar veterinario ' + veterinario.nombre" class="inline-flex items-center gap-2 rounded-full border border-portal-error px-4 py-2 font-portal-button text-portal-button uppercase text-portal-error transition-colors hover:bg-portal-error hover:text-portal-on-error" type="button">
+                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">delete</span>
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
