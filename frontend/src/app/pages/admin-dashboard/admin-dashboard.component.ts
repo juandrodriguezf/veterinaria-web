@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { AdminHeaderComponent } from '../../components/admin-header/admin-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { ResumenDashboard } from '../../models/dashboard.model';
 import { DashboardService } from '../../service/dashboard.service';
+import { SesionService } from '../../service/sesion.service';
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
 import { KpiMedicamentosComponent } from './components/kpi-medicamentos/kpi-medicamentos.component';
 import { TopMedicamentosComponent } from './components/top-medicamentos/top-medicamentos.component';
@@ -27,8 +29,14 @@ import { TopMedicamentosComponent } from './components/top-medicamentos/top-medi
 export class AdminDashboardComponent {
   private dashboardService = inject(DashboardService);
 
-  /** Nombre del administrador (sin sesión, igual que el portal veterinario). */
-  nombreAdministrador: string = 'Dirección Vetopia';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del administrador autenticado, para la cabecera del portal. */
+  get nombreAdministrador(): string {
+    return this.sesionService.nombre();
+  }
 
   /** Resumen de KPIs; queda indefinido mientras carga. */
   resumen?: ResumenDashboard;
@@ -37,6 +45,10 @@ export class AdminDashboardComponent {
   mensajeError = '';
 
   ngOnInit() {
+    if (!this.sesionService.esAdministrador()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.cargar();
   }
 

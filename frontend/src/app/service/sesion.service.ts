@@ -47,6 +47,12 @@ export class SesionService {
     return sesion !== null && sesion.rol === 'VETERINARIO';
   });
 
+  /** Indica si la sesión actual pertenece a un administrador. */
+  readonly esAdministrador = computed(() => {
+    const sesion = this.sesionActual();
+    return sesion !== null && sesion.rol === 'ADMINISTRADOR';
+  });
+
   /** Guarda los datos mínimos que devolvió el login y actualiza la señal. */
   guardar(resultado: ResultadoLogin) {
     const sesion: SesionUsuario = {

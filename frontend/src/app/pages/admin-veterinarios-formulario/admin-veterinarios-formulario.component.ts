@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminHeaderComponent } from '../../components/admin-header/admin-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
+import { SesionService } from '../../service/sesion.service';
 import { VeterinarioService } from '../../service/veterinario.service';
 import { VeterinarioCamposComponent } from './components/veterinario-campos/veterinario-campos.component';
 
@@ -30,8 +31,12 @@ export class AdminVeterinariosFormularioComponent {
 
   private activatedRoute = inject(ActivatedRoute);
 
-  /** Nombre del administrador (sin sesión, igual que el portal veterinario). */
-  nombreAdministrador: string = 'Dirección Vetopia';
+  private sesionService = inject(SesionService);
+
+  /** Nombre del administrador autenticado, para la cabecera del portal. */
+  get nombreAdministrador(): string {
+    return this.sesionService.nombre();
+  }
 
   /** true cuando la ruta trae un id (edición). */
   isEdit = false;
@@ -56,6 +61,10 @@ export class AdminVeterinariosFormularioComponent {
   });
 
   ngOnInit() {
+    if (!this.sesionService.esAdministrador()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.id = Number(this.activatedRoute.snapshot.params['id']) || 0;
     if (!this.id) {
       return;
