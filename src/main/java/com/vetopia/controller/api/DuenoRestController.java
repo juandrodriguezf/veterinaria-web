@@ -61,7 +61,7 @@ public class DuenoRestController {
         duenoService.guardar(dueno);
     }
 
-    @Operation(summary = "Actualiza un cliente existente.")
+    @Operation(summary = "Actualiza un cliente existente (valida cédula y correo únicos en todo el sistema).")
     @PutMapping("/update")
     public void actualizarDueno(@RequestBody Dueno dueno) {
         duenoService.guardar(dueno);

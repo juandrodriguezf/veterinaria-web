@@ -36,14 +36,14 @@ public interface DuenoRepository extends JpaRepository<Dueno, Integer> {
                                              String estado);
 
     /**
-     * Cliente por correo: soporta la validación de unicidad en
-     * el service (un correo no puede repetirse entre clientes).
+     * Cliente por correo: soporta la validación de unicidad global
+     * entre clientes, veterinarios y administradores.
      */
     Dueno findByCorreoIgnoreCase(String correo);
 
     /**
-     * Cliente por cédula: soporta la validación de unicidad en
-     * el service (una cédula no puede repetirse).
+     * Cliente por cédula: soporta la validación de unicidad global
+     * entre clientes, veterinarios y administradores.
      */
     Dueno findByCedula(String cedula);
 

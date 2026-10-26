@@ -42,15 +42,16 @@ public interface DuenoService {
     /**
      * Obtiene el dueño con el id indicado y valida que esté "Activo"
      * (misma política del login: un cliente desactivado no ingresa al
-     * portal). Lanza IllegalArgumentException si el id es inválido y
-     * IllegalStateException si el dueño no existe o está inactivo.
+     * portal). Lanza IllegalArgumentException si el id es inválido,
+     * RecursoNoEncontradoException si el dueño no existe e
+     * IllegalStateException si está inactivo.
      */
     Dueno obtenerActivo(Integer id);
 
     /**
      * Alterna el estado del dueño (Activo <-> Inactivo, el borrado
-     * lógico del diagrama de clases) y devuelve el nuevo estado; null si
-     * el dueño no existe.
+     * lógico del diagrama de clases) y devuelve el nuevo estado. Lanza
+     * RecursoNoEncontradoException si el dueño no existe.
      */
     String alternarEstado(Integer id);
 

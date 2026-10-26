@@ -19,9 +19,9 @@ public interface AdministradorService {
     Administrador obtenerAdministradorPorId(Integer id);
 
     /**
-     * Guarda (registra) un administrador nuevo. Valida que la cédula y el
-     * correo no pertenezcan a ninguna otra cuenta del sistema; al editar,
-     * el registro actual no cuenta como duplicado.
+     * Guarda (crea o actualiza) un administrador. Valida que la cédula y
+     * el correo no pertenezcan a ninguna otra cuenta del sistema; al
+     * editar, el registro actual no cuenta como duplicado.
      */
     void guardar(Administrador administrador);
 

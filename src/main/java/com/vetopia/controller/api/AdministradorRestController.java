@@ -21,7 +21,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * CONTROLLER REST - Administrador
- * Expone el listado y registro de administradores como API JSON.
+ * Expone el listado, la consulta, el registro y el dashboard de
+ * administradores como API JSON.
  *
  * Flujo estricto: Controller -> Service -> Repository.
  */

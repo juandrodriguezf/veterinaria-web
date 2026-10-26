@@ -15,13 +15,15 @@ Controller       ->  Service  ->  Repository
 
 Cada capa se comunica únicamente con la capa inferior y las dependencias se gestionan con inyección de dependencias de Spring (constructor en `DataLoader`, `@Autowired` en el resto). La persistencia es real: **Spring Data JPA 100% con queries derivadas** (sin JPQL) sobre **H2**, siguiendo los patrones del material del curso (`7.JPA_avanzado`).
 
+La **unicidad de cédula y correo** se valida en la capa service (`IdentificadorUnicoService`) contra clientes, veterinarios y administradores; las restricciones `unique` de las entidades solo protegen dentro de cada tabla.
+
 ## Funcionalidades
 
 - **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño (con búsqueda opcional por nombre), listar las activas, consultar una mascota propia de un dueño, crear, actualizar, alternar estado y eliminar.
 - **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
 - **API REST de tratamientos y drogas**: consultar el historial de una mascota o de un veterinario, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario, registra la unidad vendida y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
 - **API REST de veterinarios y administradores**: CRUD de veterinarios con búsqueda por cédula o nombre, activar/desactivar y eliminar (desvinculando sus tratamientos); además el administrador consulta el **dashboard** con los indicadores del negocio.
-- **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal; los veterinarios solo entran si están **activos**.
+- **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal; veterinarios y clientes solo entran si están **activos** (el administrador no maneja estado).
 - **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
 - **Portal del administrador**: dashboard con los indicadores del negocio (tratamientos del último mes, veterinarios activos e inactivos, mascotas activas e inactivas, ventas y ganancias, y las drogas más usadas) y gestión de veterinarios con búsqueda, alta, edición, activación/desactivación y eliminación.
 - **Portal del veterinario**: pestaña **Tratadas** con las mascotas que ha tratado, ordenadas por la última atención, con búsqueda por nombre.
@@ -59,8 +61,8 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/dueno/all` | Todos los clientes |
 | `GET` | `/dueno/find/{id}` | Un cliente por id |
 | `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia parcial, sin distinguir mayúsculas) |
-| `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos) |
-| `PUT` | `/dueno/update` | Actualiza un cliente |
+| `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos en todo el sistema) |
+| `PUT` | `/dueno/update` | Actualiza un cliente (valida cédula y correo únicos en todo el sistema) |
 | `PUT` | `/dueno/toggle/{id}` | Alterna el estado y lo devuelve |
 | `DELETE` | `/dueno/delete/{id}` | Elimina un cliente y, en cascada, sus mascotas |
 | `GET` | `/tratamiento/all` | Todos los tratamientos |
@@ -74,14 +76,14 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/veterinario/all` | Todos los veterinarios |
 | `GET` | `/veterinario/find/{id}` | Un veterinario por id |
 | `GET` | `/veterinario/search/{termino}` | Veterinarios por cédula o nombre (coincidencia parcial) |
-| `POST` | `/veterinario/add` | Registra un veterinario (valida cédula y correo únicos; clave por defecto `vet123`) |
-| `PUT` | `/veterinario/update` | Actualiza un veterinario (si la clave llega vacía se conserva) |
+| `POST` | `/veterinario/add` | Registra un veterinario (valida cédula y correo únicos en todo el sistema; clave por defecto `vet123`) |
+| `PUT` | `/veterinario/update` | Actualiza un veterinario (valida cédula y correo únicos en todo el sistema; si la clave llega vacía se conserva) |
 | `PUT` | `/veterinario/toggle/{id}` | Activa o desactiva un veterinario |
 | `DELETE` | `/veterinario/delete/{id}` | Elimina un veterinario (desvincula sus tratamientos) |
 | `GET` | `/administrador/all` | Todos los administradores |
 | `GET` | `/administrador/find/{id}` | Un administrador por id |
 | `GET` | `/administrador/dashboard` | Indicadores del negocio para el dashboard |
-| `POST` | `/administrador/add` | Registra un administrador |
+| `POST` | `/administrador/add` | Registra un administrador (valida cédula y correo únicos en todo el sistema) |
 | `POST` | `/login` | Autentica por correo o cédula y contraseña; devuelve `{rol, id}` o `401 {mensaje}` |
 
 La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
@@ -211,7 +213,7 @@ Vetopia/
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
     │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
     │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
-    │   └── errors/                          # RecursoNoEncontradoException
+    │   └── errors/                          # RecursoNoEncontradoException y RestExceptionHandler
     └── resources/
         ├── data/medicamentos.xlsx           # Inventario de medicamentos que carga DrogaExcelLoader
         ├── application.properties           # Puerto y perfil activo (h2)

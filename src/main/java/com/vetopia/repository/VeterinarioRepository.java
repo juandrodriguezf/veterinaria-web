@@ -34,14 +34,15 @@ public interface VeterinarioRepository extends JpaRepository<Veterinario, Intege
             String estado);
 
     /**
-     * Veterinario por correo: soporta la validación de unicidad en el
-     * service (un correo no puede repetirse entre veterinarios).
+     * Veterinario por correo: soporta la validación de unicidad global
+     * entre clientes, veterinarios y administradores.
      */
     Veterinario findByCorreoIgnoreCase(String correo);
 
     /**
-     * Veterinario por cédula: soporta la validación de unicidad en el
-     * service y la búsqueda exacta por documento.
+     * Veterinario por cédula: soporta la validación de unicidad global
+     * entre clientes, veterinarios y administradores, además de la
+     * búsqueda exacta por documento.
      */
     Veterinario findByCedula(String cedula);
 

@@ -62,7 +62,7 @@ public class VeterinarioRestController {
         veterinarioService.guardar(veterinario);
     }
 
-    @Operation(summary = "Actualiza un veterinario existente.")
+    @Operation(summary = "Actualiza un veterinario existente (valida cédula y correo únicos en todo el sistema).")
     @PutMapping("/update")
     public void actualizarVeterinario(@RequestBody Veterinario veterinario) {
         veterinarioService.guardar(veterinario);

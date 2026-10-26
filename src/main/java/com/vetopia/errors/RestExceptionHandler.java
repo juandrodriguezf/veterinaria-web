@@ -97,8 +97,9 @@ public class RestExceptionHandler {
     }
 
     /**
-     * Conflicto con el estado actual (mascota inactiva, droga sin
-     * unidades, cliente inactivo, etc.): responde 409 con el mensaje.
+     * Conflicto con el estado actual o con un identificador ya registrado
+     * (mascota inactiva, droga sin unidades, cliente inactivo, cédula o
+     * correo duplicado, etc.): responde 409 con el mensaje.
      */
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> manejarConflicto(IllegalStateException excepcion) {

@@ -155,9 +155,9 @@ public class DuenoServiceImpl implements DuenoService {
 
     /**
      * {@inheritDoc}
-     * Antes de retirar al dueño se retiran sus mascotas para no dejar
-     * huérfanas (misma política del ejemplo: borrar por capas desde el
-     * service, sin depender del DDL).
+     * Elimina físicamente al dueño por su id. La eliminación en cascada de
+     * sus mascotas la realiza eliminarEnCascada, que primero retira las
+     * mascotas para no dejar registros huérfanos.
      */
     @Override
     @Transactional

@@ -131,7 +131,7 @@ Los servicios ya no siembran datos: cada método hace una petición a la API RES
 | `VeterinarioService` | `eliminar(id)` | `DELETE /veterinario/delete/{id}`; comando (desvincula tratamientos) |
 | `DashboardService` | `obtenerResumen()` | `GET /administrador/dashboard` |
 
-En la creación se omite el `id` (`{ ...entidad, id: null }`) porque el backend trata un id nulo como registro nuevo; con `id` 0 lo tomaría como una edición (`merge`). Las reglas de negocio (cédula/correo únicos, dueño obligatorio, mascota activa y stock) viven ahora en el backend, así que el frontend ya no las replica.
+En la creación se omite el `id` (`{ ...entidad, id: null }`) porque el backend trata un id nulo como registro nuevo; con `id` 0 lo tomaría como una edición (`merge`). Las reglas de negocio (cédula/correo únicos en todo el sistema, dueño obligatorio, mascota activa y stock) viven ahora en el backend, así que el frontend ya no las replica.
 
 La ficha clínica y el detalle del cliente encadenan dos consultas con **`mergeMap`** (patrón del video): primero la mascota (`obtenerMascotaPorId` / `obtenerPropia`) y, con esa respuesta, `listarTratamientosPorMascota`, en un solo `subscribe`, en lugar de anidar un `subscribe` dentro de otro.
 
