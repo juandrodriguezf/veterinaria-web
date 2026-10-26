@@ -21,9 +21,9 @@ La **unicidad de cédula y correo** se valida en la capa service (`Identificador
 
 - **API REST de mascotas**: listar, consultar por id, buscar por nombre, listar por dueño (con búsqueda opcional por nombre), listar las activas, consultar una mascota propia de un dueño, crear, actualizar, alternar estado y eliminar.
 - **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
-- **API REST de tratamientos y drogas**: consultar el historial de una mascota o de un veterinario, asignar un tratamiento (valida mascota activa y stock, descuenta una unidad del inventario, registra la unidad vendida y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
+- **API REST de tratamientos y drogas**: consultar el historial de una mascota o de un veterinario, asignar un tratamiento (recibe el veterinario responsable, valida mascota y veterinario activos y stock, descuenta una unidad del inventario, registra la unidad vendida y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
 - **API REST de veterinarios y administradores**: CRUD de veterinarios con búsqueda por cédula o nombre, activar/desactivar y eliminar (desvinculando sus tratamientos); además el administrador consulta el **dashboard** con los indicadores del negocio.
-- **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol** y el **id** para que el frontend navegue a su portal; veterinarios y clientes solo entran si están **activos** (el administrador no maneja estado).
+- **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol**, el **id** y el **nombre** para que el frontend navegue a su portal y muestre la cuenta autenticada; veterinarios y clientes solo entran si están **activos** (el administrador no maneja estado).
 - **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
 - **Portal del administrador**: dashboard con los indicadores del negocio (tratamientos del último mes, veterinarios activos e inactivos, mascotas activas e inactivas, ventas y ganancias, y las drogas más usadas) y gestión de veterinarios con búsqueda, alta, edición, activación/desactivación y eliminación.
 - **Portal del veterinario**: pestaña **Tratadas** con las mascotas que ha tratado, ordenadas por la última atención, con búsqueda por nombre.
@@ -84,7 +84,7 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/administrador/find/{id}` | Un administrador por id |
 | `GET` | `/administrador/dashboard` | Indicadores del negocio para el dashboard |
 | `POST` | `/administrador/add` | Registra un administrador (valida cédula y correo únicos en todo el sistema) |
-| `POST` | `/login` | Autentica por correo o cédula y contraseña; devuelve `{rol, id}` o `401 {mensaje}` |
+| `POST` | `/login` | Autentica por correo o cédula y contraseña; devuelve `{rol, id, nombre}` o `401 {mensaje}` |
 
 La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
 
@@ -128,12 +128,13 @@ La interfaz de usuario vive en el [frontend Angular](frontend/README.md) (`http:
 | Rol | Usuario | Contraseña | Estado |
 |---|---|---|---|
 | Veterinario | `carlos.gutierrez@vetopia.com` | `vet123` | — |
+| Veterinario | `laura.mendez@vetopia.com` | `vet123` | — |
 | Administrador | `admin@vetopia.com` | `admin123` | — |
 | Cliente | `ana@correo.com` | `dueño123` | Activa |
 | Cliente | `pedro@correo.com` | `dueño123` | Activa |
 | Cliente | `maria@correo.com` | `dueño123` | Inactiva (no inicia sesión) |
 
-El login también acepta la **cédula** como usuario (por ejemplo, `1002003001` para Carlos, `1000000001` para el administrador o `1020304050` para Ana), manteniendo la misma contraseña.
+El login también acepta la **cédula** como usuario (por ejemplo, `1002003001` para Carlos, `1002003002` para Laura, `1000000001` para el administrador o `1020304050` para Ana), manteniendo la misma contraseña.
 
 ## Diagrama de clases
 
@@ -166,7 +167,7 @@ El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial 
 
 ## Frontend Angular
 
-La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), y **consume esta API REST con `HttpClient`** (los servicios ya no tienen datos quemados).
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), y **consume esta API REST con `HttpClient`** (los servicios ya no tienen datos quemados). El login devuelve `{rol, id, nombre}` y el frontend conserva esa identidad en `localStorage` para mostrar la cuenta autenticada en cada portal.
 
 | Ruta | Descripción |
 |---|---|
