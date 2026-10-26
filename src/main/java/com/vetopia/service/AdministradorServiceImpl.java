@@ -25,6 +25,10 @@ public class AdministradorServiceImpl implements AdministradorService {
     @Autowired
     private AdministradorRepository administradorRepository;
 
+    /** Validador de cédula y correo únicos entre las cuentas del sistema. */
+    @Autowired
+    private IdentificadorUnicoService identificadorUnicoService;
+
     @Override
     public List<Administrador> listarAdministradores() {
         return List.copyOf(administradorRepository.findAll());
@@ -43,8 +47,21 @@ public class AdministradorServiceImpl implements AdministradorService {
                         "No encontramos ningún administrador registrado con el identificador \"" + id + "\"."));
     }
 
+    /**
+     * {@inheritDoc}
+     * La cédula y el correo identifican la cuenta en el login, así que se
+     * validan contra clientes, veterinarios y administradores antes de
+     * guardar. El validador central ignora este mismo registro al editar y
+     * reserva también los identificadores de cuentas inactivas.
+     */
     @Override
     public void guardar(Administrador administrador) {
+        administrador.setCedula(
+                administrador.getCedula() == null ? null : administrador.getCedula().trim());
+        administrador.setCorreo(
+                administrador.getCorreo() == null ? null : administrador.getCorreo().trim());
+        identificadorUnicoService.validarAdministrador(
+                administrador.getCedula(), administrador.getCorreo(), administrador.getId());
         administradorRepository.save(administrador);
     }
 

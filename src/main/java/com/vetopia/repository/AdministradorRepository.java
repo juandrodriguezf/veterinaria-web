@@ -21,4 +21,10 @@ public interface AdministradorRepository extends JpaRepository<Administrador, In
      * iniciar sesión con el documento.
      */
     Administrador findByCedulaAndContrasena(String cedula, String contrasena);
+
+    /** Administrador por correo: soporta la validación de unicidad global. */
+    Administrador findByCorreoIgnoreCase(String correo);
+
+    /** Administrador por cédula: soporta la validación de unicidad global. */
+    Administrador findByCedula(String cedula);
 }

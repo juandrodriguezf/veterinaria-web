@@ -57,7 +57,7 @@ public class AdministradorRestController {
         return administradorService.obtenerAdministradorPorId(id);
     }
 
-    @Operation(summary = "Registra un administrador nuevo.")
+    @Operation(summary = "Registra un administrador nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarAdministrador(@RequestBody Administrador administrador) {
         administradorService.guardar(administrador);

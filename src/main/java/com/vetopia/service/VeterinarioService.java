@@ -28,9 +28,9 @@ public interface VeterinarioService {
 
     /**
      * Guarda un veterinario nuevo o actualiza uno existente. Valida que
-     * la cédula y el correo no se repitan; en edición, una contraseña en
-     * blanco conserva la actual y el estado vacío se completa con
-     * "Activo" al crear.
+     * la cédula y el correo no pertenezcan a ninguna otra cuenta del
+     * sistema; en edición, una contraseña en blanco conserva la actual y
+     * el estado vacío se completa con "Activo" al crear.
      */
     void guardar(Veterinario veterinario);
 

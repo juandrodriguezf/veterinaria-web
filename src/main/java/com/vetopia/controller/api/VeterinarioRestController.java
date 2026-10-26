@@ -56,7 +56,7 @@ public class VeterinarioRestController {
         return veterinarioService.buscar(termino);
     }
 
-    @Operation(summary = "Registra un veterinario nuevo (valida cédula y correo únicos).")
+    @Operation(summary = "Registra un veterinario nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarVeterinario(@RequestBody Veterinario veterinario) {
         veterinarioService.guardar(veterinario);

@@ -28,6 +28,10 @@ public class DuenoServiceImpl implements DuenoService {
     @Autowired
     private DuenoRepository duenoRepository;
 
+    /** Validador de cédula y correo únicos entre las cuentas del sistema. */
+    @Autowired
+    private IdentificadorUnicoService identificadorUnicoService;
+
     /** Servicio de mascotas (para la eliminación en cascada). */
     @Autowired
     private MascotaService mascotaService;
@@ -91,21 +95,14 @@ public class DuenoServiceImpl implements DuenoService {
     @Override
     @Transactional
     public void guardar(Dueno dueno) {
-        // Validación de unicidad ANTES de insertar: sin esto la base
-        // rechazaría el INSERT por las restricciones UNIQUE de cédula y
-        // correo con una excepción críptica. Al validar aquí el mensaje
-        // es claro y el formulario vuelve con el aviso. Al editar (el
-        // dueno conserva su id), "repetido en otro id" no cuenta.
-        Dueno porCorreo = duenoRepository.findByCorreoIgnoreCase(dueno.getCorreo());
-        if (porCorreo != null && !porCorreo.getId().equals(dueno.getId())) {
-            throw new IllegalArgumentException(
-                "Ya existe un cliente con el correo \"" + dueno.getCorreo() + "\".");
-        }
-        Dueno porCedula = duenoRepository.findByCedula(dueno.getCedula());
-        if (porCedula != null && !porCedula.getId().equals(dueno.getId())) {
-            throw new IllegalArgumentException(
-                "Ya existe un cliente con la cédula \"" + dueno.getCedula() + "\".");
-        }
+        // La cédula y el correo identifican la cuenta en el login, así que
+        // deben ser únicos entre clientes, veterinarios y administradores.
+        // El validador central ignora este mismo registro al editar y
+        // reserva también los identificadores de cuentas inactivas.
+        dueno.setCedula(dueno.getCedula() == null ? null : dueno.getCedula().trim());
+        dueno.setCorreo(dueno.getCorreo() == null ? null : dueno.getCorreo().trim());
+        identificadorUnicoService.validarCliente(
+                dueno.getCedula(), dueno.getCorreo(), dueno.getId());
         // Política de contraseñas: en edición, dejar el campo en blanco
         // significa "conservar la clave actual" (el formulario no la
         // devuelve, se envía vacía); en creación se asigna una clave

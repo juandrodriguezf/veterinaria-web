@@ -18,7 +18,11 @@ public interface AdministradorService {
     /** Obtiene un administrador validando previamente el identificador. */
     Administrador obtenerAdministradorPorId(Integer id);
 
-    /** Guarda (registra) un administrador nuevo. El id lo asigna el repositorio. */
+    /**
+     * Guarda (registra) un administrador nuevo. Valida que la cédula y el
+     * correo no pertenezcan a ninguna otra cuenta del sistema; al editar,
+     * el registro actual no cuenta como duplicado.
+     */
     void guardar(Administrador administrador);
 
     /** Busca un administrador por correo o cédula y contraseña (para login). */

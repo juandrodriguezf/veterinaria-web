@@ -55,7 +55,7 @@ public class DuenoRestController {
         return duenoService.buscarPorNombre(nombre);
     }
 
-    @Operation(summary = "Crea un cliente (valida cédula y correo únicos).")
+    @Operation(summary = "Crea un cliente (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarDueno(@RequestBody Dueno dueno) {
         duenoService.guardar(dueno);

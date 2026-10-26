@@ -27,6 +27,10 @@ public class VeterinarioServiceImpl implements VeterinarioService {
     @Autowired
     private VeterinarioRepository veterinarioRepository;
 
+    /** Validador de cédula y correo únicos entre las cuentas del sistema. */
+    @Autowired
+    private IdentificadorUnicoService identificadorUnicoService;
+
     /**
      * Servicio de tratamientos: antes de eliminar al veterinario se
      * desvinculan sus tratamientos para conservar el historial clínico.
@@ -66,23 +70,19 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
     /**
      * {@inheritDoc}
-     * La validación de unicidad se hace ANTES de insertar: sin esto la base
-     * rechazaría el INSERT por las restricciones UNIQUE con una excepción
-     * críptica. Al editar (el veterinario conserva su id), "repetido en
-     * otro id" no cuenta.
+     * La cédula y el correo identifican la cuenta en el login, así que se
+     * validan contra clientes, veterinarios y administradores antes de
+     * guardar. El validador central ignora este mismo registro al editar y
+     * reserva también los identificadores de cuentas inactivas.
      */
     @Override
     public void guardar(Veterinario veterinario) {
-        Veterinario porCorreo = veterinarioRepository.findByCorreoIgnoreCase(veterinario.getCorreo());
-        if (porCorreo != null && !porCorreo.getId().equals(veterinario.getId())) {
-            throw new IllegalArgumentException(
-                    "Ya existe un veterinario con el correo \"" + veterinario.getCorreo() + "\".");
-        }
-        Veterinario porCedula = veterinarioRepository.findByCedula(veterinario.getCedula());
-        if (porCedula != null && !porCedula.getId().equals(veterinario.getId())) {
-            throw new IllegalArgumentException(
-                    "Ya existe un veterinario con la cédula \"" + veterinario.getCedula() + "\".");
-        }
+        veterinario.setCedula(
+                veterinario.getCedula() == null ? null : veterinario.getCedula().trim());
+        veterinario.setCorreo(
+                veterinario.getCorreo() == null ? null : veterinario.getCorreo().trim());
+        identificadorUnicoService.validarVeterinario(
+                veterinario.getCedula(), veterinario.getCorreo(), veterinario.getId());
         // Política de contraseñas: en edición, dejar el campo en blanco
         // significa "conservar la clave actual" (el formulario no la
         // devuelve); en creación se asigna la clave provisional del

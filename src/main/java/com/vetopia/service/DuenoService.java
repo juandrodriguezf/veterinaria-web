@@ -26,7 +26,11 @@ public interface DuenoService {
     /** Obtiene un dueño validando previamente el identificador. */
     Dueno obtenerDuenoPorId(Integer id);
 
-    /** Guarda (registra) un dueño nuevo. El id lo asigna el repositorio. */
+    /**
+     * Guarda (registra o actualiza) un dueño. Valida que la cédula y el
+     * correo no pertenezcan a ninguna otra cuenta del sistema; al editar,
+     * el registro actual no cuenta como duplicado.
+     */
     void guardar(Dueno dueno);
 
     /**
