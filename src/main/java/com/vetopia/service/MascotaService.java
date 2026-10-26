@@ -65,26 +65,28 @@ public interface MascotaService {
 
     /**
      * Lista solo las mascotas que pertenecen al dueño indicado
-     * (relación Dueno 1 -- 0..* Mascota del diagrama de clases).
+     * (relación Dueno 1 -- 0..* Mascota del diagrama de clases). Valida que
+     * el identificador sea positivo y que el dueño exista; un cliente
+     * inexistente se informa como recurso no encontrado, no como lista vacía.
      */
     List<Mascota> listarMascotasPorDueno(Integer duenoId);
 
     /**
-     * Busca mascotas cuyo nombre coincida exactamente con el término dado,
-     * sin distinguir mayúsculas/minúsculas (AC21). Si el término es nulo
-     * o vacío, devuelve el listado completo para que el mismo endpoint
-     * sirva búsqueda y listado, igual que el findByNombre del ejemplo del
-     * curso más el IgnoreCase que el proyecto ya usa en credenciales.
+     * Busca mascotas cuyo nombre contenga el término dado, sin distinguir
+     * mayúsculas/minúsculas (AC21). Si el término es nulo o vacío, devuelve
+     * el listado completo para que el mismo endpoint sirva búsqueda y
+     * listado, igual que el findByNombre del ejemplo del curso más el
+     * IgnoreCase que el proyecto ya usa en credenciales.
      */
     List<Mascota> buscarPorNombre(String nombre);
 
     /**
-     * Busca mascotas de un dueño cuyo nombre coincida exactamente con el
-     * término dado, sin distinguir mayúsculas/minúsculas (AC21, portal del
-     * cliente). La relación se resuelve en el service (findByDuenoId) y el
-     * nombre se compara en memoria, de la misma forma en que el ejemplo
-     * del curso resuelve la relación fuera del nombre del método. Si el
-     * término es nulo o vacío, cae al listado de mascotas del dueño.
+     * Busca mascotas de un dueño cuyo nombre contenga el término dado, sin
+     * distinguir mayúsculas/minúsculas (AC21, portal del cliente). La
+     * relación se resuelve en el service (findByDuenoId) y el nombre se
+     * compara en memoria con la misma coincidencia parcial que el listado
+     * general. Si el término es nulo o vacío, cae al listado de mascotas
+     * del dueño.
      */
     List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre);
 

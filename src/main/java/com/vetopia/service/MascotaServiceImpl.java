@@ -1,12 +1,14 @@
 package com.vetopia.service;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Mascota;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.repository.DuenoRepository;
 import com.vetopia.repository.MascotaRepository;
 
 import jakarta.transaction.Transactional;
@@ -27,6 +29,10 @@ public class MascotaServiceImpl implements MascotaService {
     /** Repositorio de mascotas (flujo obligatorio: Service -> Repository). */
     @Autowired
     private MascotaRepository mascotaRepository;
+
+    /** Repositorio de dueños (valida que el cliente exista al listar sus mascotas). */
+    @Autowired
+    private DuenoRepository duenoRepository;
 
     /** Servicio de tratamientos (se desvinculan antes de eliminar la mascota). */
     @Autowired
@@ -179,6 +185,16 @@ public class MascotaServiceImpl implements MascotaService {
         if (duenoId == null) {
             throw new IllegalArgumentException("No se especificó el dueño de la consulta.");
         }
+        // Un id no positivo solo puede llegar por manipulación manual de la URL.
+        if (duenoId <= 0) {
+            throw new IllegalArgumentException("El identificador \"" + duenoId + "\" no es válido.");
+        }
+        // La lista vacía por sí sola no distingue entre un dueño sin mascotas
+        // y un dueño inexistente; se valida primero para responder 404.
+        if (!duenoRepository.existsById(duenoId)) {
+            throw new RecursoNoEncontradoException(
+                    "No encontramos ningún cliente registrado con el identificador \"" + duenoId + "\".");
+        }
         return mascotaRepository.findByDueno_Id(duenoId);
     }
 
@@ -203,9 +219,9 @@ public class MascotaServiceImpl implements MascotaService {
      * {@inheritDoc}
      * La relación con el dueño se resuelve con findByDuenoId (consulta
      * derivada simple, como en el ejemplo del curso) y sobre ese listado
-     * se compara el nombre exacto sin distinguir mayúsculas en memoria;
-     * no se usa una consulta compuesta. Si el término está vacío cae al
-     * listado del dueño.
+     * se busca una coincidencia parcial del nombre sin distinguir
+     * mayúsculas/minúsculas en memoria; no se usa una consulta compuesta.
+     * Si el término está vacío cae al listado del dueño.
      */
     @Override
     public List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre) {
@@ -213,9 +229,9 @@ public class MascotaServiceImpl implements MascotaService {
         if (nombre == null || nombre.isBlank()) {
             return delDueno;
         }
-        String termino = nombre.trim();
+        String termino = nombre.trim().toLowerCase(Locale.ROOT);
         return delDueno.stream()
-                .filter(mascota -> termino.equalsIgnoreCase(mascota.getNombre()))
+                .filter(mascota -> mascota.getNombre().toLowerCase(Locale.ROOT).contains(termino))
                 .toList();
     }
 

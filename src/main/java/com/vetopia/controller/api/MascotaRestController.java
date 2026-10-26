@@ -64,7 +64,7 @@ public class MascotaRestController {
         return mascotaService.buscarPorNombre(nombre);
     }
 
-    @Operation(summary = "Lista las mascotas de un dueño (opcionalmente filtradas por nombre).")
+    @Operation(summary = "Lista las mascotas de un dueño existente (opcionalmente filtradas por nombre).")
     @GetMapping("/byDueno/{duenoId}")
     public List<Mascota> listarPorDueno(@PathVariable Integer duenoId,
                                         @RequestParam(name = "nombre", required = false) String nombre) {

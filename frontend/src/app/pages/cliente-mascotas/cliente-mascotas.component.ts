@@ -29,27 +29,72 @@ export class ClienteMascotasComponent {
 
   nombre = '';
 
+  /** true cuando el cliente de la URL no existe o el id no es válido. */
+  errorCarga = false;
+
+  /** true cuando falla la consulta de mascotas de un cliente válido. */
+  errorMascotas = false;
+
+  /** Mensaje del backend para el estado de error. */
+  mensajeError = '';
+
+  /** true mientras se resuelve el cliente o su listado de mascotas. */
+  cargando = true;
+
   ngOnInit() {
     // El id del cliente viaja en la ruta; el login lo puso ahí al autenticar.
     this.idUsuario = Number(this.activatedRoute.snapshot.params['idUsuario']);
-    this.duenoService.obtenerPorId(this.idUsuario).subscribe((data) => (this.dueno = data));
-    this.cargar();
+    // Un id no numérico o no positivo no llega a la API: se informa de una vez.
+    if (!Number.isInteger(this.idUsuario) || this.idUsuario <= 0) {
+      this.errorCarga = true;
+      this.cargando = false;
+      this.mensajeError = 'El identificador del cliente no es válido.';
+      return;
+    }
+    // Primero se valida el dueño: sin él no tiene sentido consultar mascotas
+    // ni mostrar el estado vacío como si fuera un cliente válido.
+    this.duenoService.obtenerPorId(this.idUsuario).subscribe({
+      next: (data) => {
+        this.dueno = data;
+        this.cargar();
+      },
+      error: (error) => {
+        this.errorCarga = true;
+        this.cargando = false;
+        this.mensajeError = error?.error?.mensaje ?? 'No encontramos el cliente solicitado.';
+      },
+    });
   }
 
   /** Carga las mascotas del cliente (todas o filtradas por nombre). */
   cargar() {
-    this.mascotaService
-      .listarPorDueno(this.idUsuario, this.nombre)
-      .subscribe((data) => (this.mascotas = data));
+    this.cargando = true;
+    this.errorMascotas = false;
+    this.mensajeError = '';
+    this.mascotaService.listarPorDueno(this.idUsuario, this.nombre).subscribe({
+      next: (data) => {
+        this.mascotas = data;
+        this.cargando = false;
+      },
+      error: (error) => {
+        this.cargando = false;
+        this.errorMascotas = true;
+        this.mensajeError = error?.error?.mensaje ?? 'No se pudieron cargar las mascotas. Intenta de nuevo.';
+      },
+    });
   }
 
   buscar() {
-    this.cargar();
+    if (!this.errorCarga) {
+      this.cargar();
+    }
   }
 
   limpiar() {
-    this.nombre = '';
-    this.cargar();
+    if (!this.errorCarga) {
+      this.nombre = '';
+      this.cargar();
+    }
   }
 
   numeroPaciente(mascota: Mascota) {

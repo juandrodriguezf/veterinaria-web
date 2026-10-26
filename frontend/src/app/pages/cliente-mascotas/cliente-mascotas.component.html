@@ -2,36 +2,73 @@
   <app-cliente-header [idUsuario]="idUsuario" [nombreCliente]="dueno?.nombre" seccion="mascotas"></app-cliente-header>
 
   <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
-    <section class="mb-portal-stack-lg">
-      <h1 class="mb-2 font-portal-headline-xl text-portal-headline-xl text-portal-on-surface">Mis Mascotas</h1>
-      <p class="max-w-3xl font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
-        Consulta la información de tus mascotas registradas en Vetopia. Selecciona una mascota para ver su perfil completo.
-      </p>
-    </section>
-
-    <section class="mb-portal-stack-md">
-      <form (ngSubmit)="buscar()" class="flex items-center gap-3">
-        <div class="relative flex-1 max-w-sm">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
-          <input class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
-                 name="nombre" [(ngModel)]="nombre" placeholder="Buscar por nombre..." type="text"/>
+    @if (errorCarga) {
+      <section class="bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-portal-stack-lg text-center" role="alert">
+        <span class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-portal-surface-container-high">
+          <span class="material-symbols-outlined text-[32px] text-portal-outline" style="font-variation-settings: 'FILL' 0;">search_off</span>
+        </span>
+        <h1 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface mb-2">Cliente no encontrado</h1>
+        <p class="max-w-xl mx-auto font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant mb-8">{{ mensajeError }}</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-6 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/">
+            Volver al inicio
+            <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
+          </a>
+          <a class="inline-flex items-center gap-2 rounded-full border border-portal-outline px-6 py-3 font-portal-button text-portal-button uppercase text-portal-on-surface transition-colors hover:bg-portal-surface-container-high" routerLink="/login">
+            Iniciar sesión
+          </a>
         </div>
-        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
-          Buscar
-        </button>
-        <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
-          Limpiar
-        </button>
-      </form>
-    </section>
+      </section>
+    } @else {
+      <section class="mb-portal-stack-lg">
+        <h1 class="mb-2 font-portal-headline-xl text-portal-headline-xl text-portal-on-surface">Mis Mascotas</h1>
+        <p class="max-w-3xl font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+          Consulta la información de tus mascotas registradas en Vetopia. Selecciona una mascota para ver su perfil completo.
+        </p>
+      </section>
 
-    <section class="bg-portal-surface-container-lowest rounded-portal border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
-      <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
-        <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
-        <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">{{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}</span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[720px] text-left">
+      @if (mensajeError) {
+        <div class="mb-6 flex items-start gap-3 rounded-portal-xl border border-portal-error/30 bg-portal-error-container/40 p-4" role="alert">
+          <span class="material-symbols-outlined text-portal-error mt-0.5">error</span>
+          <p class="font-portal-body-md text-portal-body-md text-portal-on-error-container">{{ mensajeError }}</p>
+        </div>
+      }
+
+      <section class="mb-portal-stack-md">
+        <form (ngSubmit)="buscar()" class="flex items-center gap-3">
+          <div class="relative flex-1 max-w-sm">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
+            <input class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+                   name="nombre" [(ngModel)]="nombre" placeholder="Buscar por nombre..." type="text"/>
+          </div>
+          <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+            Buscar
+          </button>
+          <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
+            Limpiar
+          </button>
+        </form>
+      </section>
+
+      @if (!errorMascotas) {
+        <section class="bg-portal-surface-container-lowest rounded-portal border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+          <div class="flex items-center justify-between gap-4 p-portal-stack-lg border-b border-portal-surface-container-high">
+            <h2 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface">Listado de mascotas</h2>
+            <span class="font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">
+              @if (cargando) {
+                Cargando...
+              } @else {
+                {{ mascotas.length === 1 ? '1 mascota registrada' : mascotas.length + ' mascotas registradas' }}
+              }
+            </span>
+          </div>
+          <div class="overflow-x-auto">
+            @if (cargando) {
+              <div class="px-6 py-16 text-center font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant">
+                Cargando mascotas...
+              </div>
+            } @else {
+              <table class="w-full min-w-[720px] text-left">
           <thead>
             <tr class="bg-portal-surface-container-low uppercase">
               <th class="px-6 py-4 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant" scope="col">Foto</th>
@@ -86,9 +123,12 @@
               </tr>
             }
           </tbody>
-        </table>
-      </div>
-    </section>
+              </table>
+            }
+          </div>
+        </section>
+      }
+    }
   </main>
 
   <app-footer-portal></app-footer-portal>
