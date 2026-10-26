@@ -41,6 +41,12 @@ export class SesionService {
   /** Rol del usuario autenticado (cadena vacía si no hay sesión). */
   readonly rol = computed(() => this.sesionActual()?.rol ?? '');
 
+  /** Indica si la sesión actual pertenece a un veterinario. */
+  readonly esVeterinario = computed(() => {
+    const sesion = this.sesionActual();
+    return sesion !== null && sesion.rol === 'VETERINARIO';
+  });
+
   /** Guarda los datos mínimos que devolvió el login y actualiza la señal. */
   guardar(resultado: ResultadoLogin) {
     const sesion: SesionUsuario = {

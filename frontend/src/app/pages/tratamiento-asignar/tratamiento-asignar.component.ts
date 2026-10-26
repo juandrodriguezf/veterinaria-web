@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Droga } from '../../models/droga.model';
 import { Mascota } from '../../models/mascota.model';
 import { DrogaService } from '../../service/droga.service';
 import { MascotaService } from '../../service/mascota.service';
+import { SesionService } from '../../service/sesion.service';
 import { TratamientoService } from '../../service/tratamiento.service';
 import { TratamientoFormComponent } from './components/tratamiento-form/tratamiento-form.component';
 import { TratamientoModalComponent } from './components/tratamiento-modal/tratamiento-modal.component';
@@ -26,7 +27,14 @@ export class TratamientoAsignarComponent {
 
   private activatedRoute = inject(ActivatedRoute);
 
-  nombreVeterinario = 'Carlos Gutiérrez';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del veterinario autenticado, para la cabecera y el formulario. */
+  get nombreVeterinario(): string {
+    return this.sesionService.nombre();
+  }
 
   mascotas: Mascota[] = [];
 
@@ -50,6 +58,12 @@ export class TratamientoAsignarComponent {
   });
 
   ngOnInit() {
+    // Esta pantalla es exclusiva del veterinario: sin sesión válida se
+    // vuelve al login en vez de consultar datos con un id inventado.
+    if (!this.sesionService.esVeterinario()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     // Solo las mascotas activas (hospitalizadas) pueden recibir tratamiento.
     this.mascotaService.listarMascotasActivas().subscribe((data) => {
       this.mascotas = data;
@@ -78,6 +92,11 @@ export class TratamientoAsignarComponent {
   aplicar() {
     const formValue = this.form.value;
     this.mensajeError = '';
+    const veterinarioId = this.sesionService.id();
+    if (!this.sesionService.esVeterinario() || veterinarioId === null) {
+      this.router.navigate(['/login']);
+      return;
+    }
     // Comando: el backend registra el tratamiento, descuenta el stock y
     // devuelve la droga actualizada; el componente reacciona a esa respuesta.
     this.tratamientoService
@@ -85,6 +104,7 @@ export class TratamientoAsignarComponent {
         fecha: formValue.fecha ?? '',
         mascota: { id: Number(formValue.mascotaId) },
         droga: { id: Number(formValue.drogaId) },
+        veterinario: { id: veterinarioId },
       })
       .subscribe({
         next: (droga) => {
