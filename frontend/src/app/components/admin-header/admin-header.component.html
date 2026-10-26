@@ -17,7 +17,7 @@
           <div class="w-10 h-10 rounded-full bg-portal-primary-container text-portal-on-primary-container flex items-center justify-center font-bold">A</div>
         </div>
       }
-      <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/">Logout</a>
+      <a class="hidden md:inline-flex px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider items-center gap-2" routerLink="/" (click)="cerrarSesion()">Logout</a>
       <button
         aria-controls="menu-administrador"
         [attr.aria-expanded]="menuAbierto()"
@@ -41,7 +41,7 @@
             <span class="text-xs uppercase tracking-widest text-gray-400">Administrador</span>
           </div>
         }
-        <a class="inline-flex justify-center px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider" routerLink="/" (click)="cerrarMenu()">Logout</a>
+        <a class="inline-flex justify-center px-6 py-3 rounded-full border border-gray-600 text-white hover:bg-white/10 transition-colors font-portal-button text-portal-button uppercase tracking-wider" routerLink="/" (click)="cerrarSesion()">Logout</a>
       </div>
     </div>
   }

@@ -1,5 +1,6 @@
-import { Component, HostListener, input, signal } from '@angular/core';
+import { Component, HostListener, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SesionService } from '../../service/sesion.service';
 
 /**
  * Encabezado del portal del administrador. Sigue el mismo patrón de
@@ -13,6 +14,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './admin-header.component.scss',
 })
 export class AdminHeaderComponent {
+  private sesionService = inject(SesionService);
+
   /** Pestaña activa del portal (para resaltar el enlace correspondiente). */
   activo = input<'dashboard' | 'veterinarios'>();
 
@@ -30,6 +33,12 @@ export class AdminHeaderComponent {
   /** Cierra el menú móvil al navegar o al pulsar Escape. */
   cerrarMenu() {
     this.menuAbierto.set(false);
+  }
+
+  /** Elimina la sesión antes de que el enlace Logout navegue al inicio. */
+  cerrarSesion() {
+    this.sesionService.cerrar();
+    this.cerrarMenu();
   }
 
   @HostListener('document:keydown.escape')

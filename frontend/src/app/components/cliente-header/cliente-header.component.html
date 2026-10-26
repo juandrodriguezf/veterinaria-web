@@ -6,7 +6,7 @@
     </a>
     <nav class="flex items-center gap-6 md:gap-8 font-portal-label-md text-portal-label-md uppercase tracking-widest">
       <a [class]="claseMascotas()" [routerLink]="['/cliente/mascotas', idUsuario()]">Mascotas</a>
-      <a class="flex items-center gap-2 text-gray-300 hover:text-portal-error transition-colors" routerLink="/login">
+      <a class="flex items-center gap-2 text-gray-300 hover:text-portal-error transition-colors" routerLink="/login" (click)="cerrarSesion()">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
         Cerrar Sesión
       </a>
