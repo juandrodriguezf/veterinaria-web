@@ -1,17 +1,18 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { MascotaTratada } from '../../models/mascota-tratada.model';
 import { Tratamiento } from '../../models/tratamiento.model';
+import { SesionService } from '../../service/sesion.service';
 import { TratamientoService } from '../../service/tratamiento.service';
 import { TratadasTablaComponent } from './components/tratadas-tabla/tratadas-tabla.component';
 
 /**
  * Página "Tratadas" del portal del veterinario. Pide los tratamientos del
- * veterinario, los agrupa por mascota y permite filtrar por nombre.
- * Mientras no exista sesión, el portal trabaja con el veterinario 1,
- * igual que al asignar un tratamiento.
+ * veterinario autenticado, los agrupa por mascota y permite filtrar por
+ * nombre. Si no hay una sesión de veterinario, vuelve al login.
  */
 @Component({
   selector: 'app-veterinario-tratadas',
@@ -22,11 +23,14 @@ import { TratadasTablaComponent } from './components/tratadas-tabla/tratadas-tab
 export class VeterinarioTratadasComponent {
   private tratamientoService = inject(TratamientoService);
 
-  /** Nombre del veterinario del portal (sin sesión, igual que en las demás páginas). */
-  nombreVeterinario: string = 'Carlos Gutiérrez';
+  private sesionService = inject(SesionService);
 
-  /** Veterinario responsable fijo mientras no haya sesión. */
-  veterinarioId = 1;
+  private router = inject(Router);
+
+  /** Nombre del veterinario autenticado, para la cabecera y el resumen. */
+  get nombreVeterinario(): string {
+    return this.sesionService.nombre();
+  }
 
   /** Historial completo del veterinario (una fila por tratamiento). */
   tratamientos: Tratamiento[] = [];
@@ -41,10 +45,15 @@ export class VeterinarioTratadasComponent {
     this.cargar();
   }
 
-  /** Pide el historial del veterinario al backend. */
+  /** Pide el historial del veterinario autenticado al backend. */
   cargar() {
     this.mensajeError = '';
-    this.tratamientoService.listarTratamientosPorVeterinario(this.veterinarioId).subscribe({
+    const veterinarioId = this.sesionService.id();
+    if (!this.sesionService.esVeterinario() || veterinarioId === null) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.tratamientoService.listarTratamientosPorVeterinario(veterinarioId).subscribe({
       next: (tratamientos) => (this.tratamientos = tratamientos),
       error: () => {
         this.mensajeError = 'No se pudo cargar el historial de pacientes atendidos.';

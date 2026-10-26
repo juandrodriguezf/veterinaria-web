@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { LoginService } from '../../service/login.service';
+import { SesionService } from '../../service/sesion.service';
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,8 @@ import { LoginService } from '../../service/login.service';
 })
 export class LoginComponent {
   private loginService = inject(LoginService);
+
+  private sesionService = inject(SesionService);
 
   private router = inject(Router);
 
@@ -35,7 +38,12 @@ export class LoginComponent {
     this.correo = identificador;
     // Consulta: el componente reacciona a la respuesta y navega según el rol.
     this.loginService.autenticar(identificador, this.contrasena).subscribe({
-      next: (resultado) => this.navegarPorRol(resultado.rol, resultado.id),
+      next: (resultado) => {
+        // La sesión se guarda antes de navegar para que el portal ya tenga
+        // la identidad cuando se construyan sus componentes.
+        this.sesionService.guardar(resultado);
+        this.navegarPorRol(resultado.rol, resultado.id);
+      },
       error: (error) => {
         // El backend responde 401 con el mensaje exacto del service.
         this.mensajeError = error?.error?.mensaje ?? 'Cédula, correo o contraseña incorrectos. Verifica tus credenciales.';

@@ -52,11 +52,13 @@ public interface TratamientoService {
 
     /**
      * Registra la asignación del tratamiento aplicando las reglas de
-     * negocio: exige mascota y medicamento, descuenta una unidad del
-     * inventario de la droga y devuelve la droga actualizada para la
-     * vista de confirmación. Lanza IllegalArgumentException si faltan
-     * datos y IllegalStateException si el medicamento no existe o se
-     * quedó sin unidades.
+     * negocio: exige mascota, veterinario y medicamento, valida que la
+     * mascota y el veterinario estén activos, descuenta una unidad del
+     * inventario de la droga y devuelve la droga actualizada para la vista
+     * de confirmación. Lanza IllegalArgumentException si faltan datos,
+     * RecursoNoEncontradoException si alguna referencia no existe e
+     * IllegalStateException si la mascota o el veterinario están inactivos
+     * o si el medicamento se quedó sin unidades.
      */
     Droga asignar(Tratamiento tratamiento);
 }

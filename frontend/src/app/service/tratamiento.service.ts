@@ -13,6 +13,7 @@ export interface NuevoTratamiento {
   fecha: string;
   mascota: { id: number };
   droga: { id: number };
+  veterinario: { id: number };
 }
 
 /**
@@ -45,7 +46,7 @@ export class TratamientoService {
   }
 
   /**
-   * Asigna un tratamiento: el backend valida mascota activa y stock,
+   * Asigna un tratamiento: el backend valida mascota y veterinario activos,
    * descuenta una unidad del inventario y devuelve la Droga actualizada.
    */
   asignar(tratamiento: NuevoTratamiento): Observable<Droga> {

@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Dueno } from '../../models/dueno.model';
 import { DuenoService } from '../../service/dueno.service';
+import { SesionService } from '../../service/sesion.service';
 import { ClienteTablaComponent } from './components/cliente-tabla/cliente-tabla.component';
 import { ClientesPageTitleComponent } from './components/page-title/page-title.component';
 
@@ -24,7 +25,14 @@ import { ClientesPageTitleComponent } from './components/page-title/page-title.c
 export class ClientesListadoComponent {
   private duenoService = inject(DuenoService);
 
-  nombreVeterinario: string = 'Carlos Gutiérrez';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del veterinario autenticado, para la cabecera del portal. */
+  get nombreVeterinario(): string {
+    return this.sesionService.nombre();
+  }
 
   duenos: Dueno[] = [];
 
@@ -34,6 +42,10 @@ export class ClientesListadoComponent {
   totalDuenos = 0;
 
   ngOnInit() {
+    if (!this.sesionService.esVeterinario()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.cargar();
   }
 

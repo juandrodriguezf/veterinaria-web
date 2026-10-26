@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Mascota } from '../../models/mascota.model';
 import { MascotaService } from '../../service/mascota.service';
+import { SesionService } from '../../service/sesion.service';
 import { MascotaTablaComponent } from './components/mascota-tabla/mascota-tabla.component';
 import { PageTitleComponent } from './components/page-title/page-title.component';
 
@@ -24,7 +25,14 @@ import { PageTitleComponent } from './components/page-title/page-title.component
 export class MascotasListadoComponent {
   private mascotaService = inject(MascotaService);
 
-  nombreVeterinario: string = 'Carlos Gutiérrez';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del veterinario autenticado, para la cabecera del portal. */
+  get nombreVeterinario(): string {
+    return this.sesionService.nombre();
+  }
 
   mascotas: Mascota[] = [];
 
@@ -34,6 +42,10 @@ export class MascotasListadoComponent {
   totalMascotas = 0;
 
   ngOnInit() {
+    if (!this.sesionService.esVeterinario()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.cargar();
   }
 

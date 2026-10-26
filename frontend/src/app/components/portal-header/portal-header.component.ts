@@ -1,5 +1,6 @@
-import { Component, HostListener, input, signal } from '@angular/core';
+import { Component, HostListener, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SesionService } from '../../service/sesion.service';
 
 /**
  * Encabezado del portal del veterinario. Se compartía copiado en seis
@@ -14,6 +15,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './portal-header.component.scss',
 })
 export class PortalHeaderComponent {
+  private sesionService = inject(SesionService);
+
   /** Pestaña activa del portal (para resaltar el enlace correspondiente). */
   activo = input<'mascotas' | 'clientes' | 'tratamientos' | 'tratadas'>();
 
@@ -31,6 +34,12 @@ export class PortalHeaderComponent {
   /** Cierra el menú móvil al navegar o al pulsar Escape. */
   cerrarMenu() {
     this.menuAbierto.set(false);
+  }
+
+  /** Elimina la sesión antes de que el enlace Logout navegue al inicio. */
+  cerrarSesion() {
+    this.sesionService.cerrar();
+    this.cerrarMenu();
   }
 
   @HostListener('document:keydown.escape')

@@ -1,5 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SesionService } from '../../service/sesion.service';
 
 /**
  * Encabezado del portal del cliente. Estaba copiado en las dos pantallas
@@ -13,6 +14,8 @@ import { RouterLink } from '@angular/router';
   styleUrl: './cliente-header.component.scss',
 })
 export class ClienteHeaderComponent {
+  private sesionService = inject(SesionService);
+
   /** Identificador del cliente (para volver a sus mascotas). */
   idUsuario = input<number>();
 
@@ -21,6 +24,11 @@ export class ClienteHeaderComponent {
 
   /** Sección activa del portal del cliente. */
   seccion = input<'mascotas'>();
+
+  /** Elimina la sesión antes de que el enlace Cerrar Sesión navegue al login. */
+  cerrarSesion() {
+    this.sesionService.cerrar();
+  }
 
   /** Clases del enlace "Mascotas" según sea o no la sección activa. */
   claseMascotas() {

@@ -128,12 +128,12 @@ public class TratamientoServiceImpl implements TratamientoService {
 
     /**
      * {@inheritDoc}
-     * El veterinario responsable se resuelve desde el repositorio y la
-     * operación es transaccional: el registro del tratamiento, el
-     * descuento del inventario y el contador de atenciones del
-     * veterinario se confirman juntos o no se confirma ninguno, para que
-     * no quede una asignación sin su descuento de stock ni una atención
-     * sin registrar.
+     * El veterinario responsable llega en el cuerpo de la petición (solo su
+     * id) y se resuelve desde el repositorio. La operación es transaccional:
+     * el registro del tratamiento, el descuento del inventario y el contador
+     * de atenciones del veterinario se confirman juntos o no se confirma
+     * ninguno, para que no quede una asignación sin su descuento de stock ni
+     * una atención sin registrar.
      */
     @Override
     @Transactional
@@ -159,12 +159,20 @@ public class TratamientoServiceImpl implements TratamientoService {
         if (tratamiento.getDroga() == null || tratamiento.getDroga().getId() == null) {
             throw new IllegalArgumentException("La asignación debe indicar el medicamento.");
         }
-        // Mientras el proyecto no maneje sesión, el veterinario responsable
-        // queda fijo (id 1), igual que en la versión anterior del controlador.
-        tratamiento.setVeterinario(veterinarioRepository.findById(1).orElse(null));
-        if (tratamiento.getVeterinario() == null) {
-            throw new IllegalStateException("No se encontró el veterinario responsable del tratamiento.");
+        // El veterinario responsable llega desde la sesión del portal; el
+        // backend valida que exista y que siga activo antes de registrar.
+        if (tratamiento.getVeterinario() == null || tratamiento.getVeterinario().getId() == null) {
+            throw new IllegalArgumentException("La asignación debe indicar el veterinario responsable.");
         }
+        Integer veterinarioId = tratamiento.getVeterinario().getId();
+        Veterinario veterinario = veterinarioRepository.findById(veterinarioId).orElseThrow(
+                () -> new RecursoNoEncontradoException(
+                        "No encontramos ningún veterinario registrado con el identificador \"" + veterinarioId + "\"."));
+        if (!"Activo".equals(veterinario.getEstado())) {
+            throw new IllegalStateException("El veterinario \"" + veterinario.getNombre()
+                    + "\" está inactivo: no puede registrar tratamientos.");
+        }
+        tratamiento.setVeterinario(veterinario);
         Droga droga = drogaService.obtenerDrogaPorId(tratamiento.getDroga().getId());
         // Regla de inventario: cada tratamiento consume exactamente una
         // unidad; sin stock la asignación se rechaza y no se registra.
@@ -187,7 +195,6 @@ public class TratamientoServiceImpl implements TratamientoService {
         // Cada tratamiento aplicado cuenta como una atención del
         // veterinario responsable: se acumula en su contador dentro de la
         // misma transacción (Veterinario.numeroAtenciones del diagrama).
-        Veterinario veterinario = tratamiento.getVeterinario();
         veterinario.setNumeroAtenciones(
                 (veterinario.getNumeroAtenciones() == null ? 0 : veterinario.getNumeroAtenciones()) + 1);
         veterinarioRepository.save(veterinario);

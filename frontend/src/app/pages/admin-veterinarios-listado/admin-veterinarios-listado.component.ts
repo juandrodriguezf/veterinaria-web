@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AdminHeaderComponent } from '../../components/admin-header/admin-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Veterinario } from '../../models/veterinario.model';
+import { SesionService } from '../../service/sesion.service';
 import { VeterinarioService } from '../../service/veterinario.service';
 import { VeterinarioTablaComponent } from './components/veterinario-tabla/veterinario-tabla.component';
 
@@ -27,8 +28,14 @@ import { VeterinarioTablaComponent } from './components/veterinario-tabla/veteri
 export class AdminVeterinariosListadoComponent {
   private veterinarioService = inject(VeterinarioService);
 
-  /** Nombre del administrador (sin sesión, igual que el portal veterinario). */
-  nombreAdministrador: string = 'Dirección Vetopia';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del administrador autenticado, para la cabecera del portal. */
+  get nombreAdministrador(): string {
+    return this.sesionService.nombre();
+  }
 
   /** Veterinarios del listado (todos o los que coinciden con el término). */
   veterinarios: Veterinario[] = [];
@@ -40,6 +47,10 @@ export class AdminVeterinariosListadoComponent {
   totalVeterinarios = 0;
 
   ngOnInit() {
+    if (!this.sesionService.esAdministrador()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.cargar();
   }
 

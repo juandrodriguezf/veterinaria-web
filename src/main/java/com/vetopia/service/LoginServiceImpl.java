@@ -52,17 +52,17 @@ public class LoginServiceImpl implements LoginService {
         // service acepta correo o cédula en el identificador.
         Veterinario veterinario = veterinarioService.obtenerPorCorreoYContrasena(identificador, contrasena);
         if (veterinario != null) {
-            return new ResultadoLogin(ROL_VETERINARIO, veterinario.getId());
+            return new ResultadoLogin(ROL_VETERINARIO, veterinario.getId(), veterinario.getNombre());
         }
 
         Administrador administrador = administradorService.obtenerPorCorreoYContrasena(identificador, contrasena);
         if (administrador != null) {
-            return new ResultadoLogin(ROL_ADMINISTRADOR, administrador.getId());
+            return new ResultadoLogin(ROL_ADMINISTRADOR, administrador.getId(), administrador.getNombre());
         }
 
         Dueno dueno = duenoService.obtenerPorCorreoYContrasena(identificador, contrasena);
         if (dueno != null) {
-            return new ResultadoLogin(ROL_CLIENTE, dueno.getId());
+            return new ResultadoLogin(ROL_CLIENTE, dueno.getId(), dueno.getNombre());
         }
 
         // Ninguna tabla reconoció la combinación: la excepción lleva el

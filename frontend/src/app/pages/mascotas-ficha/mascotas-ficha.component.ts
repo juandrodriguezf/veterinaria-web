@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { mergeMap, forkJoin, of } from 'rxjs';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { PortalHeaderComponent } from '../../components/portal-header/portal-header.component';
 import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
+import { SesionService } from '../../service/sesion.service';
 import { TratamientoService } from '../../service/tratamiento.service';
 import { FichaDatosComponent } from './components/ficha-datos/ficha-datos.component';
 import { FichaEncabezadoComponent } from './components/ficha-encabezado/ficha-encabezado.component';
@@ -35,13 +36,24 @@ export class MascotasFichaComponent {
 
   private activatedRoute = inject(ActivatedRoute);
 
-  nombreVeterinario: string = 'Carlos Gutiérrez';
+  private sesionService = inject(SesionService);
+
+  private router = inject(Router);
+
+  /** Nombre del veterinario autenticado, para la cabecera del portal. */
+  get nombreVeterinario(): string {
+    return this.sesionService.nombre();
+  }
 
   mascota?: Mascota;
 
   mensajeError: string = '';
 
   ngOnInit() {
+    if (!this.sesionService.esVeterinario()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     const id = Number(this.activatedRoute.snapshot.params['id']);
     // Consultas encadenadas (patrón del video): primero la mascota y, con
     // su id, el dueño (que ya no viaja anidado) y el historial de
