@@ -7,10 +7,17 @@ import { Dueno } from '../../models/dueno.model';
 import { Mascota } from '../../models/mascota.model';
 import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
+import { ClienteMascotaTablaComponent } from './components/cliente-mascota-tabla/cliente-mascota-tabla.component';
 
 @Component({
   selector: 'app-cliente-mascotas',
-  imports: [FormsModule, RouterLink, FooterPortalComponent, ClienteHeaderComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    FooterPortalComponent,
+    ClienteHeaderComponent,
+    ClienteMascotaTablaComponent,
+  ],
   templateUrl: './cliente-mascotas.component.html',
   styleUrl: './cliente-mascotas.component.scss',
 })
@@ -104,19 +111,4 @@ export class ClienteMascotasComponent {
     }
   }
 
-  numeroPaciente(mascota: Mascota) {
-    return String(mascota.id).padStart(4, '0');
-  }
-
-  descripcionEdad(mascota: Mascota) {
-    if (mascota.edad === undefined) {
-      return 'No registrada';
-    }
-    if (mascota.edad < 1) {
-      const meses = Math.max(1, Math.round(mascota.edad * 12));
-      return meses + (meses === 1 ? ' mes' : ' meses');
-    }
-    const anios = Math.floor(mascota.edad);
-    return anios + (anios === 1 ? ' año' : ' años');
-  }
 }
