@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { Mascota } from '../../../../models/mascota.model';
-import { descripcionEdad, descripcionPeso } from '../../../../utils/mascota.utils';
+import { descripcionEdad, descripcionPeso, formatearFechaLarga } from '../../../../utils/mascota.utils';
 
 /**
  * Bloque de datos de la mascota en el detalle del cliente: foto y ficha
@@ -18,4 +18,6 @@ export class DetalleMascotaComponent {
   readonly descripcionEdad = descripcionEdad;
 
   readonly descripcionPeso = descripcionPeso;
+
+  readonly formatearFechaLarga = formatearFechaLarga;
 }

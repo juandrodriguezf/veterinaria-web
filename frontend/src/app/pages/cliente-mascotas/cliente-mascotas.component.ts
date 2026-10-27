@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
@@ -20,6 +20,8 @@ export class ClienteMascotasComponent {
   private mascotaService = inject(MascotaService);
 
   private activatedRoute = inject(ActivatedRoute);
+
+  private router = inject(Router);
 
   idUsuario = 0;
 
@@ -53,12 +55,17 @@ export class ClienteMascotasComponent {
     }
     // Primero se valida el dueño: sin él no tiene sentido consultar mascotas
     // ni mostrar el estado vacío como si fuera un cliente válido.
-    this.duenoService.obtenerPorId(this.idUsuario).subscribe({
+    this.duenoService.obtenerActivo(this.idUsuario).subscribe({
       next: (data) => {
         this.dueno = data;
         this.cargar();
       },
       error: (error) => {
+        // Un cliente inactivo (409) o un id invalido (400) no entra al portal.
+        if (error?.status === 409 || error?.status === 400) {
+          this.router.navigate(['/login']);
+          return;
+        }
         this.errorCarga = true;
         this.cargando = false;
         this.mensajeError = error?.error?.mensaje ?? 'No encontramos el cliente solicitado.';

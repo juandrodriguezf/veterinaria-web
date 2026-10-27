@@ -32,6 +32,11 @@ export class DuenoService {
     return this.http.get<Dueno>(`${this.baseUrl}/find/${id}`);
   }
 
+  /** Obtiene un cliente solo si está activo; el portal rechaza cuentas inactivas. */
+  obtenerActivo(id: number): Observable<Dueno> {
+    return this.http.get<Dueno>(`${this.baseUrl}/activo/${id}`);
+  }
+
   /** Busca clientes por nombre (coincidencia exacta, sin distinguir mayúsculas). */
   buscarPorNombre(nombre: string): Observable<Dueno[]> {
     return this.http.get<Dueno[]>(`${this.baseUrl}/search/${encodeURIComponent(nombre)}`);

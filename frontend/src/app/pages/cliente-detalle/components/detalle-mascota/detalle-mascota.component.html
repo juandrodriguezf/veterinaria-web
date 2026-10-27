@@ -45,7 +45,7 @@
         </div>
         <div>
           <dt class="mb-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-surface-variant">Fecha de ingreso</dt>
-          <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ mascota().fechaIngreso || 'No registrada' }}</dd>
+          <dd class="font-portal-body-lg text-portal-body-lg font-semibold text-portal-on-surface">{{ formatearFechaLarga(mascota().fechaIngreso) }}</dd>
         </div>
       </dl>
     </div>

@@ -19,3 +19,22 @@ export function descripcionEdad(edad: number | undefined | null): string {
 export function descripcionPeso(peso: number | undefined | null): string {
   return peso === undefined || peso === null ? 'No registrado' : peso.toFixed(1) + ' kg';
 }
+
+/**
+ * Formatea una fecha ISO (YYYY-MM-DD) como "12 de enero de 2026".
+ * Se construye la fecha en horario local para no desplazar el día por UTC.
+ */
+export function formatearFechaLarga(fecha: string | undefined | null): string {
+  if (!fecha) {
+    return 'No registrada';
+  }
+  const [anio, mes, dia] = fecha.split('-').map(Number);
+  if (!anio || !mes || !dia) {
+    return fecha;
+  }
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(anio, mes - 1, dia));
+}

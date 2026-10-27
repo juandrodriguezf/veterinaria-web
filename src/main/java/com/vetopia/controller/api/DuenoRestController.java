@@ -49,6 +49,12 @@ public class DuenoRestController {
         return duenoService.obtenerDuenoPorId(id);
     }
 
+    @Operation(summary = "Obtiene un cliente activo para su portal (rechaza clientes inactivos).")
+    @GetMapping("/activo/{id}")
+    public Dueno obtenerDuenoActivo(@PathVariable Integer id) {
+        return duenoService.obtenerActivo(id);
+    }
+
     @Operation(summary = "Busca clientes por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
     public List<Dueno> buscarPorNombre(@PathVariable String nombre) {

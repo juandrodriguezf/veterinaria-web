@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
@@ -26,6 +26,8 @@ export class ClienteDetalleComponent {
 
   private activatedRoute = inject(ActivatedRoute);
 
+  private router = inject(Router);
+
   idUsuario = 0;
 
   dueno?: Dueno;
@@ -37,13 +39,15 @@ export class ClienteDetalleComponent {
   ngOnInit() {
     this.idUsuario = Number(this.activatedRoute.snapshot.params['idUsuario']);
     const id = Number(this.activatedRoute.snapshot.params['id']);
-    this.duenoService.obtenerPorId(this.idUsuario).subscribe((data) => (this.dueno = data));
-    // Consultas encadenadas con mergeMap (patrón del video): primero la
-    // mascota propia (el backend valida la pertenencia) y, con esa
-    // respuesta, su historial de tratamientos.
-    this.mascotaService
-      .obtenerPropia(id, this.idUsuario)
+    // Primero se valida que el cliente siga activo; solo entonces se
+    // consultan la mascota propia y su historial de tratamientos.
+    this.duenoService
+      .obtenerActivo(this.idUsuario)
       .pipe(
+        mergeMap((dueno) => {
+          this.dueno = dueno;
+          return this.mascotaService.obtenerPropia(id, this.idUsuario);
+        }),
         mergeMap((mascota) => {
           this.mascota = mascota;
           this.mascota.tratamientos = [];
@@ -56,8 +60,13 @@ export class ClienteDetalleComponent {
             this.mascota.tratamientos = tratamientos;
           }
         },
-        error: () => {
-          // Id inexistente, inválido o de otro dueño: el panel informativo.
+        error: (error) => {
+          // Un cliente inactivo (409) o un id invalido (400) vuelve al login.
+          if (error?.status === 409 || error?.status === 400) {
+            this.router.navigate(['/login']);
+            return;
+          }
+          // Id inexistente o de otro dueño: el panel informativo.
           this.mensajeError = 'No encontramos ninguna mascota registrada a tu nombre.';
         },
       });
