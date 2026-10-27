@@ -9,6 +9,11 @@ import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
 import { ClienteMascotaTablaComponent } from './components/cliente-mascota-tabla/cliente-mascota-tabla.component';
 
+/**
+ * Página "Mis mascotas" del portal del cliente.
+ * Valida que el cliente siga activo, carga su listado y delega la tabla
+ * al componente presentacional.
+ */
 @Component({
   selector: 'app-cliente-mascotas',
   imports: [

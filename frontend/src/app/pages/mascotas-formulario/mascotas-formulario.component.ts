@@ -9,6 +9,10 @@ import { DuenoService } from '../../service/dueno.service';
 import { MascotaService } from '../../service/mascota.service';
 import { MascotaCamposComponent } from './components/mascota-campos/mascota-campos.component';
 
+/**
+ * Página de alta y edición de mascotas del portal del veterinario.
+ * Usa formulario reactivo y conserva los datos clínicos que no edita.
+ */
 @Component({
   selector: 'app-mascotas-formulario',
   imports: [FooterPortalComponent, PortalHeaderComponent, MascotaCamposComponent, ReactiveFormsModule, RouterLink],

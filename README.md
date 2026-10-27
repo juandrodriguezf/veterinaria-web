@@ -24,8 +24,9 @@ La **unicidad de cédula y correo** se valida en la capa service (`Identificador
 - **API REST de tratamientos y drogas**: consultar el historial de una mascota o de un veterinario, asignar un tratamiento (recibe el veterinario responsable, valida mascota y veterinario activos y stock, descuenta una unidad del inventario, registra la unidad vendida y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
 - **API REST de veterinarios y administradores**: CRUD de veterinarios con búsqueda por cédula o nombre, activar/desactivar y eliminar (desvinculando sus tratamientos); además el administrador consulta el **dashboard** con los indicadores del negocio.
 - **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol**, el **id** y el **nombre** para que el frontend navegue a su portal y muestre la cuenta autenticada; veterinarios y clientes solo entran si están **activos** (el administrador no maneja estado).
-- **Portal del cliente**: cada dueño consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos.
+- **Portal del cliente**: cada dueño activo consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos; si la cuenta fue desactivada, el portal lo devuelve al login.
 - **Portal del administrador**: dashboard con los indicadores del negocio (tratamientos del último mes, veterinarios activos e inactivos, mascotas activas e inactivas, ventas y ganancias, y las drogas más usadas) y gestión de veterinarios con búsqueda, alta, edición, activación/desactivación y eliminación.
+- **Edición sin pérdida de datos**: al actualizar una mascota o un veterinario se conservan los campos que el formulario no envía (`fechaIngreso`, `enfermedad`, `numeroAtenciones`, `urlFoto` y `estado`).
 - **Portal del veterinario**: pestaña **Tratadas** con las mascotas que ha tratado, ordenadas por la última atención, con búsqueda por nombre.
 - **Documentación interactiva** de la API con **Swagger UI** y su especificación OpenAPI en JSON.
 - **Frontend Angular** que consume la API con `HttpClient` (ver [`frontend/`](frontend/README.md)).
@@ -60,6 +61,7 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `DELETE` | `/mascota/delete/{id}` | Elimina una mascota (desvincula su historial) |
 | `GET` | `/dueno/all` | Todos los clientes |
 | `GET` | `/dueno/find/{id}` | Un cliente por id |
+| `GET` | `/dueno/activo/{id}` | Un cliente solo si está activo (portal del dueño) |
 | `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia parcial, sin distinguir mayúsculas) |
 | `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos en todo el sistema) |
 | `PUT` | `/dueno/update` | Actualiza un cliente (valida cédula y correo únicos en todo el sistema) |

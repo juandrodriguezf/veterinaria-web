@@ -12,6 +12,10 @@ import { TratamientoService } from '../../service/tratamiento.service';
 import { TratamientoFormComponent } from './components/tratamiento-form/tratamiento-form.component';
 import { TratamientoModalComponent } from './components/tratamiento-modal/tratamiento-modal.component';
 
+/**
+ * Página de asignación de tratamientos del veterinario autenticado.
+ * Carga mascotas activas y drogas con stock, y confirma el descuento.
+ */
 @Component({
   selector: 'app-tratamiento-asignar',
   imports: [FooterPortalComponent, PortalHeaderComponent, TratamientoFormComponent, TratamientoModalComponent],

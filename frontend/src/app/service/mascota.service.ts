@@ -32,7 +32,7 @@ export class MascotaService {
     return this.http.get<Mascota>(`${this.baseUrl}/find/${id}`);
   }
 
-  /** Busca mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas). */
+  /** Busca mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas). */
   buscarPorNombre(nombre: string): Observable<Mascota[]> {
     return this.http.get<Mascota[]>(`${this.baseUrl}/search/${encodeURIComponent(nombre)}`);
   }

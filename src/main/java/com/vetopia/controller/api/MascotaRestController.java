@@ -58,7 +58,7 @@ public class MascotaRestController {
         return mascotaService.obtenerMascotaPorId(id);
     }
 
-    @Operation(summary = "Busca mascotas por nombre (coincidencia exacta, sin distinguir mayúsculas).")
+    @Operation(summary = "Busca mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
     public List<Mascota> buscarPorNombre(@PathVariable String nombre) {
         return mascotaService.buscarPorNombre(nombre);

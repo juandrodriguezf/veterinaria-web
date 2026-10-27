@@ -2,6 +2,10 @@ import { Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dueno } from '../../../../models/dueno.model';
 
+/**
+ * Tabla de clientes del portal del veterinario.
+ * Presenta el listado y emite las acciones de alternar estado y eliminar.
+ */
 @Component({
   selector: 'app-cliente-tabla',
   imports: [RouterLink],

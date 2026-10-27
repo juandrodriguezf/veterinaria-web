@@ -13,8 +13,8 @@ import com.vetopia.entities.Mascota;
 public interface MascotaService {
 
     /**
-     * Lista las mascotas ordenadas alfabéticamente por nombre
-     * (regla de negocio para el listado del portal del cliente).
+     * Lista todas las mascotas registradas. El repositorio las entrega en
+     * el orden de la base; la busqueda por nombre se resuelve aparte.
      */
     List<Mascota> listarMascotas();
 

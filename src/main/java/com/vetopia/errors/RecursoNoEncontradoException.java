@@ -5,8 +5,8 @@ package com.vetopia.errors;
  * cliente, tratamiento, droga, etc.) no existe en la base de datos.
  *
  * Es una RuntimeException: no obliga a declararla en los métodos y llega
- * al GlobalExceptionHandler, que la traduce en la vista de error con el
- * mensaje que la capa de servicio preparó.
+ * al RestExceptionHandler, que la traduce en una respuesta JSON de error
+ * con el mensaje que la capa de servicio preparó.
  */
 public class RecursoNoEncontradoException extends RuntimeException {
 

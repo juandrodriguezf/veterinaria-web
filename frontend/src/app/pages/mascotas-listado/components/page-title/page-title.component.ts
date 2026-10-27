@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+/** Encabezado reutilizable del listado de mascotas. */
 @Component({
   selector: 'app-page-title',
   imports: [],

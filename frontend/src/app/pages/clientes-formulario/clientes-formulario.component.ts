@@ -7,6 +7,10 @@ import { Dueno } from '../../models/dueno.model';
 import { DuenoService } from '../../service/dueno.service';
 import { ClienteCamposComponent } from './components/cliente-campos/cliente-campos.component';
 
+/**
+ * Página de alta y edición de clientes del portal del veterinario.
+ * Usa formulario reactivo y conserva la contraseña si se deja vacía.
+ */
 @Component({
   selector: 'app-clientes-formulario',
   imports: [FooterPortalComponent, PortalHeaderComponent, ClienteCamposComponent, ReactiveFormsModule, RouterLink],

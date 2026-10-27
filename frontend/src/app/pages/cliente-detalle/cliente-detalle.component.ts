@@ -11,6 +11,10 @@ import { TratamientoService } from '../../service/tratamiento.service';
 import { DetalleHistorialComponent } from './components/detalle-historial/detalle-historial.component';
 import { DetalleMascotaComponent } from './components/detalle-mascota/detalle-mascota.component';
 
+/**
+ * Detalle de una mascota del cliente autenticado.
+ * Valida el cliente activo, la pertenencia de la mascota y carga su historial.
+ */
 @Component({
   selector: 'app-cliente-detalle',
   imports: [RouterLink, FooterPortalComponent, ClienteHeaderComponent, DetalleMascotaComponent, DetalleHistorialComponent],

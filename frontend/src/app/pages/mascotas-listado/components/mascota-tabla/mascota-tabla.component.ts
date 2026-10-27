@@ -3,6 +3,10 @@ import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../../models/mascota.model';
 import { descripcionEdad } from '../../../../utils/mascota.utils';
 
+/**
+ * Tabla de mascotas del portal del veterinario.
+ * Presenta el listado y emite la mascota seleccionada para alternar estado.
+ */
 @Component({
   selector: 'app-mascota-tabla',
   imports: [RouterLink],

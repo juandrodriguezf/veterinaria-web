@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+/** Encabezado reutilizable del listado de clientes. */
 @Component({
   selector: 'app-clientes-page-title',
   imports: [],

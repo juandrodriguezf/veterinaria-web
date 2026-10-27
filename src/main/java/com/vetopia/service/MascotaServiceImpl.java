@@ -18,10 +18,9 @@ import jakarta.transaction.Transactional;
  * Contiene la lógica de negocio. La anotación @Service registra la clase
  * como bean de negocio y Spring gestiona automáticamente su ciclo de vida.
  *
- * El repositorio se recibe por inyección por constructor (recomendación
- * oficial de Spring): garantiza dependencias obligatorias, facilita las
- * pruebas unitarias y mantiene la inmutabilidad del bean. Esta capa nunca
- * conoce los detalles de la persistencia, solo el contrato del repositorio.
+ * Las dependencias se reciben por inyección por campo (@Autowired): Spring
+ * las resuelve al crear el bean. Esta capa nunca conoce los detalles de la
+ * persistencia, solo el contrato del repositorio.
  */
 @Service
 public class MascotaServiceImpl implements MascotaService {
