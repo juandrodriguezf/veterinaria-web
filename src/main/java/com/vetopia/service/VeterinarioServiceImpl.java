@@ -87,22 +87,25 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         // significa "conservar la clave actual" (el formulario no la
         // devuelve); en creación se asigna la clave provisional del
         // equipo ("vet123"), igual que los datos de prueba.
-        if (veterinario.getContrasena() == null || veterinario.getContrasena().isBlank()) {
-            if (veterinario.getId() != null) {
-                Veterinario actual = veterinarioRepository.findById(veterinario.getId()).orElseThrow(
+        // En edicion se carga el registro actual una sola vez: de alli se
+        // recuperan los campos que el formulario no envia para no borrarlos.
+        Veterinario actual = veterinario.getId() == null
+                ? null
+                : veterinarioRepository.findById(veterinario.getId()).orElseThrow(
                         () -> new RecursoNoEncontradoException(
                                 "No encontramos ningún veterinario registrado con el identificador \""
                                         + veterinario.getId() + "\"."));
-                veterinario.setContrasena(actual.getContrasena());
-            } else {
-                veterinario.setContrasena("vet123");
-            }
+        if (veterinario.getContrasena() == null || veterinario.getContrasena().isBlank()) {
+            veterinario.setContrasena(actual != null ? actual.getContrasena() : "vet123");
         }
         if (veterinario.getEstado() == null || veterinario.getEstado().isBlank()) {
-            veterinario.setEstado("Activo");
+            veterinario.setEstado(actual != null ? actual.getEstado() : "Activo");
         }
         if (veterinario.getNumeroAtenciones() == null) {
-            veterinario.setNumeroAtenciones(0);
+            veterinario.setNumeroAtenciones(actual != null ? actual.getNumeroAtenciones() : 0);
+        }
+        if (veterinario.getUrlFoto() == null) {
+            veterinario.setUrlFoto(actual != null ? actual.getUrlFoto() : null);
         }
         veterinarioRepository.save(veterinario);
     }

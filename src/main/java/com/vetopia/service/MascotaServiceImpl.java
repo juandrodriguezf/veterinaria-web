@@ -123,6 +123,16 @@ public class MascotaServiceImpl implements MascotaService {
         // Regla del diagrama de clases: toda mascota nueva nace "Activa".
         if (mascota.getId() == null) {
             mascota.setEstado("Activo");
+        } else {
+            // En edicion el formulario no envia los datos clinicos que no
+            // edita; se recuperan del registro actual para no borrarlos.
+            Mascota actual = obtenerMascotaPorId(mascota.getId());
+            if (mascota.getFechaIngreso() == null) {
+                mascota.setFechaIngreso(actual.getFechaIngreso());
+            }
+            if (mascota.getEnfermedad() == null) {
+                mascota.setEnfermedad(actual.getEnfermedad());
+            }
         }
         // Regla de la relación Dueno 1 -- 0..* Mascota: sin dueño la
         // mascota quedaría huérfana; se rechaza el guardado. El
