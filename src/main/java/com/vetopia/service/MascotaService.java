@@ -83,10 +83,9 @@ public interface MascotaService {
     /**
      * Busca mascotas de un dueño cuyo nombre contenga el término dado, sin
      * distinguir mayúsculas/minúsculas (AC21, portal del cliente). La
-     * relación se resuelve en el service (findByDuenoId) y el nombre se
-     * compara en memoria con la misma coincidencia parcial que el listado
-     * general. Si el término es nulo o vacío, cae al listado de mascotas
-     * del dueño.
+     * relación se resuelve con findByDueno_Id y el nombre se compara en
+     * memoria con la misma coincidencia parcial que el listado general. Si
+     * el término es nulo o vacío, cae al listado de mascotas del dueño.
      */
     List<Mascota> buscarPorDuenoYNombre(Integer duenoId, String nombre);
 

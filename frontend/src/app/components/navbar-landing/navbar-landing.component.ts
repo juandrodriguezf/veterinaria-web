@@ -11,10 +11,10 @@ export class NavbarLandingComponent {
   desplazado = false;
 
   readonly enlaces = [
-    { texto: 'Experiencia', fragmento: 'experiencia', activo: false },
     { texto: 'Servicios', fragmento: 'servicios', activo: true },
+    { texto: 'Equipo', fragmento: 'equipo', activo: false },
     { texto: 'Timeline', fragmento: 'timeline', activo: false },
-    { texto: 'Contacto', fragmento: 'contacto', activo: false },
+    { texto: 'Ubicación', fragmento: 'ubicacion', activo: false },
   ];
 
   /** Controla la apertura del menú móvil. */

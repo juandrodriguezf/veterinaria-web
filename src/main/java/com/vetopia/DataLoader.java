@@ -45,7 +45,7 @@ import com.vetopia.repository.VeterinarioRepository;
 @Order(2)
 public class DataLoader implements CommandLineRunner {
 
-    /** Semilla fija del generador . */
+    /** Semilla fija del generador de datos (41). */
     private static final Random AZAR = new java.util.Random(41);
 
     private final DuenoRepository duenoRepository;
@@ -68,8 +68,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Ya hay datos: la base no vuelve a semillarse (con el perfil h2
-        // las tablas se recranean en cada arranque, así que siempre entra).
+        // Con el perfil h2 las tablas se recranean en cada arranque, así
+        // que la siembra siempre entra y los datos de demo se restauran.
         if (duenoRepository.count() > 0) {
             return;
         }

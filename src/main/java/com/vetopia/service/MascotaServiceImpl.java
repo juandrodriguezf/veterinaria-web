@@ -184,7 +184,7 @@ public class MascotaServiceImpl implements MascotaService {
 
     /**
      * {@inheritDoc}
-     * La consulta derivada findByDuenoId resuelve la ruta
+     * La consulta derivada findByDueno_Id resuelve la ruta
      * mascota.dueno.id y conserva solo las mascotas del dueño indicado.
      */
     @Override
