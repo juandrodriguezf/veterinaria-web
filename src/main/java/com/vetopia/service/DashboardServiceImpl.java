@@ -76,14 +76,10 @@ public class DashboardServiceImpl implements DashboardService {
      * para no agregar consultas JPQL al repositorio.
      */
     private List<ConteoMedicamento> agruparPorMedicamento(List<Tratamiento> tratamientos) {
-        Map<String, Long> conteo = new LinkedHashMap<>();
-        for (Tratamiento tratamiento : tratamientos) {
-            if (tratamiento.getDroga() == null) {
-                continue;
-            }
-            String nombre = tratamiento.getDroga().getNombre();
-            conteo.merge(nombre, 1L, Long::sum);
-        }
+        Map<String, Long> conteo = tratamientos.parallelStream()
+                .filter(tratamiento -> tratamiento.getDroga() != null)
+                .collect(Collectors.groupingByConcurrent(tratamiento -> tratamiento.getDroga().getNombre(),
+                        Collectors.counting()));
         return conteo.entrySet().stream()
                 .map(entrada -> new ConteoMedicamento(entrada.getKey(), entrada.getValue()))
                 .sorted(Comparator.comparing(ConteoMedicamento::getCantidad).reversed())
@@ -92,25 +88,21 @@ public class DashboardServiceImpl implements DashboardService {
 
     /** Suma el precio de venta de cada unidad vendida del inventario. */
     private double totalVentas(List<Droga> drogas) {
-        double total = 0;
-        for (Droga droga : drogas) {
-            total += precioVenta(droga) * unidadesVendidas(droga);
-        }
-        return total;
+        return drogas.parallelStream()
+                .mapToDouble(droga -> precioVenta(droga) * unidadesVendidas(droga))
+                .sum();
     }
 
     /** Suma la diferencia entre venta y compra de cada unidad vendida. */
     private double totalGanancias(List<Droga> drogas) {
-        double total = 0;
-        for (Droga droga : drogas) {
-            total += (precioVenta(droga) - precioCompra(droga)) * unidadesVendidas(droga);
-        }
-        return total;
+        return drogas.parallelStream()
+                .mapToDouble(droga -> (precioVenta(droga) - precioCompra(droga)) * unidadesVendidas(droga))
+                .sum();
     }
 
     /** Top 3 de medicamentos con más unidades vendidas (solo con ventas). */
     private List<ConteoMedicamento> topVendidos(List<Droga> drogas) {
-        return drogas.stream()
+        return drogas.parallelStream()
                 .filter(droga -> unidadesVendidas(droga) > 0)
                 .sorted(Comparator.comparingLong(this::unidadesVendidas).reversed())
                 .limit(3)
