@@ -42,6 +42,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Pruebas automatizadas: JUnit 5, Mockito, MockMvc y AssertJ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Reduce el boilerplate de las entidades (@Data, @NoArgsConstructor, @AllArgsConstructor) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
