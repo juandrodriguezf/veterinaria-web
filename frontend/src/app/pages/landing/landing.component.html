@@ -7,6 +7,8 @@
         class="w-full h-full min-w-full min-h-full object-cover object-center"
         alt=""
         src="images/gato-header.jpg"
+        decoding="async"
+        fetchpriority="high"
       />
       <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none" aria-hidden="true"></div>
     </div>
@@ -41,6 +43,8 @@
           class="float-animation w-full rounded-3xl shadow-2xl object-cover aspect-[2/2]"
           alt="Mascota recibiendo atención veterinaria de última generación"
           src="https://i.pinimg.com/736x/52/74/02/52740253b489af1e3a1fd8d0303cf19a.jpg"
+          loading="lazy"
+          decoding="async"
         />
       </div>
 
@@ -108,8 +112,10 @@
             <div class="h-64 md:h-80 overflow-hidden">
               <img
                 [class]="'w-full h-full object-cover ' + miembro.posicion"
-                [alt]="miembro.nombre"
+                [alt]="miembro.nombre + ' - ' + miembro.rol"
                 [src]="miembro.imagen"
+                loading="lazy"
+                decoding="async"
               />
             </div>
             <div class="p-6 text-center">
