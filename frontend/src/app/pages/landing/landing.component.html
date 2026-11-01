@@ -94,22 +94,26 @@
     </div>
   </section>
 
-  <section class="mb-section-gap scroll-mt-24" id="equipo">
-    <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-10 text-deep-carbon">
+  <section class="mb-section-gap scroll-mt-24" id="equipo" aria-labelledby="equipo-titulo">
+    <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-6 text-deep-carbon" id="equipo-titulo">
       NUESTRO <span class="text-mint-accent text-shadow-mint">EQUIPO</span>
     </h2>
+    <p class="text-body-lg text-text-secondary max-w-2xl mb-10">
+      Especialistas enfocados en diagnóstico preciso, tratamiento oportuno y acompañamiento continuo
+      para cada mascota.
+    </p>
 
     <div class="relative">
       <div
-        class="flex gap-gutter overflow-x-auto snap-x snap-mandatory scroll-smooth pt-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         id="team-carousel"
         #carrusel
       >
         @for (miembro of equipo; track miembro.nombre) {
           <div
-            class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500"
+            class="snap-center shrink-0 w-[80%] sm:w-[45%] md:w-[30%] bg-white border border-mint-accent/20 rounded-3xl overflow-hidden shadow-sm card-hover transition-all duration-500"
           >
-            <div class="h-64 md:h-80 overflow-hidden">
+            <div class="relative aspect-[4/5] overflow-hidden">
               <img
                 [class]="'w-full h-full object-cover ' + miembro.posicion"
                 [alt]="miembro.nombre + ' - ' + miembro.rol"
@@ -117,19 +121,19 @@
                 loading="lazy"
                 decoding="async"
               />
-            </div>
-            <div class="p-6 text-center">
-              <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-white mb-1">{{ miembro.nombre }}</h3>
-              <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
-                {{ miembro.rol }}
-              </p>
+              <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/45 to-transparent">
+                <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-white mb-1">{{ miembro.nombre }}</h3>
+                <p class="text-white/80 font-label-sm text-label-sm uppercase tracking-widest">
+                  {{ miembro.rol }}
+                </p>
+              </div>
             </div>
           </div>
         }
       </div>
 
       <button
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        class="flex absolute left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
         id="team-prev"
         aria-label="Anterior"
         (click)="moverCarrusel(-1)"
@@ -137,7 +141,7 @@
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
       <button
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        class="flex absolute right-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
         id="team-next"
         aria-label="Siguiente"
         (click)="moverCarrusel(1)"
