@@ -5,13 +5,16 @@
     <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-screen max-w-none z-[-1] overflow-hidden">
       <img
         class="w-full h-full min-w-full min-h-full object-cover object-center"
-        alt="Retrato de un galgo gris en una clínica veterinaria futurista"
+        alt=""
         src="images/gato-header.jpg"
+        decoding="async"
+        fetchpriority="high"
       />
+      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none" aria-hidden="true"></div>
     </div>
 
     <div class="z-10 max-w-3xl">
-      <h1 class="font-display-xl text-display-xl mb-10 text-white leading-tight ml-1.5">
+      <h1 class="font-display-xl text-[clamp(2.25rem,5vw,96px)] mb-10 text-white leading-tight ml-1.5">
         PRECISIÓN EN EL<br />
         <span class="text-mint-accent text-shadow-mint">CUIDADO ANIMAL</span>
       </h1>
@@ -33,18 +36,20 @@
     </div>
   </section>
 
-  <section class="mb-section-gap" id="servicios">
+  <section class="mb-section-gap scroll-mt-24" id="servicios">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
       <div class="order-2 md:order-1 relative">
         <img
           class="float-animation w-full rounded-3xl shadow-2xl object-cover aspect-[2/2]"
           alt="Mascota recibiendo atención veterinaria de última generación"
           src="https://i.pinimg.com/736x/52/74/02/52740253b489af1e3a1fd8d0303cf19a.jpg"
+          loading="lazy"
+          decoding="async"
         />
       </div>
 
       <div class="order-1 md:order-2">
-        <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+        <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-8 text-deep-carbon">
           QUÉ <span class="text-mint-accent text-shadow-mint">HACEMOS</span>
         </h2>
         <p class="text-body-lg text-text-secondary">
@@ -56,42 +61,79 @@
         </p>
       </div>
     </div>
+
+    <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white rounded-3xl p-6 border border-mint-accent/20 shadow-sm card-hover transition-all duration-500">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-mint-accent">local_hospital</span>
+          <p class="font-headline-md text-lg text-deep-carbon">Hospitalización</p>
+        </div>
+        <p class="text-sm text-text-secondary mt-3">Atención vigilada y cuidados críticos.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-6 border border-mint-accent/20 shadow-sm card-hover transition-all duration-500">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-mint-accent">schedule</span>
+          <p class="font-headline-md text-lg text-deep-carbon">Monitoreo 24/7</p>
+        </div>
+        <p class="text-sm text-text-secondary mt-3">Seguimiento continuo de signos vitales.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-6 border border-mint-accent/20 shadow-sm card-hover transition-all duration-500">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-mint-accent">science</span>
+          <p class="font-headline-md text-lg text-deep-carbon">Tratamiento</p>
+        </div>
+        <p class="text-sm text-text-secondary mt-3">Planes de cuidado personalizados.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-6 border border-mint-accent/20 shadow-sm card-hover transition-all duration-500">
+        <div class="flex items-center gap-4">
+          <span class="material-symbols-outlined text-mint-accent">insights</span>
+          <p class="font-headline-md text-lg text-deep-carbon">Plataforma digital</p>
+        </div>
+        <p class="text-sm text-text-secondary mt-3">Acceso claro al estado de salud.</p>
+      </div>
+    </div>
   </section>
 
-  <section class="mb-section-gap" id="equipo">
-    <h2 class="font-headline-lg text-headline-lg mb-10 text-deep-carbon">
+  <section class="mb-section-gap scroll-mt-24" id="equipo" aria-labelledby="equipo-titulo">
+    <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-6 text-deep-carbon" id="equipo-titulo">
       NUESTRO <span class="text-mint-accent text-shadow-mint">EQUIPO</span>
     </h2>
+    <p class="text-body-lg text-text-secondary max-w-2xl mb-10">
+      Especialistas enfocados en diagnóstico preciso, tratamiento oportuno y acompañamiento continuo
+      para cada mascota.
+    </p>
 
     <div class="relative">
       <div
-        class="flex gap-gutter overflow-x-auto snap-x snap-mandatory scroll-smooth pt-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         id="team-carousel"
         #carrusel
       >
         @for (miembro of equipo; track miembro.nombre) {
           <div
-            class="snap-center shrink-0 w-[85%] sm:w-[45%] md:w-[30%] bg-surface-elevated border border-white/10 rounded-xl overflow-hidden card-hover transition-all duration-500"
+            class="snap-center shrink-0 w-[80%] sm:w-[45%] md:w-[30%] bg-white border border-mint-accent/20 rounded-3xl overflow-hidden shadow-sm card-hover transition-all duration-500"
           >
-            <div class="h-64 md:h-80 overflow-hidden">
+            <div class="relative aspect-[4/5] overflow-hidden">
               <img
                 [class]="'w-full h-full object-cover ' + miembro.posicion"
-                [alt]="miembro.nombre"
+                [alt]="miembro.nombre + ' - ' + miembro.rol"
                 [src]="miembro.imagen"
+                loading="lazy"
+                decoding="async"
               />
-            </div>
-            <div class="p-6 text-center">
-              <h3 class="font-headline-md text-headline-md text-white mb-1">{{ miembro.nombre }}</h3>
-              <p class="text-on-surface-variant font-label-sm text-label-sm uppercase tracking-widest">
-                {{ miembro.rol }}
-              </p>
+              <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/80 via-black/45 to-transparent">
+                <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-white mb-1">{{ miembro.nombre }}</h3>
+                <p class="text-white/80 font-label-sm text-label-sm uppercase tracking-widest">
+                  {{ miembro.rol }}
+                </p>
+              </div>
             </div>
           </div>
         }
       </div>
 
       <button
-        class="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        class="flex absolute left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
         id="team-prev"
         aria-label="Anterior"
         (click)="moverCarrusel(-1)"
@@ -99,7 +141,7 @@
         <span class="material-symbols-outlined">chevron_left</span>
       </button>
       <button
-        class="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-12 h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
+        class="flex absolute right-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full bg-deep-carbon border border-mint-accent text-mint-accent hover:bg-mint-accent/10 transition-colors duration-300"
         id="team-next"
         aria-label="Siguiente"
         (click)="moverCarrusel(1)"
@@ -109,26 +151,44 @@
     </div>
   </section>
 
-  <section class="mb-section-gap" id="timeline">
-    <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+  <section class="mb-section-gap scroll-mt-24" id="timeline">
+    <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-8 text-deep-carbon">
       CÓMO <span class="text-mint-accent text-shadow-mint">FUNCIONA</span>
     </h2>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
-      <div>
-        <p class="text-body-lg text-text-secondary mb-3">
-          El proceso en Vetopia es simple y transparente: registras a tu mascota en nuestra plataforma
-          digital, donde se crea su perfil biométrico de forma ágil y segura.
-        </p>
-        <p class="text-body-lg text-text-secondary mb-3">
-          Nuestro equipo realiza un diagnóstico integral con escaneo y laboratorio in situ, diseña un
-          tratamiento personalizado con base en su perfil genético y da seguimiento continuo durante
-          la recuperación.
-        </p>
-        <p class="text-body-lg text-text-secondary">
-          Todo con monitoreo 24/7 en instalaciones de última generación y acceso en tiempo real a los
-          signos vitales y al progreso de tu mascota desde cualquier dispositivo.
-        </p>
+      <div class="relative pl-6 border-l border-mint-accent/20 space-y-8">
+        <div class="flex items-start gap-4">
+          <div class="w-9 h-9 rounded-full bg-mint-accent/20 grid place-items-center font-semibold text-mint-accent">1</div>
+          <div>
+            <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-deep-carbon">Registro</h3>
+            <p class="text-body-lg text-text-secondary mt-2">
+              El proceso en Vetopia es simple y transparente: registras a tu mascota en nuestra plataforma
+              digital, donde se crea su perfil biométrico de forma ágil y segura.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-9 h-9 rounded-full bg-mint-accent/20 grid place-items-center font-semibold text-mint-accent">2</div>
+          <div>
+            <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-deep-carbon">Diagnóstico</h3>
+            <p class="text-body-lg text-text-secondary mt-2">
+              Nuestro equipo realiza un diagnóstico integral con escaneo y laboratorio in situ, diseña un
+              tratamiento personalizado con base en su perfil genético y da seguimiento continuo durante
+              la recuperación.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4">
+          <div class="w-9 h-9 rounded-full bg-mint-accent/20 grid place-items-center font-semibold text-mint-accent">3</div>
+          <div>
+            <h3 class="font-headline-md text-[clamp(1.25rem,1.5vw,2rem)] text-deep-carbon">Seguimiento</h3>
+            <p class="text-body-lg text-text-secondary mt-2">
+              Todo con monitoreo 24/7 en instalaciones de última generación y acceso en tiempo real a los
+              signos vitales y al progreso de tu mascota desde cualquier dispositivo.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="aspect-video rounded-3xl overflow-hidden border border-mint-accent/20 shadow-2xl">
@@ -143,7 +203,7 @@
     </div>
   </section>
 
-  <section class="mb-section-gap" id="ubicacion">
+  <section class="mb-section-gap scroll-mt-24" id="ubicacion">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
       <div class="order-2 lg:order-1 rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
         <iframe
@@ -158,14 +218,25 @@
       </div>
 
       <div class="order-1 lg:order-2">
-        <h2 class="font-headline-lg text-headline-lg mb-8 text-deep-carbon">
+        <h2 class="font-headline-lg text-[clamp(2rem,4vw,64px)] mb-8 text-deep-carbon">
           DÓNDE <span class="text-mint-accent text-shadow-mint">UBICARNOS</span>
         </h2>
-        <p class="text-body-lg text-text-secondary max-w-3xl">
+        <address class="not-italic text-body-lg text-text-secondary max-w-3xl">
           Visítanos en nuestras instalaciones de última generación, pensadas para el bienestar y la
           recuperación de tu mascota. Encuéntranos en
           <span class="text-deep-carbon font-semibold">Ak 7 #40 - 62, Bogotá D.C., Colombia</span>.
-        </p>
+        </address>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a
+            class="btn-primary bg-mint-accent text-deep-carbon font-bold px-8 py-4 rounded font-label-sm text-label-sm uppercase tracking-widest transition-all duration-300 inline-flex items-center gap-2"
+            href="https://www.google.com/maps/search/?api=1&query=Ak+7+%2340+-+62%2C+Bogot%C3%A1+D.C.%2C+Colombia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CÓMO LLEGAR
+            <span class="material-symbols-outlined text-[18px]">map</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
