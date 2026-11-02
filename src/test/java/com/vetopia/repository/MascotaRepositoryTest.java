@@ -91,6 +91,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("guardarMascota_guardaLaMascotaYLeAsignaId")
+    // Comprueba que save() inserta la mascota, genera id y devuelve la
+    // entidad persistida.
     void guardarMascota_guardaLaMascotaYLeAsignaId() {
         Mascota nueva = Mascota.builder()
                 .nombre("Nueva")
@@ -112,6 +114,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("obtenerMascotaPorId_encuentraLaMascotaGuardada")
+    // Comprueba que findById() devuelve la mascota sembrada con los datos correctos
+    // y estado Activo.
     void obtenerMascotaPorId_encuentraLaMascotaGuardada() {
         Mascota encontrada = mascotaRepository.findById(mascotaActiva.getId()).orElse(null);
 
@@ -123,6 +127,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("listarMascotas_devuelveListaNoVaciaConLasMascotasSembradas")
+    // Comprueba que findAll() devuelve las dos mascotas sembradas, con cualquier
+    // orden pero datos correctos.
     void listarMascotas_devuelveListaNoVaciaConLasMascotasSembradas() {
         var mascotas = mascotaRepository.findAll();
 
@@ -134,6 +140,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("actualizarMascota_cambiaLosCamposAlGuardar")
+    // Comprueba que save() con entidad existente aplica los cambios y los
+    // persiste para futuras lecturas.
     void actualizarMascota_cambiaLosCamposAlGuardar() {
         mascotaActiva.setNombre("Pelusa Renombrada");
         mascotaActiva.setRaza("Labrador");
@@ -149,6 +157,7 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("eliminarMascota_borraLaMascotaYNoSeVuelveAEncontrar")
+    // Comprueba que deleteById() elimina la mascota y ya no aparece en el listado.
     void eliminarMascota_borraLaMascotaYNoSeVuelveAEncontrar() {
         mascotaRepository.deleteById(mascotaInactiva.getId());
 
@@ -160,6 +169,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("buscarPorDuenoYEstado_filtraPorEstadoDelDueno")
+    // Comprueba la consulta por dueño y estado, filtrando solo mascotas
+    // del dueño dado y estado Activo.
     void buscarPorDuenoYEstado_filtraPorEstadoDelDueno() {
         var activas = mascotaRepository.buscarPorDuenoYEstado(dueno.getId(), ACTIVO);
 
@@ -170,6 +181,8 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("buscarPorNombreYEstado_filtraPorNombreParcialYEstadoIgnorandoMayusculas")
+    // Comprueba la búsqueda por nombre parcial sin distinguir mayúsculas
+    // y filtrando por estado.
     void buscarPorNombreYEstado_filtraPorNombreParcialYEstadoIgnorandoMayusculas() {
         var activas = mascotaRepository.buscarPorNombreYEstado("pelusa", ACTIVO);
 
@@ -180,6 +193,7 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("buscarConPesoMayorOIgual_filtraPorPesoMinimo")
+    // Comprueba la consulta por peso mínimo inclusive.
     void buscarConPesoMayorOIgual_filtraPorPesoMinimo() {
         var pesadas = mascotaRepository.buscarConPesoMayorOIgual(10.0);
 
@@ -189,6 +203,7 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("buscarIngresadasDesde_filtraPorFechaDeIngreso")
+    // Comprueba la consulta por mascotas ingresadas desde una fecha dada.
     void buscarIngresadasDesde_filtraPorFechaDeIngreso() {
         var recientes = mascotaRepository.buscarIngresadasDesde(LocalDate.of(2026, 1, 1));
 
@@ -198,6 +213,7 @@ class MascotaRepositoryTest {
 
     @Test
     @DisplayName("contarPorEstadoYEspecie_cuentaSoloLaEspecieIndicada")
+    // Comprueba el conteo de mascotas por estado y especie.
     void contarPorEstadoYEspecie_cuentaSoloLaEspecieIndicada() {
         long activasCaninas = mascotaRepository.contarPorEstadoYEspecie(ACTIVO, ESPECIE);
 

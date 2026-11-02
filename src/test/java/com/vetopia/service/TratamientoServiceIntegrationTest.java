@@ -116,6 +116,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("listarTratamientos_devuelveLaListaRealQueYaPersistimos")
+    // Cuando ya hay un tratamiento guardado, el servicio debe listar
+    // exactamente ese elemento con la misma droga.
     void listarTratamientos_devuelveLaListaRealQueYaPersistimos() {
         Tratamiento tratamiento = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
@@ -133,6 +135,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("obtenerTratamientoPorId_conIdInvalido_lanzaIllegalArgumentException")
+    // Si el id es cero, el servicio rechaza la consulta porque no es
+    // un identificador válido.
     void obtenerTratamientoPorId_conIdInvalido_lanzaIllegalArgumentException() {
         assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(0))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -141,6 +145,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("obtenerTratamientoPorId_conIdInexistente_lanzaRecursoNoEncontrado")
+    // Si el id no existe en la base de datos, el servicio debe
+    // devolver una señal clara de recurso no encontrado.
     void obtenerTratamientoPorId_conIdInexistente_lanzaRecursoNoEncontrado() {
         assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
                 .isInstanceOf(RecursoNoEncontradoException.class)
@@ -149,6 +155,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("guardar_persisteElTratamientoYSePuedeRecuperar")
+    // Al guardar, el servicio debe asignar id y el tratamiento
+    // debe poder recuperarse con el mismo id.
     void guardar_persisteElTratamientoYSePuedeRecuperar() {
         Tratamiento tratamiento = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
@@ -167,6 +175,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("asignar_descontaStockSumaVentaYAtencionDelVeterinario")
+    // Al asignar un tratamiento, el servicio debe registrar el
+    // tratamiento, descontar stock y sumar atenciones del veterinario.
     void asignar_descontaStockSumaVentaYAtencionDelVeterinario() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
@@ -188,6 +198,8 @@ class TratamientoServiceIntegrationTest {
 
     @Test
     @DisplayName("asignar_sinStock_lanzaIllegalStateException")
+    // Cuando no queda inventario, el servicio debe evitar asignar
+    // tratamiento y no tocar la base de datos.
     void asignar_sinStock_lanzaIllegalStateException() {
         drogaConStock.setUnidadesDisponibles(0);
         drogaRepository.save(drogaConStock);

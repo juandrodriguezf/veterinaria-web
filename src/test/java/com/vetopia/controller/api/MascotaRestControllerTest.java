@@ -83,6 +83,8 @@ class MascotaRestControllerTest {
 
     @Test
     @DisplayName("listarMascotas_devuelveLaListaDelServicio")
+    // Comprueba que GET /mascota/all devuelve 200 y JSON con el listado real
+    // que simula el servicio, verificando tamano y campos clave.
     void listarMascotas_devuelveLaListaDelServicio() throws Exception {
         when(mascotaService.listarMascotas())
                 .thenReturn(List.of(mascotaActiva, mascotaInactiva));
@@ -99,6 +101,8 @@ class MascotaRestControllerTest {
 
     @Test
     @DisplayName("obtenerMascota_devuelveLaMascotaBuscada")
+    // Comprueba que GET /mascota/find/{id} devuelve 200 y JSON con la mascota
+    // correcta para el id solicitado.
     void obtenerMascota_devuelveLaMascotaBuscada() throws Exception {
         when(mascotaService.obtenerMascotaPorId(1)).thenReturn(mascotaActiva);
 
@@ -114,6 +118,8 @@ class MascotaRestControllerTest {
 
     @Test
     @DisplayName("agregarMascota_delegaEnElServicioConEstadoActivo")
+    // Comprueba que POST /mascota/add recibe JSON y delega en el servicio
+    // para guardar una mascota con estado Activo.
     void agregarMascota_delegaEnElServicioConEstadoActivo() throws Exception {
         Mascota nueva = Mascota.builder()
                 .nombre("Nueva")
@@ -136,6 +142,8 @@ class MascotaRestControllerTest {
 
     @Test
     @DisplayName("actualizarMascota_delegaEnElServicioConLosNuevosDatos")
+    // Comprueba que PUT /mascota/update envia el cuerpo actualizado y
+    // delega en el servicio para guardar los cambios.
     void actualizarMascota_delegaEnElServicioConLosNuevosDatos() throws Exception {
         mascotaActiva.setNombre("Pelusa Renombrada");
         String cuerpo = objectMapper.writeValueAsString(mascotaActiva);
@@ -150,6 +158,8 @@ class MascotaRestControllerTest {
 
     @Test
     @DisplayName("eliminarMascota_delegaEnElServicioYDevuelveConfirmacionVacia")
+    // Comprueba que DELETE /mascota/delete/{id} delega en el servicio
+    // y responde 200 sin cuerpo.
     void eliminarMascota_delegaEnElServicioYDevuelveConfirmacionVacia() throws Exception {
         ResultActions resultado = mockMvc.perform(delete("/mascota/delete/2"));
 

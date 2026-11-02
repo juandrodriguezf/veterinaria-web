@@ -103,6 +103,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("listarTratamientos_devuelveLosTratamientosQueRetornaElRepositorio")
+    // Con mocks, verificamos que el servicio solo devuelve la lista
+    // que recibe del repositorio, sin tocar la base de datos.
     void listarTratamientos_devuelveLosTratamientosQueRetornaElRepositorio() {
         Tratamiento tratamientoMock = Tratamiento.builder()
                 .id(1)
@@ -121,6 +123,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("obtenerTratamientoPorId_deberiaRetornarElTratamientoDelRepositorioMockeado")
+    // Con mocks, verificamos que el servicio entrega el tratamiento
+    // que proviene del repositorio sin tocar la base de datos.
     void obtenerTratamientoPorId_deberiaRetornarElTratamientoDelRepositorioMockeado() {
         Tratamiento tratamientoMock = Tratamiento.builder()
                 .id(1)
@@ -140,6 +144,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("obtenerTratamientoPorId_noExistente_lanzaRecursoNoEncontrado")
+    // Si el repositorio no encuentra el id, el servicio debe
+    // lanzar la excepción de recurso no encontrado.
     void obtenerTratamientoPorId_noExistente_lanzaRecursoNoEncontrado() {
         when(tratamientoRepository.findById(999)).thenReturn(Optional.empty());
 
@@ -151,6 +157,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("asignar_exitoso_retornaDrogaActualizadaYVerificaCadaInteraccion")
+    // Con mocks, verificamos que el servicio computa stock, ventas
+    // y atenciones del veterinario, y que cada repositorio es llamado.
     void asignar_exitoso_retornaDrogaActualizadaYVerificaCadaInteraccion() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(FECHA)
@@ -180,6 +188,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("asignar_mascotaInactiva_lanzaIllegalStateException")
+    // Si la mascota está inactiva, el servicio no debe permitir
+    // asignar tratamiento.
     void asignar_mascotaInactiva_lanzaIllegalStateException() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(FECHA)
@@ -198,6 +208,8 @@ class TratamientoServiceMockTest {
 
     @Test
     @DisplayName("asignar_sinStock_lanzaIllegalStateException")
+    // Si la droga no tiene stock, el servicio debe evitar asignar
+    // tratamiento y no guardar nada.
     void asignar_sinStock_lanzaIllegalStateException() {
         drogaConStock.setUnidadesDisponibles(0);
 
