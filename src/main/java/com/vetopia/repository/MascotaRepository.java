@@ -1,8 +1,11 @@
 package com.vetopia.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.vetopia.entities.Mascota;
@@ -59,4 +62,46 @@ public interface MascotaRepository extends JpaRepository<Mascota, Integer> {
      * del administrador.
      */
     long countByEstado(String estado);
+
+    /**
+     * Consulta personalizada 1: mascotas de un dueño filtradas por estado.
+     * Permite al cliente ver separadamente sus pacientes activos
+     * (hospitalizados) de los históricos que ya egresaron.
+     */
+    @Query("SELECT m FROM Mascota m WHERE m.dueno.id = :duenoId AND m.estado = :estado")
+    List<Mascota> buscarPorDuenoYEstado(@Param("duenoId") Integer duenoId, @Param("estado") String estado);
+
+    /**
+     * Consulta personalizada 2: mascotas cuyo nombre contiene el término
+     * buscado (sin distinguir mayúsculas/minúsculas) y además están en el
+     * estado indicado. Combina el AC21 de búsqueda parcial con el filtro
+     * de pacientes activos que exige la asignación de tratamientos.
+     */
+    @Query("SELECT m FROM Mascota m WHERE LOWER(m.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')) AND m.estado = :estado")
+    List<Mascota> buscarPorNombreYEstado(@Param("nombre") String nombre, @Param("estado") String estado);
+
+    /**
+     * Consulta personalizada 3: mascotas con peso mayor o igual al mínimo
+     * indicado. Es el ejemplo del profesor transformado en la veterinaria:
+     * reglas del tipo "la dosis del medicamento exige un animal de por
+     * lo menos cierta cantidad de kilos".
+     */
+    @Query("SELECT m FROM Mascota m WHERE m.pesoKg >= :peso")
+    List<Mascota> buscarConPesoMayorOIgual(@Param("peso") Double peso);
+
+    /**
+     * Consulta personalizada 4: mascotas hospitalizadas desde la fecha
+     * indicada en adelante. Permite informes del período reciente
+     * (por ejemplo, ingresos de las últimas dos semanas).
+     */
+    @Query("SELECT m FROM Mascota m WHERE m.fechaIngreso >= :fecha")
+    List<Mascota> buscarIngresadasDesde(@Param("fecha") LocalDate fecha);
+
+    /**
+     * Consulta personalizada 5: cuenta las mascotas de una especie en un
+     * estado determinado sin traerlas. Puede alimentar métricas del
+     * dashboard como "perros activos" o "gatos activos".
+     */
+    @Query("SELECT COUNT(m) FROM Mascota m WHERE m.estado = :estado AND m.especie = :especie")
+    long contarPorEstadoYEspecie(@Param("estado") String estado, @Param("especie") String especie);
 }

@@ -1,0 +1,226 @@
+package com.vetopia.service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.vetopia.entities.Droga;
+import com.vetopia.entities.Dueno;
+import com.vetopia.entities.Mascota;
+import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.Veterinario;
+import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.repository.MascotaRepository;
+import com.vetopia.repository.TratamientoRepository;
+import com.vetopia.repository.VeterinarioRepository;
+
+import org.assertj.core.api.Assertions;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+/**
+ * PRUEBAS CON MOCKS - Servicio de Tratamiento
+ * Aquí no se usa base de datos real. Con Mockito simulamos los repositorios
+ * y el servicio de drogas (dependencias de la capa servicio), de modo que
+ * la prueba se concentre en la lógica de negocio en vez del acceso a datos,
+ * tal como enseñó el ejemplo del curso.
+ */
+@ExtendWith(MockitoExtension.class)
+class TratamientoServiceMockTest {
+
+    private static final LocalDate FECHA = LocalDate.of(2026, 10, 1);
+
+    @Mock
+    private TratamientoRepository tratamientoRepository;
+
+    @Mock
+    private DrogaService drogaService;
+
+    @Mock
+    private VeterinarioRepository veterinarioRepository;
+
+    @Mock
+    private MascotaRepository mascotaRepository;
+
+    @InjectMocks
+    private TratamientoServiceImpl tratamientoService;
+
+    private Mascota mascotaActiva;
+    private Mascota mascotaInactiva;
+    private Veterinario veterinarioActivo;
+    private Droga drogaConStock;
+
+    @BeforeEach
+    void prepararEntidades() {
+        mascotaActiva = Mascota.builder()
+                .id(1)
+                .nombre("Pelusa")
+                .especie("Canino")
+                .raza("Criollo")
+                .edad(3.0)
+                .sexo("Hembra")
+                .pesoKg(12.5)
+                .estado("Activo")
+                .dueno(Dueno.builder().id(1).build())
+                .build();
+        mascotaInactiva = Mascota.builder()
+                .id(1)
+                .nombre("Pelusa Alta")
+                .especie("Canino")
+                .raza("Criollo")
+                .edad(2.0)
+                .sexo("Macho")
+                .pesoKg(4.0)
+                .estado("Inactivo")
+                .dueno(Dueno.builder().id(1).build())
+                .build();
+        veterinarioActivo = Veterinario.builder()
+                .id(1)
+                .nombre("Carlos")
+                .especialidad("Medicina general")
+                .estado("Activo")
+                .numeroAtenciones(0)
+                .build();
+        drogaConStock = Droga.builder()
+                .id(1)
+                .nombre("TILOSINA")
+                .precioVenta(15000.0)
+                .precioCompra(8000.0)
+                .unidadesDisponibles(5)
+                .unidadesVendidas(0)
+                .build();
+    }
+
+    @Test
+    // Con mocks, verificamos que el servicio solo devuelve la lista
+    // que recibe del repositorio, sin tocar la base de datos.
+    void tratamientoService_listarTratamientos_devuelveTratamientos() {
+        Tratamiento tratamientoMock = Tratamiento.builder()
+                .id(1)
+                .fecha(FECHA)
+                .droga(drogaConStock)
+                .build();
+
+        when(tratamientoRepository.findAll()).thenReturn(List.of(tratamientoMock));
+
+        var tratamientos = tratamientoService.listarTratamientos();
+
+        Assertions.assertThat(tratamientos).hasSize(1);
+        Assertions.assertThat(tratamientos.get(0).getId()).isEqualTo(1);
+        verify(tratamientoRepository).findAll();
+    }
+
+    @Test
+    // Con mocks, verificamos que el servicio entrega el tratamiento
+    // que proviene del repositorio sin tocar la base de datos.
+    void tratamientoService_obtenerTratamientoPorId_devuelveTratamiento() {
+        Tratamiento tratamientoMock = Tratamiento.builder()
+                .id(1)
+                .fecha(FECHA)
+                .droga(drogaConStock)
+                .build();
+
+        when(tratamientoRepository.findById(1)).thenReturn(Optional.of(tratamientoMock));
+
+        var resultado = tratamientoService.obtenerTratamientoPorId(1);
+
+        Assertions.assertThat(resultado).isNotNull();
+        Assertions.assertThat(resultado.getId()).isEqualTo(1);
+        Assertions.assertThat(resultado.getDroga().getId()).isEqualTo(1);
+        verify(tratamientoRepository).findById(1);
+    }
+
+    @Test
+    // Si el repositorio no encuentra el id, el servicio debe
+    // lanzar la excepción de recurso no encontrado.
+    void tratamientoService_obtenerTratamientoPorId_noExistenteLanzaExcepcion() {
+        when(tratamientoRepository.findById(999)).thenReturn(Optional.empty());
+
+        Assertions.assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
+                .isInstanceOf(RecursoNoEncontradoException.class)
+                .hasMessageContaining("999");
+        verify(tratamientoRepository).findById(999);
+    }
+
+    @Test
+    // Con mocks, verificamos que el servicio computa stock, ventas
+    // y atenciones del veterinario, y que cada repositorio es llamado.
+    void tratamientoService_asignar_exitosoRetornaDroga() {
+        Tratamiento solicitud = Tratamiento.builder()
+                .fecha(FECHA)
+                .mascota(Mascota.builder().id(1).build())
+                .droga(Droga.builder().id(1).build())
+                .veterinario(Veterinario.builder().id(1).build())
+                .build();
+
+        when(mascotaRepository.findById(1)).thenReturn(Optional.of(mascotaActiva));
+        when(veterinarioRepository.findById(1)).thenReturn(Optional.of(veterinarioActivo));
+        when(drogaService.obtenerDrogaPorId(1)).thenReturn(drogaConStock);
+        when(tratamientoRepository.save(any(Tratamiento.class)))
+                .thenAnswer(invocacion -> invocacion.getArgument(0));
+        when(veterinarioRepository.save(any(Veterinario.class)))
+                .thenAnswer(invocacion -> invocacion.getArgument(0));
+
+        Droga resultado = tratamientoService.asignar(solicitud);
+
+        Assertions.assertThat(resultado).isNotNull();
+        Assertions.assertThat(resultado.getUnidadesDisponibles()).isEqualTo(4);
+        Assertions.assertThat(resultado.getUnidadesVendidas()).isEqualTo(1);
+        Assertions.assertThat(veterinarioActivo.getNumeroAtenciones()).isEqualTo(1);
+        verify(tratamientoRepository).save(any(Tratamiento.class));
+        verify(veterinarioRepository).save(any(Veterinario.class));
+        verify(drogaService).guardar(drogaConStock);
+    }
+
+    @Test
+    // Si la mascota está inactiva, el servicio no debe permitir
+    // asignar tratamiento.
+    void tratamientoService_asignar_mascotaInactivaLanzaExcepcion() {
+        Tratamiento solicitud = Tratamiento.builder()
+                .fecha(FECHA)
+                .mascota(Mascota.builder().id(1).build())
+                .droga(Droga.builder().id(1).build())
+                .veterinario(Veterinario.builder().id(1).build())
+                .build();
+
+        when(mascotaRepository.findById(1)).thenReturn(Optional.of(mascotaInactiva));
+
+        Assertions.assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("inactiva");
+        verify(mascotaRepository).findById(1);
+    }
+
+    @Test
+    // Si la droga no tiene stock, el servicio debe evitar asignar
+    // tratamiento y no guardar nada.
+    void tratamientoService_asignar_sinStockLanzaExcepcion() {
+        drogaConStock.setUnidadesDisponibles(0);
+
+        Tratamiento solicitud = Tratamiento.builder()
+                .fecha(FECHA)
+                .mascota(Mascota.builder().id(1).build())
+                .droga(Droga.builder().id(1).build())
+                .veterinario(Veterinario.builder().id(1).build())
+                .build();
+
+        when(mascotaRepository.findById(1)).thenReturn(Optional.of(mascotaActiva));
+        when(veterinarioRepository.findById(1)).thenReturn(Optional.of(veterinarioActivo));
+        when(drogaService.obtenerDrogaPorId(1)).thenReturn(drogaConStock);
+
+        Assertions.assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("No hay unidades disponibles");
+        verify(mascotaRepository).findById(1);
+        verify(veterinarioRepository).findById(1);
+        verify(drogaService).obtenerDrogaPorId(1);
+    }
+}
