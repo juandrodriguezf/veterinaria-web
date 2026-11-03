@@ -82,7 +82,7 @@ class MascotaRestControllerTest {
 
     @Test
     // Comprueba que GET /mascota/all devuelve 200 y JSON con el listado real
-    // que simula el servicio, verificando tamano y campos clave.
+    // que simula el servicio, verificando tamanio y campos clave.
     void mascotaRestController_listarMascotas_devuelveLista() throws Exception {
         when(mascotaService.listarMascotas())
                 .thenReturn(List.of(mascotaActiva, mascotaInactiva));
