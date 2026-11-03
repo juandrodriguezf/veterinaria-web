@@ -3,7 +3,6 @@ package com.vetopia.controller.api;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -82,10 +81,9 @@ class MascotaRestControllerTest {
     }
 
     @Test
-    @DisplayName("listarMascotas_devuelveLaListaDelServicio")
     // Comprueba que GET /mascota/all devuelve 200 y JSON con el listado real
     // que simula el servicio, verificando tamano y campos clave.
-    void listarMascotas_devuelveLaListaDelServicio() throws Exception {
+    void mascotaRestController_listarMascotas_devuelveLista() throws Exception {
         when(mascotaService.listarMascotas())
                 .thenReturn(List.of(mascotaActiva, mascotaInactiva));
 
@@ -100,10 +98,9 @@ class MascotaRestControllerTest {
     }
 
     @Test
-    @DisplayName("obtenerMascota_devuelveLaMascotaBuscada")
     // Comprueba que GET /mascota/find/{id} devuelve 200 y JSON con la mascota
     // correcta para el id solicitado.
-    void obtenerMascota_devuelveLaMascotaBuscada() throws Exception {
+    void mascotaRestController_obtenerMascotaPorId_devuelveMascota() throws Exception {
         when(mascotaService.obtenerMascotaPorId(1)).thenReturn(mascotaActiva);
 
         ResultActions resultado = mockMvc.perform(get("/mascota/find/1"));
@@ -117,10 +114,9 @@ class MascotaRestControllerTest {
     }
 
     @Test
-    @DisplayName("agregarMascota_delegaEnElServicioConEstadoActivo")
     // Comprueba que POST /mascota/add recibe JSON y delega en el servicio
     // para guardar una mascota con estado Activo.
-    void agregarMascota_delegaEnElServicioConEstadoActivo() throws Exception {
+    void mascotaRestController_agregarMascota_delegaEnServicio() throws Exception {
         Mascota nueva = Mascota.builder()
                 .nombre("Nueva")
                 .especie("Canino")
@@ -141,10 +137,9 @@ class MascotaRestControllerTest {
     }
 
     @Test
-    @DisplayName("actualizarMascota_delegaEnElServicioConLosNuevosDatos")
     // Comprueba que PUT /mascota/update envia el cuerpo actualizado y
     // delega en el servicio para guardar los cambios.
-    void actualizarMascota_delegaEnElServicioConLosNuevosDatos() throws Exception {
+    void mascotaRestController_actualizarMascota_delegaEnServicio() throws Exception {
         mascotaActiva.setNombre("Pelusa Renombrada");
         String cuerpo = objectMapper.writeValueAsString(mascotaActiva);
 
@@ -157,10 +152,9 @@ class MascotaRestControllerTest {
     }
 
     @Test
-    @DisplayName("eliminarMascota_delegaEnElServicioYDevuelveConfirmacionVacia")
     // Comprueba que DELETE /mascota/delete/{id} delega en el servicio
     // y responde 200 sin cuerpo.
-    void eliminarMascota_delegaEnElServicioYDevuelveConfirmacionVacia() throws Exception {
+    void mascotaRestController_eliminarMascota_delegaEnServicio() throws Exception {
         ResultActions resultado = mockMvc.perform(delete("/mascota/delete/2"));
 
         resultado.andExpect(status().isOk());

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,8 +21,7 @@ import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.assertj.core.api.Assertions;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -102,10 +100,9 @@ class TratamientoServiceMockTest {
     }
 
     @Test
-    @DisplayName("listarTratamientos_devuelveLosTratamientosQueRetornaElRepositorio")
     // Con mocks, verificamos que el servicio solo devuelve la lista
     // que recibe del repositorio, sin tocar la base de datos.
-    void listarTratamientos_devuelveLosTratamientosQueRetornaElRepositorio() {
+    void tratamientoService_listarTratamientos_devuelveTratamientos() {
         Tratamiento tratamientoMock = Tratamiento.builder()
                 .id(1)
                 .fecha(FECHA)
@@ -116,16 +113,15 @@ class TratamientoServiceMockTest {
 
         var tratamientos = tratamientoService.listarTratamientos();
 
-        assertThat(tratamientos).hasSize(1);
-        assertThat(tratamientos.get(0).getId()).isEqualTo(1);
+        Assertions.assertThat(tratamientos).hasSize(1);
+        Assertions.assertThat(tratamientos.get(0).getId()).isEqualTo(1);
         verify(tratamientoRepository).findAll();
     }
 
     @Test
-    @DisplayName("obtenerTratamientoPorId_deberiaRetornarElTratamientoDelRepositorioMockeado")
     // Con mocks, verificamos que el servicio entrega el tratamiento
     // que proviene del repositorio sin tocar la base de datos.
-    void obtenerTratamientoPorId_deberiaRetornarElTratamientoDelRepositorioMockeado() {
+    void tratamientoService_obtenerTratamientoPorId_devuelveTratamiento() {
         Tratamiento tratamientoMock = Tratamiento.builder()
                 .id(1)
                 .fecha(FECHA)
@@ -136,30 +132,28 @@ class TratamientoServiceMockTest {
 
         var resultado = tratamientoService.obtenerTratamientoPorId(1);
 
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.getId()).isEqualTo(1);
-        assertThat(resultado.getDroga().getId()).isEqualTo(1);
+        Assertions.assertThat(resultado).isNotNull();
+        Assertions.assertThat(resultado.getId()).isEqualTo(1);
+        Assertions.assertThat(resultado.getDroga().getId()).isEqualTo(1);
         verify(tratamientoRepository).findById(1);
     }
 
     @Test
-    @DisplayName("obtenerTratamientoPorId_noExistente_lanzaRecursoNoEncontrado")
     // Si el repositorio no encuentra el id, el servicio debe
     // lanzar la excepción de recurso no encontrado.
-    void obtenerTratamientoPorId_noExistente_lanzaRecursoNoEncontrado() {
+    void tratamientoService_obtenerTratamientoPorId_noExistenteLanzaExcepcion() {
         when(tratamientoRepository.findById(999)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
+        Assertions.assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessageContaining("999");
         verify(tratamientoRepository).findById(999);
     }
 
     @Test
-    @DisplayName("asignar_exitoso_retornaDrogaActualizadaYVerificaCadaInteraccion")
     // Con mocks, verificamos que el servicio computa stock, ventas
     // y atenciones del veterinario, y que cada repositorio es llamado.
-    void asignar_exitoso_retornaDrogaActualizadaYVerificaCadaInteraccion() {
+    void tratamientoService_asignar_exitosoRetornaDroga() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(FECHA)
                 .mascota(Mascota.builder().id(1).build())
@@ -177,20 +171,19 @@ class TratamientoServiceMockTest {
 
         Droga resultado = tratamientoService.asignar(solicitud);
 
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.getUnidadesDisponibles()).isEqualTo(4);
-        assertThat(resultado.getUnidadesVendidas()).isEqualTo(1);
-        assertThat(veterinarioActivo.getNumeroAtenciones()).isEqualTo(1);
+        Assertions.assertThat(resultado).isNotNull();
+        Assertions.assertThat(resultado.getUnidadesDisponibles()).isEqualTo(4);
+        Assertions.assertThat(resultado.getUnidadesVendidas()).isEqualTo(1);
+        Assertions.assertThat(veterinarioActivo.getNumeroAtenciones()).isEqualTo(1);
         verify(tratamientoRepository).save(any(Tratamiento.class));
         verify(veterinarioRepository).save(any(Veterinario.class));
         verify(drogaService).guardar(drogaConStock);
     }
 
     @Test
-    @DisplayName("asignar_mascotaInactiva_lanzaIllegalStateException")
     // Si la mascota está inactiva, el servicio no debe permitir
     // asignar tratamiento.
-    void asignar_mascotaInactiva_lanzaIllegalStateException() {
+    void tratamientoService_asignar_mascotaInactivaLanzaExcepcion() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(FECHA)
                 .mascota(Mascota.builder().id(1).build())
@@ -200,17 +193,16 @@ class TratamientoServiceMockTest {
 
         when(mascotaRepository.findById(1)).thenReturn(Optional.of(mascotaInactiva));
 
-        assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
+        Assertions.assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("inactiva");
         verify(mascotaRepository).findById(1);
     }
 
     @Test
-    @DisplayName("asignar_sinStock_lanzaIllegalStateException")
     // Si la droga no tiene stock, el servicio debe evitar asignar
     // tratamiento y no guardar nada.
-    void asignar_sinStock_lanzaIllegalStateException() {
+    void tratamientoService_asignar_sinStockLanzaExcepcion() {
         drogaConStock.setUnidadesDisponibles(0);
 
         Tratamiento solicitud = Tratamiento.builder()
@@ -224,7 +216,7 @@ class TratamientoServiceMockTest {
         when(veterinarioRepository.findById(1)).thenReturn(Optional.of(veterinarioActivo));
         when(drogaService.obtenerDrogaPorId(1)).thenReturn(drogaConStock);
 
-        assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
+        Assertions.assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("No hay unidades disponibles");
         verify(mascotaRepository).findById(1);

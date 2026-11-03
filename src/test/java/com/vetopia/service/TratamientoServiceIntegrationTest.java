@@ -3,7 +3,6 @@ package com.vetopia.service;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,8 +21,7 @@ import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import org.assertj.core.api.Assertions;
 
 /**
  * PRUEBAS DE INTEGRACIÓN - Servicio de Tratamiento (sin mocks)
@@ -115,10 +113,9 @@ class TratamientoServiceIntegrationTest {
     }
 
     @Test
-    @DisplayName("listarTratamientos_devuelveLaListaRealQueYaPersistimos")
     // Cuando ya hay un tratamiento guardado, el servicio debe listar
     // exactamente ese elemento con la misma droga.
-    void listarTratamientos_devuelveLaListaRealQueYaPersistimos() {
+    void tratamientoService_listarTratamientos_devuelveTratamientos() {
         Tratamiento tratamiento = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
                 .mascota(mascotaActiva)
@@ -129,35 +126,32 @@ class TratamientoServiceIntegrationTest {
 
         var tratamientos = tratamientoService.listarTratamientos();
 
-        assertThat(tratamientos).hasSize(1);
-        assertThat(tratamientos.get(0).getDroga().getId()).isEqualTo(drogaConStock.getId());
+        Assertions.assertThat(tratamientos).hasSize(1);
+        Assertions.assertThat(tratamientos.get(0).getDroga().getId()).isEqualTo(drogaConStock.getId());
     }
 
     @Test
-    @DisplayName("obtenerTratamientoPorId_conIdInvalido_lanzaIllegalArgumentException")
     // Si el id es cero, el servicio rechaza la consulta porque no es
     // un identificador válido.
-    void obtenerTratamientoPorId_conIdInvalido_lanzaIllegalArgumentException() {
-        assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(0))
+    void tratamientoService_obtenerTratamientoPorId_idInvalidoLanzaExcepcion() {
+        Assertions.assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(0))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("no es válido");
     }
 
     @Test
-    @DisplayName("obtenerTratamientoPorId_conIdInexistente_lanzaRecursoNoEncontrado")
     // Si el id no existe en la base de datos, el servicio debe
     // devolver una señal clara de recurso no encontrado.
-    void obtenerTratamientoPorId_conIdInexistente_lanzaRecursoNoEncontrado() {
-        assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
+    void tratamientoService_obtenerTratamientoPorId_idInexistenteLanzaExcepcion() {
+        Assertions.assertThatThrownBy(() -> tratamientoService.obtenerTratamientoPorId(999))
                 .isInstanceOf(RecursoNoEncontradoException.class)
                 .hasMessageContaining("999");
     }
 
     @Test
-    @DisplayName("guardar_persisteElTratamientoYSePuedeRecuperar")
     // Al guardar, el servicio debe asignar id y el tratamiento
     // debe poder recuperarse con el mismo id.
-    void guardar_persisteElTratamientoYSePuedeRecuperar() {
+    void tratamientoService_guardar_persisteTratamiento() {
         Tratamiento tratamiento = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
                 .mascota(mascotaActiva)
@@ -167,17 +161,16 @@ class TratamientoServiceIntegrationTest {
 
         tratamientoService.guardar(tratamiento);
 
-        assertThat(tratamiento.getId()).isNotNull();
+        Assertions.assertThat(tratamiento.getId()).isNotNull();
         Tratamiento guardado = tratamientoService.obtenerTratamientoPorId(tratamiento.getId());
-        assertThat(guardado).isNotNull();
-        assertThat(guardado.getDroga().getId()).isEqualTo(drogaConStock.getId());
+        Assertions.assertThat(guardado).isNotNull();
+        Assertions.assertThat(guardado.getDroga().getId()).isEqualTo(drogaConStock.getId());
     }
 
     @Test
-    @DisplayName("asignar_descontaStockSumaVentaYAtencionDelVeterinario")
     // Al asignar un tratamiento, el servicio debe registrar el
     // tratamiento, descontar stock y sumar atenciones del veterinario.
-    void asignar_descontaStockSumaVentaYAtencionDelVeterinario() {
+    void tratamientoService_asignar_descuentaStockYSumaAtencion() {
         Tratamiento solicitud = Tratamiento.builder()
                 .fecha(LocalDate.of(2026, 10, 1))
                 .mascota(Mascota.builder().id(mascotaActiva.getId()).build())
@@ -187,20 +180,19 @@ class TratamientoServiceIntegrationTest {
 
         Droga resultado = tratamientoService.asignar(solicitud);
 
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.getUnidadesDisponibles()).isEqualTo(4);
-        assertThat(resultado.getUnidadesVendidas()).isEqualTo(1);
+        Assertions.assertThat(resultado).isNotNull();
+        Assertions.assertThat(resultado.getUnidadesDisponibles()).isEqualTo(4);
+        Assertions.assertThat(resultado.getUnidadesVendidas()).isEqualTo(1);
         Veterinario veterinarioRecargado = veterinarioRepository.findById(veterinarioActivo.getId()).orElse(null);
-        assertThat(veterinarioRecargado).isNotNull();
-        assertThat(veterinarioRecargado.getNumeroAtenciones()).isEqualTo(1);
-        assertThat(tratamientoService.listarTratamientos()).hasSize(1);
+        Assertions.assertThat(veterinarioRecargado).isNotNull();
+        Assertions.assertThat(veterinarioRecargado.getNumeroAtenciones()).isEqualTo(1);
+        Assertions.assertThat(tratamientoService.listarTratamientos()).hasSize(1);
     }
 
     @Test
-    @DisplayName("asignar_sinStock_lanzaIllegalStateException")
     // Cuando no queda inventario, el servicio debe evitar asignar
     // tratamiento y no tocar la base de datos.
-    void asignar_sinStock_lanzaIllegalStateException() {
+    void tratamientoService_asignar_sinStockLanzaExcepcion() {
         drogaConStock.setUnidadesDisponibles(0);
         drogaRepository.save(drogaConStock);
 
@@ -211,17 +203,17 @@ class TratamientoServiceIntegrationTest {
                 .veterinario(Veterinario.builder().id(veterinarioActivo.getId()).build())
                 .build();
 
-        assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
+        Assertions.assertThatThrownBy(() -> tratamientoService.asignar(solicitud))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("No hay unidades disponibles");
 
         // La asignación rechazada no registra el tratamiento ni descuenta
         // el stock (el servicio valida antes de tocar la base de datos).
-        assertThat(tratamientoRepository.count()).isZero();
-        assertThat(drogaRepository.findById(drogaConStock.getId()).orElse(null))
+        Assertions.assertThat(tratamientoRepository.count()).isZero();
+        Assertions.assertThat(drogaRepository.findById(drogaConStock.getId()).orElse(null))
                 .extracting(Droga::getUnidadesDisponibles)
                 .isEqualTo(0);
-        assertThat(veterinarioRepository.findById(veterinarioActivo.getId()).orElse(null))
+        Assertions.assertThat(veterinarioRepository.findById(veterinarioActivo.getId()).orElse(null))
                 .extracting(Veterinario::getNumeroAtenciones)
                 .isEqualTo(0);
     }

@@ -3,17 +3,14 @@ package com.vetopia.repository;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.Assertions;
 
 /**
  * PRUEBAS - Repositorio de Mascota
@@ -26,8 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * arranca desde cero y no se contaminan entre sí.
  */
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("test")
 class MascotaRepositoryTest {
 
     private static final String ACTIVO = "Activo";
@@ -87,13 +82,12 @@ class MascotaRepositoryTest {
         mascotaInactiva = mascotaRepository.save(mascotaInactiva);
     }
 
-    /* ===================== CRUD ===================== */
+    /*CRUD */
 
     @Test
-    @DisplayName("guardarMascota_guardaLaMascotaYLeAsignaId")
     // Comprueba que save() inserta la mascota, genera id y devuelve la
     // entidad persistida.
-    void guardarMascota_guardaLaMascotaYLeAsignaId() {
+    void mascotaRepository_guardarMascota_asignaId() {
         Mascota nueva = Mascota.builder()
                 .nombre("Nueva")
                 .especie(ESPECIE)
@@ -107,116 +101,107 @@ class MascotaRepositoryTest {
 
         Mascota guardada = mascotaRepository.save(nueva);
 
-        assertThat(guardada).isNotNull();
-        assertThat(guardada.getId()).isNotNull();
-        assertThat(guardada.getNombre()).isEqualTo("Nueva");
+        Assertions.assertThat(guardada).isNotNull();
+        Assertions.assertThat(guardada.getId()).isNotNull();
+        Assertions.assertThat(guardada.getNombre()).isEqualTo("Nueva");
     }
 
     @Test
-    @DisplayName("obtenerMascotaPorId_encuentraLaMascotaGuardada")
     // Comprueba que findById() devuelve la mascota sembrada con los datos correctos
     // y estado Activo.
-    void obtenerMascotaPorId_encuentraLaMascotaGuardada() {
+    void mascotaRepository_obtenerMascotaPorId_encuentraMascota() {
         Mascota encontrada = mascotaRepository.findById(mascotaActiva.getId()).orElse(null);
 
-        assertThat(encontrada).isNotNull();
-        assertThat(encontrada.getId()).isEqualTo(mascotaActiva.getId());
-        assertThat(encontrada.getNombre()).isEqualTo("Pelusa Activa");
-        assertThat(encontrada.getEstado()).isEqualTo(ACTIVO);
+        Assertions.assertThat(encontrada).isNotNull();
+        Assertions.assertThat(encontrada.getId()).isEqualTo(mascotaActiva.getId());
+        Assertions.assertThat(encontrada.getNombre()).isEqualTo("Pelusa Activa");
+        Assertions.assertThat(encontrada.getEstado()).isEqualTo(ACTIVO);
     }
 
     @Test
-    @DisplayName("listarMascotas_devuelveListaNoVaciaConLasMascotasSembradas")
     // Comprueba que findAll() devuelve las dos mascotas sembradas, con cualquier
     // orden pero datos correctos.
-    void listarMascotas_devuelveListaNoVaciaConLasMascotasSembradas() {
+    void mascotaRepository_listarMascotas_devuelveLista() {
         var mascotas = mascotaRepository.findAll();
 
-        assertThat(mascotas).isNotNull();
-        assertThat(mascotas).hasSize(2);
-        assertThat(mascotas).extracting(Mascota::getNombre)
+        Assertions.assertThat(mascotas).isNotNull();
+        Assertions.assertThat(mascotas).hasSize(2);
+        Assertions.assertThat(mascotas).extracting(Mascota::getNombre)
                 .containsExactlyInAnyOrder("Pelusa Activa", "Pelusa Inactiva");
     }
 
     @Test
-    @DisplayName("actualizarMascota_cambiaLosCamposAlGuardar")
     // Comprueba que save() con entidad existente aplica los cambios y los
     // persiste para futuras lecturas.
-    void actualizarMascota_cambiaLosCamposAlGuardar() {
+    void mascotaRepository_actualizarMascota_cambiaCampos() {
         mascotaActiva.setNombre("Pelusa Renombrada");
         mascotaActiva.setRaza("Labrador");
         Mascota actualizada = mascotaRepository.save(mascotaActiva);
 
         Mascota recargada = mascotaRepository.findById(mascotaActiva.getId()).orElse(null);
 
-        assertThat(actualizada).isNotNull();
-        assertThat(recargada).isNotNull();
-        assertThat(recargada.getNombre()).isEqualTo("Pelusa Renombrada");
-        assertThat(recargada.getRaza()).isEqualTo("Labrador");
+        Assertions.assertThat(actualizada).isNotNull();
+        Assertions.assertThat(recargada).isNotNull();
+        Assertions.assertThat(recargada.getNombre()).isEqualTo("Pelusa Renombrada");
+        Assertions.assertThat(recargada.getRaza()).isEqualTo("Labrador");
     }
 
     @Test
-    @DisplayName("eliminarMascota_borraLaMascotaYNoSeVuelveAEncontrar")
     // Comprueba que deleteById() elimina la mascota y ya no aparece en el listado.
-    void eliminarMascota_borraLaMascotaYNoSeVuelveAEncontrar() {
+    void mascotaRepository_eliminarMascota_eliminaMascota() {
         mascotaRepository.deleteById(mascotaInactiva.getId());
 
-        assertThat(mascotaRepository.findById(mascotaInactiva.getId())).isEmpty();
-        assertThat(mascotaRepository.findAll()).hasSize(1);
+        Assertions.assertThat(mascotaRepository.findById(mascotaInactiva.getId())).isEmpty();
+        Assertions.assertThat(mascotaRepository.findAll()).hasSize(1);
     }
 
-    /* ===================== Consultas personalizadas ===================== */
+    /* Consultas personalizadas  */
 
     @Test
-    @DisplayName("buscarPorDuenoYEstado_filtraPorEstadoDelDueno")
     // Comprueba la consulta por dueño y estado, filtrando solo mascotas
     // del dueño dado y estado Activo.
-    void buscarPorDuenoYEstado_filtraPorEstadoDelDueno() {
+    void mascotaRepository_buscarPorDuenoYEstado_filtraMascotas() {
         var activas = mascotaRepository.buscarPorDuenoYEstado(dueno.getId(), ACTIVO);
 
-        assertThat(activas).hasSize(1);
-        assertThat(activas.get(0).getEstado()).isEqualTo(ACTIVO);
-        assertThat(activas.get(0).getDueno().getId()).isEqualTo(dueno.getId());
+        Assertions.assertThat(activas).hasSize(1);
+        Assertions.assertThat(activas.get(0).getEstado()).isEqualTo(ACTIVO);
+        Assertions.assertThat(activas.get(0).getDueno().getId()).isEqualTo(dueno.getId());
     }
 
     @Test
-    @DisplayName("buscarPorNombreYEstado_filtraPorNombreParcialYEstadoIgnorandoMayusculas")
     // Comprueba la búsqueda por nombre parcial sin distinguir mayúsculas
     // y filtrando por estado.
-    void buscarPorNombreYEstado_filtraPorNombreParcialYEstadoIgnorandoMayusculas() {
+    void mascotaRepository_buscarPorNombreYEstado_filtraMascotas() {
         var activas = mascotaRepository.buscarPorNombreYEstado("pelusa", ACTIVO);
 
-        assertThat(activas).hasSize(1);
-        assertThat(activas.get(0).getNombre()).isEqualTo("Pelusa Activa");
-        assertThat(activas.get(0).getEstado()).isEqualTo(ACTIVO);
+        Assertions.assertThat(activas).hasSize(1);
+        Assertions.assertThat(activas.get(0).getNombre()).isEqualTo("Pelusa Activa");
+        Assertions.assertThat(activas.get(0).getEstado()).isEqualTo(ACTIVO);
     }
 
     @Test
-    @DisplayName("buscarConPesoMayorOIgual_filtraPorPesoMinimo")
     // Comprueba la consulta por peso mínimo inclusive.
-    void buscarConPesoMayorOIgual_filtraPorPesoMinimo() {
+    void mascotaRepository_buscarConPesoMayorOIgual_filtraMascotas() {
         var pesadas = mascotaRepository.buscarConPesoMayorOIgual(10.0);
 
-        assertThat(pesadas).hasSize(1);
-        assertThat(pesadas.get(0).getPesoKg()).isEqualTo(12.5);
+        Assertions.assertThat(pesadas).hasSize(1);
+        Assertions.assertThat(pesadas.get(0).getPesoKg()).isEqualTo(12.5);
     }
 
     @Test
-    @DisplayName("buscarIngresadasDesde_filtraPorFechaDeIngreso")
     // Comprueba la consulta por mascotas ingresadas desde una fecha dada.
-    void buscarIngresadasDesde_filtraPorFechaDeIngreso() {
+    void mascotaRepository_buscarIngresadasDesde_filtraMascotas() {
         var recientes = mascotaRepository.buscarIngresadasDesde(LocalDate.of(2026, 1, 1));
 
-        assertThat(recientes).hasSize(1);
-        assertThat(recientes.get(0).getFechaIngreso()).isEqualTo(LocalDate.of(2026, 10, 1));
+        Assertions.assertThat(recientes).hasSize(1);
+        Assertions.assertThat(recientes.get(0).getFechaIngreso()).isEqualTo(LocalDate.of(2026, 10, 1));
     }
 
     @Test
-    @DisplayName("contarPorEstadoYEspecie_cuentaSoloLaEspecieIndicada")
     // Comprueba el conteo de mascotas por estado y especie.
-    void contarPorEstadoYEspecie_cuentaSoloLaEspecieIndicada() {
+    void mascotaRepository_contarPorEstadoYEspecie_cuentaMascotas() {
         long activasCaninas = mascotaRepository.contarPorEstadoYEspecie(ACTIVO, ESPECIE);
 
-        assertThat(activasCaninas).isEqualTo(1L);
+        Assertions.assertThat(activasCaninas).isEqualTo(1L);
     }
 }
