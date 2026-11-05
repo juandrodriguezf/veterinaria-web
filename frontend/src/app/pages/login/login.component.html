@@ -29,7 +29,7 @@
           <p class="text-portal-body-lg font-portal-body-lg text-portal-on-surface-variant mb-6">Ingresa tus credenciales para acceder a tu portal.</p>
 
           @if (mensajeError) {
-            <div class="mb-6 flex items-start gap-3 rounded-xl border border-portal-error/30 bg-portal-error-container/40 p-4" role="alert">
+            <div id="mensajeLogin" class="mb-6 flex items-start gap-3 rounded-xl border border-portal-error/30 bg-portal-error-container/40 p-4" role="alert">
               <span class="material-symbols-outlined text-portal-error mt-0.5">error</span>
               <p class="font-portal-body-md text-portal-body-md text-portal-on-error-container">{{ mensajeError }}</p>
             </div>
@@ -61,7 +61,7 @@
               </div>
             </div>
 
-            <button class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-portal-primary-container px-6 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+            <button id="btnIngresar" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-portal-primary-container px-6 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
               Ingresar al Portal
               <span class="material-symbols-outlined text-lg">login</span>
             </button>
