@@ -32,8 +32,6 @@ import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
 import com.vetopia.service.DashboardService;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -82,7 +80,6 @@ public abstract class E2eBase {
     }
 
     protected void configurarDriver() {
-        WebDriverManager.chromedriver().setup();
         ChromeOptions opciones = new ChromeOptions();
         opciones.addArguments("--disable-extensions");
         opciones.addArguments("--window-size=1440,900");
