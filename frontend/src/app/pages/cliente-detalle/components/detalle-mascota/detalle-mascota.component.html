@@ -17,14 +17,14 @@
   <div class="lg:col-span-7">
     <div class="bg-portal-surface-container-lowest rounded-portal-xl border border-portal-surface-container-highest shadow-[0px_10px_30px_rgba(0,0,0,0.04)] p-8">
       <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant mb-2">Paciente N° {{ numeroPaciente() }}</p>
-      <h1 class="font-portal-headline-xl text-portal-headline-xl text-portal-on-surface mb-3">{{ mascota().nombre }}</h1>
+      <h1 id="detalleMascotaNombre" class="font-portal-headline-xl text-portal-headline-xl text-portal-on-surface mb-3">{{ mascota().nombre }}</h1>
 
       <div class="flex flex-wrap items-center gap-2 mb-3">
         <span class="inline-flex items-center rounded-full bg-portal-primary-container px-4 py-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-primary-container">{{ mascota().especie }}</span>
         <span class="inline-flex items-center rounded-full bg-portal-secondary-container px-4 py-1 font-portal-label-md text-portal-label-md uppercase tracking-widest text-portal-on-secondary-container">{{ mascota().sexo }}</span>
       </div>
 
-      <p class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant mb-4 pb-2">{{ mascota().raza }} · {{ mascota().especie }}</p>
+      <p id="detalleMascotaEspecieRaza" class="font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant mb-4 pb-2">{{ mascota().raza }} · {{ mascota().especie }}</p>
 
       <dl class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-portal-surface-container-high">
         <div>

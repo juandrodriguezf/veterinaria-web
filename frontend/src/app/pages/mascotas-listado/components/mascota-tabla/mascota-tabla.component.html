@@ -26,7 +26,7 @@
         </tr>
       }
       @for (mascota of mascotas(); track $index) {
-        <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+        <tr [attr.data-testid]="'mascota-' + mascota.id" class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
           <td class="px-6 py-4">
             @if (mascota.imagen) {
               <img [alt]="'Foto de ' + mascota.nombre" class="h-14 w-14 rounded-full border border-portal-surface-container-highest object-cover" [src]="mascota.imagen"/>
@@ -46,7 +46,7 @@
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.sexo }}</td>
           <td class="px-6 py-4">
             <div class="flex flex-nowrap items-center gap-2 whitespace-nowrap">
-              <a [attr.aria-label]="'Consultar ficha clínica de ' + mascota.nombre" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" [routerLink]="['/mascotas', mascota.id]">
+              <a [attr.data-testid]="'ver-ficha-' + mascota.id" [attr.aria-label]="'Consultar ficha clínica de ' + mascota.nombre" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" [routerLink]="['/mascotas', mascota.id]">
                 Ver ficha
                 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
               </a>
@@ -54,7 +54,7 @@
                 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">edit</span>
                 Editar
               </a>
-              <button (click)="seleccionar(mascota)" [class]="mascota.estado === 'Activo' ? 'bg-portal-error-container text-portal-on-error-container hover:bg-portal-error hover:text-portal-on-error' : 'bg-portal-primary-container text-portal-on-primary-container hover:bg-portal-primary hover:text-portal-on-primary'"
+              <button [attr.data-testid]="'toggle-mascota-' + mascota.id" (click)="seleccionar(mascota)" [class]="mascota.estado === 'Activo' ? 'bg-portal-error-container text-portal-on-error-container hover:bg-portal-error hover:text-portal-on-error' : 'bg-portal-primary-container text-portal-on-primary-container hover:bg-portal-primary hover:text-portal-on-primary'"
                       class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors" type="button">
                 <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">{{ mascota.estado === 'Activo' ? 'pets' : 'emergency_home' }}</span>
                 <span>{{ mascota.estado === 'Activo' ? 'Desactivar' : 'Activar' }}</span>
