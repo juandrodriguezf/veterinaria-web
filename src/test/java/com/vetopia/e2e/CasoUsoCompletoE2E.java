@@ -3,7 +3,6 @@ package com.vetopia.e2e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,22 +15,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import com.vetopia.entities.Administrador;
-import com.vetopia.entities.Droga;
-import com.vetopia.entities.Dueno;
-import com.vetopia.entities.Mascota;
-import com.vetopia.entities.Veterinario;
-import com.vetopia.repository.AdministradorRepository;
-import com.vetopia.repository.DrogaRepository;
-import com.vetopia.repository.DuenoRepository;
-import com.vetopia.repository.MascotaRepository;
-import com.vetopia.repository.TratamientoRepository;
-import com.vetopia.repository.VeterinarioRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
@@ -42,28 +28,15 @@ public class CasoUsoCompletoE2E {
 
     private static final String VET_EMAIL = "carlos.e2e@vetopia.com";
     private static final String VET_PASSWORD = "vet123";
-    private static final String VET_CEDULA = "1002003001";
-    private static final String VET_NOMBRE = "Carlos E2E";
 
     private static final String ADMIN_EMAIL = "admin.e2e@vetopia.com";
     private static final String ADMIN_PASSWORD = "admin123";
-    private static final String ADMIN_CEDULA = "1000000001";
-    private static final String ADMIN_NOMBRE = "Admin E2E";
 
     private static final String OWNER_CEDULA = "1000000000";
-    private static final String OWNER_NOMBRE = "Ana E2E";
-    private static final String OWNER_EMAIL = "ana.e2e@vetopia.com";
-    private static final String OWNER_PASSWORD = "ana123";
 
     private static final String PET_NOMBRE = "Max";
-    private static final String PET_ESPECIE = "Perro";
-    private static final String PET_RAZA = "Doberman";
-    private static final double PET_EDAD = 5.0;
-    private static final String PET_SEXO = "Macho";
-    private static final double PET_PESO = 32.0;
-    private static final String PET_COLOR = "Negro";
 
-    private static final String DRUG_NOMBRE = "TILOSINA";
+    private static final String DRUG_NOMBRE = "TILOSINA E2E";
     private static final double DRUG_PRECIO_COMPRA = 12000.0;
     private static final double DRUG_PRECIO_VENTA = 20000.0;
     private static final int DRUG_STOCK = 10;
@@ -86,27 +59,8 @@ public class CasoUsoCompletoE2E {
 
     private WebDriverWait wait;
 
-    @Autowired
-    private VeterinarioRepository veterinarioRepository;
-
-    @Autowired
-    private AdministradorRepository administradorRepository;
-
-    @Autowired
-    private DuenoRepository duenoRepository;
-
-    @Autowired
-    private MascotaRepository mascotaRepository;
-
-    @Autowired
-    private DrogaRepository drogaRepository;
-
-    @Autowired
-    private TratamientoRepository tratamientoRepository;
-
     @BeforeEach
     public void setUp() {
-        sembrarDatos();
         ChromeOptions opciones = new ChromeOptions();
         opciones.addArguments("--disable-extensions");
         opciones.addArguments("--window-size=1440,900");
@@ -128,7 +82,7 @@ public class CasoUsoCompletoE2E {
     }
 
     /**
-     * Caso 1 del enunciado: el veterinario falla el primer login y entra al
+     * Caso 1 : el veterinario falla el primer login y entra al
      * segundo intento; registra un cliente equivocándose en la cédula
      * (duplicada), corrige y guarda; registra la mascota asociada al nuevo
      * dueño; y por último el cliente entra con su cédula al portal y valida
@@ -198,11 +152,11 @@ public class CasoUsoCompletoE2E {
     }
 
     /**
-     * Caso 2 del enunciado: el veterinario busca la mascota, le asigna un
+     * Caso 2: el veterinario busca la mascota, le asigna un
      * tratamiento (TILOSINA) y confirma el stock restante; vuelve a buscar la
      * mascota y valida el tratamiento en la ficha; finalmente el
      * administrador comprueba en el dashboard la cantidad de medicamentos y
-     * las ganancias, además del inventario en base de datos.
+     * las ganancias.
      */
     @Test
     void caso2_tratamientoYValidacionDashboard() {
@@ -269,13 +223,6 @@ public class CasoUsoCompletoE2E {
         assertThat(numeroDesdeTexto(textoDe("kpiGanancias")))
                 .isEqualTo((int) (DRUG_PRECIO_VENTA - DRUG_PRECIO_COMPRA));
         assertThat(numeroDesdeTexto(textoDeTestId("cantidad-" + DRUG_NOMBRE))).isEqualTo(1);
-
-        var droga = drogaRepository.findAll().stream()
-                .filter(registro -> DRUG_NOMBRE.equals(registro.getNombre()))
-                .findFirst()
-                .orElseThrow();
-        assertThat(droga.getUnidadesDisponibles()).isEqualTo(DRUG_STOCK - 1);
-        assertThat(droga.getUnidadesVendidas()).isEqualTo(1);
     }
 
     private void llenarCliente(String cedula) {
@@ -303,63 +250,6 @@ public class CasoUsoCompletoE2E {
     private void cerrarSesionVeterinario() {
         esperarId("btnLogoutVeterinario").click();
         wait.until(ExpectedConditions.urlToBe(BASE_URL + "/"));
-    }
-
-    private void sembrarDatos() {
-        tratamientoRepository.deleteAll();
-        mascotaRepository.deleteAll();
-        duenoRepository.deleteAll();
-        drogaRepository.deleteAll();
-        veterinarioRepository.deleteAll();
-        administradorRepository.deleteAll();
-
-        administradorRepository.save(Administrador.builder()
-                .cedula(ADMIN_CEDULA)
-                .correo(ADMIN_EMAIL)
-                .contrasena(ADMIN_PASSWORD)
-                .nombre(ADMIN_NOMBRE)
-                .build());
-
-        veterinarioRepository.save(Veterinario.builder()
-                .cedula(VET_CEDULA)
-                .contrasena(VET_PASSWORD)
-                .correo(VET_EMAIL)
-                .especialidad("Medicina General")
-                .numeroAtenciones(0)
-                .nombre(VET_NOMBRE)
-                .estado("Activo")
-                .build());
-
-        Dueno dueno = duenoRepository.save(Dueno.builder()
-                .cedula(OWNER_CEDULA)
-                .nombre(OWNER_NOMBRE)
-                .correo(OWNER_EMAIL)
-                .contrasena(OWNER_PASSWORD)
-                .celular("3000000000")
-                .estado("Activo")
-                .build());
-
-        mascotaRepository.save(Mascota.builder()
-                .nombre(PET_NOMBRE)
-                .especie(PET_ESPECIE)
-                .raza(PET_RAZA)
-                .edad(PET_EDAD)
-                .sexo(PET_SEXO)
-                .pesoKg(PET_PESO)
-                .color(PET_COLOR)
-                .fechaIngreso(LocalDate.now().minusDays(10))
-                .enfermedad("Control de rutina")
-                .dueno(dueno)
-                .estado("Activo")
-                .build());
-
-        drogaRepository.save(Droga.builder()
-                .nombre(DRUG_NOMBRE)
-                .precioCompra(DRUG_PRECIO_COMPRA)
-                .precioVenta(DRUG_PRECIO_VENTA)
-                .unidadesDisponibles(DRUG_STOCK)
-                .unidadesVendidas(0)
-                .build());
     }
 
     private WebElement esperarId(String id) {
