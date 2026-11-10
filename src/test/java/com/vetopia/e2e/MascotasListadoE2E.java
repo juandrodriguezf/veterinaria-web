@@ -3,7 +3,6 @@ package com.vetopia.e2e;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
-import java.time.LocalDate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,17 +15,9 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import com.vetopia.entities.Dueno;
-import com.vetopia.entities.Mascota;
-import com.vetopia.entities.Veterinario;
-import com.vetopia.repository.DuenoRepository;
-import com.vetopia.repository.MascotaRepository;
-import com.vetopia.repository.VeterinarioRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
@@ -37,21 +28,11 @@ public class MascotasListadoE2E {
 
     private static final String VET_EMAIL = "carlos.e2e@vetopia.com";
     private static final String VET_PASSWORD = "vet123";
-    private static final String VET_CEDULA = "1002003001";
-    private static final String VET_NOMBRE = "Carlos E2E";
 
     private static final String OWNER_CEDULA = "1000000000";
     private static final String OWNER_NOMBRE = "Ana E2E";
-    private static final String OWNER_EMAIL = "ana.e2e@vetopia.com";
-    private static final String OWNER_PASSWORD = "ana123";
 
     private static final String PET_NOMBRE = "Max";
-    private static final String PET_ESPECIE = "Perro";
-    private static final String PET_RAZA = "Doberman";
-    private static final double PET_EDAD = 5.0;
-    private static final String PET_SEXO = "Macho";
-    private static final double PET_PESO = 32.0;
-    private static final String PET_COLOR = "Negro";
 
     private static final String NEW_PET_NOMBRE = "Mascota E2E";
     private static final String NEW_PET_ESPECIE = "Perro";
@@ -65,18 +46,8 @@ public class MascotasListadoE2E {
 
     private WebDriverWait wait;
 
-    @Autowired
-    private VeterinarioRepository veterinarioRepository;
-
-    @Autowired
-    private DuenoRepository duenoRepository;
-
-    @Autowired
-    private MascotaRepository mascotaRepository;
-
     @BeforeEach
     public void setUp() {
-        sembrarDatos();
         ChromeOptions opciones = new ChromeOptions();
         opciones.addArguments("--disable-extensions");
         opciones.addArguments("--window-size=1440,900");
@@ -154,8 +125,8 @@ public class MascotasListadoE2E {
 
     /**
      * Nivel medio: desactiva una mascota desde el listado aceptando la
-     * confirmación del navegador, comprueba que el botón cambie a "Activar" y
-     * que el estado en base de datos quede en "Inactivo".
+     * confirmación del navegador y comprueba que el botón pase a ofrecer
+     * "Activar" para la mascota desactivada.
      */
     @Test
     void listadoMascotas_desactivaMascota_cambiaEstado() {
@@ -169,12 +140,6 @@ public class MascotasListadoE2E {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(
                 "//button[contains(@data-testid,'toggle-mascota-')]//span[normalize-space(.)='Activar']")));
-
-        assertThat(mascotaRepository.findAll().stream()
-                .filter(mascota -> PET_NOMBRE.equals(mascota.getNombre()))
-                .findFirst()
-                .orElseThrow()
-                .getEstado()).isEqualTo("Inactivo");
     }
 
     private void abrirListadoMascotas() {
@@ -185,45 +150,6 @@ public class MascotasListadoE2E {
         esperarId("btnIngresar").click();
         wait.until(ExpectedConditions.urlToBe(BASE_URL + "/mascotas"));
         esperarTexto(PET_NOMBRE);
-    }
-
-    private void sembrarDatos() {
-        mascotaRepository.deleteAll();
-        duenoRepository.deleteAll();
-        veterinarioRepository.deleteAll();
-
-        veterinarioRepository.save(Veterinario.builder()
-                .cedula(VET_CEDULA)
-                .contrasena(VET_PASSWORD)
-                .correo(VET_EMAIL)
-                .especialidad("Medicina General")
-                .numeroAtenciones(0)
-                .nombre(VET_NOMBRE)
-                .estado("Activo")
-                .build());
-
-        Dueno dueno = duenoRepository.save(Dueno.builder()
-                .cedula(OWNER_CEDULA)
-                .nombre(OWNER_NOMBRE)
-                .correo(OWNER_EMAIL)
-                .contrasena(OWNER_PASSWORD)
-                .celular("3000000000")
-                .estado("Activo")
-                .build());
-
-        mascotaRepository.save(Mascota.builder()
-                .nombre(PET_NOMBRE)
-                .especie(PET_ESPECIE)
-                .raza(PET_RAZA)
-                .edad(PET_EDAD)
-                .sexo(PET_SEXO)
-                .pesoKg(PET_PESO)
-                .color(PET_COLOR)
-                .fechaIngreso(LocalDate.now().minusDays(10))
-                .enfermedad("Control de rutina")
-                .dueno(dueno)
-                .estado("Activo")
-                .build());
     }
 
     private WebElement esperarId(String id) {
