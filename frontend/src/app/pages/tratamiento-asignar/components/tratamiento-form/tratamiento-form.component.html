@@ -67,6 +67,7 @@
               } @else {
                 @for (droga of coincidencias(); track droga.id; let i = $index) {
                   <li [id]="'medicamento-' + i"
+                      [attr.data-testid]="'medicamento-' + droga.nombre"
                       [attr.aria-selected]="i === resaltado()"
                       [class]="i === resaltado()
                         ? 'cursor-pointer bg-portal-primary-container/40 px-3 py-2 font-portal-body-md text-portal-body-md text-portal-on-primary-container'
@@ -92,7 +93,7 @@
 
     <div class="flex flex-wrap items-center justify-end gap-4 pt-6 border-t border-portal-surface-container-highest">
       <a class="px-8 py-4 rounded-full border border-portal-surface-container-highest text-portal-on-surface font-portal-button text-portal-button uppercase hover:bg-portal-surface-container-high transition-colors" routerLink="/mascotas">Cancelar</a>
-      <button [disabled]="!form().valid || sinMedicamentos()" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-8 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary disabled:opacity-60" type="submit">
+      <button id="btnAplicarTratamiento" [disabled]="!form().valid || sinMedicamentos()" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-8 py-4 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary disabled:opacity-60" type="submit">
         Aplicar Tratamiento
         <span class="material-symbols-outlined text-lg">check_circle</span>
       </button>

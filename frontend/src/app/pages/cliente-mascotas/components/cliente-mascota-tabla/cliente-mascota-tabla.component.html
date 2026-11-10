@@ -26,7 +26,7 @@
         </tr>
       }
       @for (mascota of mascotas(); track mascota.id) {
-        <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+        <tr [attr.data-testid]="'cliente-mascota-' + mascota.id" class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
           <td class="px-6 py-4">
             @if (mascota.imagen) {
               <img [alt]="'Foto de ' + mascota.nombre" class="h-14 w-14 rounded-full border border-portal-surface-container-highest object-cover" [src]="mascota.imagen"/>
@@ -45,7 +45,7 @@
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ descripcionEdad(mascota.edad) }}</td>
           <td class="px-6 py-4 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ mascota.sexo }}</td>
           <td class="px-6 py-4">
-            <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary"
+            <a [attr.data-testid]="'ver-detalle-' + mascota.id" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary"
                [attr.aria-label]="'Consultar detalles de ' + mascota.nombre"
                [routerLink]="['/cliente/mascotas', idUsuario(), 'detalle', mascota.id]">
               Ver detalles

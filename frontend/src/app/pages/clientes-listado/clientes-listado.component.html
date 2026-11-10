@@ -8,10 +8,10 @@
       <form (ngSubmit)="buscar()" class="flex items-center gap-3">
         <div class="relative flex-1 max-w-sm">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-portal-outline-variant text-[20px]" style="font-variation-settings: 'FILL' 0;">search</span>
-          <input [(ngModel)]="nombre" class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
+          <input id="buscarCliente" [(ngModel)]="nombre" class="w-full pl-10 pr-4 py-2 bg-portal-surface-container-low border border-portal-outline rounded-portal focus:outline-none focus:ring-2 focus:ring-portal-primary text-portal-on-surface"
                  name="nombre" placeholder="Buscar por nombre..." type="text"/>
         </div>
-        <button class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
+        <button id="btnBuscarCliente" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" type="submit">
           Buscar
         </button>
         <button (click)="limpiar()" class="inline-flex items-center gap-2 rounded-full px-4 py-2 font-portal-button text-portal-button uppercase transition-colors text-portal-on-surface-variant hover:text-portal-on-surface" type="button">
@@ -31,7 +31,7 @@
               {{ duenos.length === 1 ? '1 cliente registrado' : duenos.length + ' clientes registrados' }}
             }
           </span>
-          <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/clientes/new">
+          <a id="btnAgregarCliente" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/clientes/new">
             Agregar cliente
             <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">person_add</span>
           </a>

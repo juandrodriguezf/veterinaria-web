@@ -25,9 +25,9 @@
           </tr>
         }
         @for (fila of filas(); track $index) {
-          <tr class="border-b border-portal-surface-container-high last:border-0 hover:bg-portal-surface-container-low">
+          <tr [attr.data-testid]="'medicamento-' + fila.nombre" class="border-b border-portal-surface-container-high last:border-0 hover:bg-portal-surface-container-low">
             <td class="px-6 py-3 font-portal-body-md text-portal-body-md text-portal-on-surface">{{ fila.nombre }}</td>
-            <td class="px-6 py-3 text-right font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.cantidad }}</td>
+            <td [attr.data-testid]="'cantidad-' + fila.nombre" class="px-6 py-3 text-right font-portal-label-md text-portal-label-md text-portal-on-surface">{{ fila.cantidad }}</td>
           </tr>
         }
       </tbody>
