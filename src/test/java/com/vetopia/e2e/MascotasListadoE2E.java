@@ -97,6 +97,11 @@ public class MascotasListadoE2E {
         }
     }
 
+    /**
+     * Nivel medio: comprueba que la búsqueda por nombre filtra el listado a
+     * una sola mascota y que un término inexistente muestra el mensaje de
+     * "sin resultados" sin filas en la tabla.
+     */
     @Test
     void listadoMascotas_buscaPorNombre_filtraResultados() {
         abrirListadoMascotas();
@@ -114,6 +119,10 @@ public class MascotasListadoE2E {
         wait.until(driver -> driver.findElements(By.cssSelector("tr[data-testid^='mascota-']")).isEmpty());
     }
 
+    /**
+     * Nivel medio: registra una mascota asociada a un dueño existente y
+     * verifica que el listado pase de una a dos mascotas y muestre la nueva.
+     */
     @Test
     void listadoMascotas_agregaMascota_incrementaListado() {
         abrirListadoMascotas();
@@ -143,6 +152,11 @@ public class MascotasListadoE2E {
         assertThat(esperarTexto(NEW_PET_NOMBRE).isDisplayed()).isTrue();
     }
 
+    /**
+     * Nivel medio: desactiva una mascota desde el listado aceptando la
+     * confirmación del navegador, comprueba que el botón cambie a "Activar" y
+     * que el estado en base de datos quede en "Inactivo".
+     */
     @Test
     void listadoMascotas_desactivaMascota_cambiaEstado() {
         abrirListadoMascotas();

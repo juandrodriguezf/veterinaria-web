@@ -88,6 +88,10 @@ public class MascotaDetalleE2E {
         }
     }
 
+    /**
+     * Nivel sencillo: abre la ficha de una mascota existente y comprueba que
+     * el nombre mostrado corresponde al registro consultado.
+     */
     @Test
     void detalleMascota_verificaNombre() {
         abrirDetalleMascota();
@@ -95,6 +99,11 @@ public class MascotaDetalleE2E {
         assertThat(textoDe("fichaMascotaNombre")).contains(PET_NOMBRE);
     }
 
+    /**
+     * Nivel sencillo: valida los datos clínicos de la ficha (especie/raza,
+     * edad y peso) y que una mascota sin tratamientos muestre el aviso
+     * correspondiente en el historial.
+     */
     @Test
     void detalleMascota_verificaDatosClinicos() {
         abrirDetalleMascota();

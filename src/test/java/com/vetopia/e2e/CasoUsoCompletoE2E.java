@@ -127,6 +127,13 @@ public class CasoUsoCompletoE2E {
         }
     }
 
+    /**
+     * Caso 1 del enunciado: el veterinario falla el primer login y entra al
+     * segundo intento; registra un cliente equivocándose en la cédula
+     * (duplicada), corrige y guarda; registra la mascota asociada al nuevo
+     * dueño; y por último el cliente entra con su cédula al portal y valida
+     * los datos de la mascota.
+     */
     @Test
     void caso1_registroClienteMascotaYPortalCliente() {
         driver.get(BASE_URL + "/login");
@@ -190,6 +197,13 @@ public class CasoUsoCompletoE2E {
         assertThat(esperarTexto(NEW_PET_COLOR).isDisplayed()).isTrue();
     }
 
+    /**
+     * Caso 2 del enunciado: el veterinario busca la mascota, le asigna un
+     * tratamiento (TILOSINA) y confirma el stock restante; vuelve a buscar la
+     * mascota y valida el tratamiento en la ficha; finalmente el
+     * administrador comprueba en el dashboard la cantidad de medicamentos y
+     * las ganancias, además del inventario en base de datos.
+     */
     @Test
     void caso2_tratamientoYValidacionDashboard() {
         driver.get(BASE_URL + "/login");
