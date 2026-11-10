@@ -25,7 +25,7 @@
         </tr>
       }
       @for (dueno of duenos(); track $index) {
-        <tr class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
+        <tr [attr.data-testid]="'cliente-' + dueno.cedula" class="border-b border-portal-surface-container-high transition-colors last:border-0 hover:bg-portal-surface-container-low">
           <td class="px-6 py-4">
             <p class="font-portal-label-md text-portal-label-md text-portal-on-surface">{{ dueno.nombre }}</p>
             <p class="text-xs uppercase tracking-widest text-portal-on-surface-variant">{{ cantidadMascotas(dueno) }}</p>
