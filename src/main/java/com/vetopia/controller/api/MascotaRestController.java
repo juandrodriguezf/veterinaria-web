@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.MascotaDto;
 import com.vetopia.entities.Mascota;
+import com.vetopia.mapper.MascotaMapper;
 import com.vetopia.service.MascotaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,42 +48,43 @@ public class MascotaRestController {
 
     @Operation(summary = "Lista todas las mascotas.")
     @GetMapping("/all")
-    public List<Mascota> listarMascotas() {
-        return mascotaService.listarMascotas();
+    public List<MascotaDto> listarMascotas() {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.listarMascotas());
     }
 
     @Operation(summary = "Obtiene una mascota por su identificador.")
     @GetMapping("/find/{id}")
-    public Mascota obtenerMascota(@PathVariable Integer id) {
-        return mascotaService.obtenerMascotaPorId(id);
+    public MascotaDto obtenerMascota(@PathVariable Integer id) {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.obtenerMascotaPorId(id));
     }
 
     @Operation(summary = "Busca mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
-    public List<Mascota> buscarPorNombre(@PathVariable String nombre) {
-        return mascotaService.buscarPorNombre(nombre);
+    public List<MascotaDto> buscarPorNombre(@PathVariable String nombre) {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.buscarPorNombre(nombre));
     }
 
     @Operation(summary = "Lista las mascotas de un dueño existente (opcionalmente filtradas por nombre).")
     @GetMapping("/byDueno/{duenoId}")
-    public List<Mascota> listarPorDueno(@PathVariable Integer duenoId,
+    public List<MascotaDto> listarPorDueno(@PathVariable Integer duenoId,
                                         @RequestParam(name = "nombre", required = false) String nombre) {
         // Un solo endpoint para el listado del portal del cliente y su
         // búsqueda: buscarPorDuenoYNombre devuelve todo el listado del
         // dueño cuando el término llega vacío.
-        return mascotaService.buscarPorDuenoYNombre(duenoId, nombre);
+        return MascotaMapper.INSTANCE.toDto(
+                mascotaService.buscarPorDuenoYNombre(duenoId, nombre));
     }
 
     @Operation(summary = "Obtiene una mascota validando que pertenezca al dueño indicado.")
     @GetMapping("/propia/{id}/{duenoId}")
-    public Mascota obtenerPropia(@PathVariable Integer id, @PathVariable Integer duenoId) {
-        return mascotaService.obtenerPropia(id, duenoId);
+    public MascotaDto obtenerPropia(@PathVariable Integer id, @PathVariable Integer duenoId) {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.obtenerPropia(id, duenoId));
     }
 
     @Operation(summary = "Lista solo las mascotas activas (candidatas a tratamiento).")
     @GetMapping("/activas")
-    public List<Mascota> listarMascotasActivas() {
-        return mascotaService.listarMascotasActivas();
+    public List<MascotaDto> listarMascotasActivas() {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.listarMascotasActivas());
     }
 
     @Operation(summary = "Crea o actualiza una mascota (dueño obligatorio, estado inicial Activo).")

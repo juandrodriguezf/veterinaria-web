@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.DuenoDto;
 import com.vetopia.entities.Dueno;
+import com.vetopia.mapper.DuenoMapper;
 import com.vetopia.service.DuenoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,26 +39,26 @@ public class DuenoRestController {
 
     @Operation(summary = "Lista todos los clientes.")
     @GetMapping("/all")
-    public List<Dueno> listarDuenos() {
-        return duenoService.listarDuenos();
+    public List<DuenoDto> listarDuenos() {
+        return DuenoMapper.INSTANCE.toDto(duenoService.listarDuenos());
     }
 
     @Operation(summary = "Obtiene un cliente por su identificador.")
     @GetMapping("/find/{id}")
-    public Dueno obtenerDueno(@PathVariable Integer id) {
-        return duenoService.obtenerDuenoPorId(id);
+    public DuenoDto obtenerDueno(@PathVariable Integer id) {
+        return DuenoMapper.INSTANCE.toDto(duenoService.obtenerDuenoPorId(id));
     }
 
     @Operation(summary = "Obtiene un cliente activo para su portal (rechaza clientes inactivos).")
     @GetMapping("/activo/{id}")
-    public Dueno obtenerDuenoActivo(@PathVariable Integer id) {
-        return duenoService.obtenerActivo(id);
+    public DuenoDto obtenerDuenoActivo(@PathVariable Integer id) {
+        return DuenoMapper.INSTANCE.toDto(duenoService.obtenerActivo(id));
     }
 
     @Operation(summary = "Busca clientes por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
-    public List<Dueno> buscarPorNombre(@PathVariable String nombre) {
-        return duenoService.buscarPorNombre(nombre);
+    public List<DuenoDto> buscarPorNombre(@PathVariable String nombre) {
+        return DuenoMapper.INSTANCE.toDto(duenoService.buscarPorNombre(nombre));
     }
 
     @Operation(summary = "Crea un cliente (valida cédula y correo únicos en todo el sistema).")

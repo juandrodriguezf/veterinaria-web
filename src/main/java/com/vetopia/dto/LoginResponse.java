@@ -1,23 +1,18 @@
-package com.vetopia.entities;
+package com.vetopia.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Clase de apoyo del proceso de login: representa el resultado de una
- * autenticación exitosa. El frontend guarda únicamente el token en
- * localStorage; el rol, el id y el nombre se mantienen en memoria para
- * navegar al portal correcto y mostrar la cuenta autenticada.
- *
- * Lombok genera automáticamente getters/setters (@Data), el constructor
- * vacío (@NoArgsConstructor) y el constructor con todos los atributos
- * (@AllArgsConstructor).
+ * DTO - LoginResponse
+ * Respuesta del login: token JWT firmado más los datos mínimos que el
+ * frontend necesita para navegar al portal correcto.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResultadoLogin {
+public class LoginResponse {
 
     /** Token JWT firmado que el frontend enviará en cada petición. */
     private String token;

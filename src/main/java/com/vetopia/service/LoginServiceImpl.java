@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.dto.UsuarioSesion;
-import com.vetopia.entities.ResultadoLogin;
+import com.vetopia.dto.LoginResponse;
 import com.vetopia.security.JwtService;
 
 /**
@@ -35,7 +35,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ResultadoLogin autenticar(String identificador, String contrasena) {
+    public LoginResponse autenticar(String identificador, String contrasena) {
         // Credenciales incompletas: no se consulta la base y el mensaje
         // indica qué le falta al usuario.
         if (identificador == null || identificador.isBlank()
@@ -54,7 +54,7 @@ public class LoginServiceImpl implements LoginService {
         String token = jwtService.generarToken(
                 autenticacion.getName(), perfil.getRol(), perfil.getId(), perfil.getNombre());
 
-        return new ResultadoLogin(token, "Bearer", perfil.getRol(),
+        return new LoginResponse(token, "Bearer", perfil.getRol(),
                 perfil.getId(), perfil.getNombre());
     }
 }

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.vetopia.entities.LoginRequest;
-import com.vetopia.entities.ResultadoLogin;
+import com.vetopia.dto.LoginRequest;
+import com.vetopia.dto.LoginResponse;
 import com.vetopia.service.LoginService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +41,7 @@ public class LoginRestController {
     @PostMapping
     public ResponseEntity<?> autenticar(@RequestBody LoginRequest credenciales) {
         try {
-            ResultadoLogin resultado = loginService.autenticar(
+            LoginResponse resultado = loginService.autenticar(
                     credenciales.getCorreo(), credenciales.getContrasena());
             return ResponseEntity.ok(resultado);
         } catch (DisabledException excepcion) {

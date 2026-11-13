@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.VeterinarioDto;
 import com.vetopia.entities.Veterinario;
+import com.vetopia.mapper.VeterinarioMapper;
 import com.vetopia.service.VeterinarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,20 +40,21 @@ public class VeterinarioRestController {
 
     @Operation(summary = "Lista todos los veterinarios.")
     @GetMapping("/all")
-    public List<Veterinario> listarVeterinarios() {
-        return veterinarioService.listarVeterinarios();
+    public List<VeterinarioDto> listarVeterinarios() {
+        return VeterinarioMapper.INSTANCE.toDto(veterinarioService.listarVeterinarios());
     }
 
     @Operation(summary = "Obtiene un veterinario por su identificador.")
     @GetMapping("/find/{id}")
-    public Veterinario obtenerVeterinario(@PathVariable Integer id) {
-        return veterinarioService.obtenerVeterinarioPorId(id);
+    public VeterinarioDto obtenerVeterinario(@PathVariable Integer id) {
+        return VeterinarioMapper.INSTANCE.toDto(
+                veterinarioService.obtenerVeterinarioPorId(id));
     }
 
     @Operation(summary = "Busca veterinarios por cédula o nombre (coincidencia parcial).")
     @GetMapping("/search/{termino}")
-    public List<Veterinario> buscar(@PathVariable String termino) {
-        return veterinarioService.buscar(termino);
+    public List<VeterinarioDto> buscar(@PathVariable String termino) {
+        return VeterinarioMapper.INSTANCE.toDto(veterinarioService.buscar(termino));
     }
 
     @Operation(summary = "Registra un veterinario nuevo (valida cédula y correo únicos en todo el sistema).")

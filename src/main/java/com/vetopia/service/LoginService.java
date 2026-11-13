@@ -1,6 +1,6 @@
 package com.vetopia.service;
 
-import com.vetopia.entities.ResultadoLogin;
+import com.vetopia.dto.LoginResponse;
 
 /**
  * SERVICIO - LoginService
@@ -15,11 +15,11 @@ public interface LoginService {
     /**
      * Autentica un usuario por correo o cédula y contraseña. Busca en el
      * orden Veterinario -> Administrador -> Dueño. Si encuentra coincidencia
-     * devuelve un ResultadoLogin con el rol, el id y el nombre; si faltan
+     * devuelve un LoginResponse con el rol, el id y el nombre; si faltan
      * datos o no hay coincidencia lanza IllegalArgumentException con el
      * mensaje que el login debe mostrar.
      *
      * Rol: "VETERINARIO", "ADMINISTRADOR" o "CLIENTE".
      */
-    ResultadoLogin autenticar(String identificador, String contrasena);
+    LoginResponse autenticar(String identificador, String contrasena);
 }
