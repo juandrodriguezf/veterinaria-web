@@ -78,16 +78,17 @@ public class AdministradorServiceImpl implements AdministradorService {
                                         + administrador.getId() + "\"."));
         String clave = administrador.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
-        if (!claveNueva) {
-            clave = actual != null ? actual.getContrasena() : "admin123";
-            administrador.setContrasena(clave);
+        if (actual == null && !claveNueva) {
+            clave = "admin123";
+            claveNueva = true;
         }
 
         // Cuenta unificada: correo como usuario, clave cifrada y rol.
         UserEntity cuenta = actual != null ? actual.getUser() : null;
         if (cuenta == null) {
             cuenta = cuentaUsuarioService.construir(
-                    administrador.getCorreo(), clave, CuentaUsuarioService.ROL_ADMINISTRADOR);
+                    administrador.getCorreo(), claveNueva ? clave : "admin123",
+                    CuentaUsuarioService.ROL_ADMINISTRADOR);
         } else {
             cuentaUsuarioService.sincronizar(
                     cuenta, administrador.getCorreo(), claveNueva ? clave : null,
@@ -96,16 +97,5 @@ public class AdministradorServiceImpl implements AdministradorService {
         cuentaUsuarioService.cambiarEstado(cuenta, true);
         administrador.setUser(cuenta);
         administradorRepository.save(administrador);
-    }
-
-    @Override
-    public Administrador obtenerPorCorreoYContrasena(String identificador, String contrasena) {
-        // El formulario acepta correo o cédula: se busca primero por correo y,
-        // si no hay coincidencia, por documento.
-        Administrador porCorreo = administradorRepository
-                .findByCorreoIgnoreCaseAndContrasena(identificador, contrasena);
-        return porCorreo != null
-                ? porCorreo
-                : administradorRepository.findByCedulaAndContrasena(identificador, contrasena);
     }
 }

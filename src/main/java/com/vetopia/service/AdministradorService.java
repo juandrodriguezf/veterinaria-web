@@ -24,7 +24,4 @@ public interface AdministradorService {
      * editar, el registro actual no cuenta como duplicado.
      */
     void guardar(Administrador administrador);
-
-    /** Busca un administrador por correo o cédula y contraseña (para login). */
-    Administrador obtenerPorCorreoYContrasena(String identificador, String contrasena);
 }

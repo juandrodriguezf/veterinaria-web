@@ -6,19 +6,24 @@ import lombok.NoArgsConstructor;
 
 /**
  * Clase de apoyo del proceso de login: representa el resultado de una
- * autenticación exitosa. Contiene el rol del usuario autenticado
- * ("VETERINARIO", "ADMINISTRADOR" o "CLIENTE"), su identificador en
- * la tabla correspondiente y su nombre, para que el frontend Angular
- * navegue al portal correcto y muestre la cuenta autenticada.
+ * autenticación exitosa. El frontend guarda únicamente el token en
+ * localStorage; el rol, el id y el nombre se mantienen en memoria para
+ * navegar al portal correcto y mostrar la cuenta autenticada.
  *
  * Lombok genera automáticamente getters/setters (@Data), el constructor
  * vacío (@NoArgsConstructor) y el constructor con todos los atributos
- * (@AllArgsConstructor), igual que en las demás entidades.
+ * (@AllArgsConstructor).
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResultadoLogin {
+
+    /** Token JWT firmado que el frontend enviará en cada petición. */
+    private String token;
+
+    /** Tipo de token (siempre "Bearer"). */
+    private String tipo;
 
     /** Rol del usuario autenticado ("VETERINARIO", "ADMINISTRADOR" o "CLIENTE"). */
     private String rol;

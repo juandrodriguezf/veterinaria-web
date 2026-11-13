@@ -5,8 +5,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.security.JwtAuthenticationFilter;
 import com.vetopia.service.MascotaService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * los datos clave de la respuesta, de modo que el contrato con el frontend
  * quede verificado sin probar otra vez el servicio.
  */
-@WebMvcTest(MascotaRestController.class)
+@WebMvcTest(controllers = MascotaRestController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class))
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class MascotaRestControllerTest {
 

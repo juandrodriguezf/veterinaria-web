@@ -98,13 +98,13 @@ public class VeterinarioServiceImpl implements VeterinarioService {
                                 "No encontramos ningún veterinario registrado con el identificador \""
                                         + veterinario.getId() + "\"."));
 
-        // Contraseña: vacía en edición significa conservar la actual; en
-        // creación se asigna la clave provisional del equipo ("vet123").
+        // Contraseña: vacía en edición significa conservar el hash actual;
+        // en creación se asigna la clave provisional del equipo ("vet123").
         String clave = veterinario.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
-        if (!claveNueva) {
-            clave = actual != null ? actual.getContrasena() : "vet123";
-            veterinario.setContrasena(clave);
+        if (actual == null && !claveNueva) {
+            clave = "vet123";
+            claveNueva = true;
         }
         if (veterinario.getEstado() == null || veterinario.getEstado().isBlank()) {
             veterinario.setEstado(actual != null ? actual.getEstado() : "Activo");
@@ -120,7 +120,8 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         UserEntity cuenta = actual != null ? actual.getUser() : null;
         if (cuenta == null) {
             cuenta = cuentaUsuarioService.construir(
-                    veterinario.getCorreo(), clave, CuentaUsuarioService.ROL_VETERINARIO);
+                    veterinario.getCorreo(), claveNueva ? clave : "vet123",
+                    CuentaUsuarioService.ROL_VETERINARIO);
         } else {
             cuentaUsuarioService.sincronizar(
                     cuenta, veterinario.getCorreo(), claveNueva ? clave : null,
@@ -129,19 +130,6 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         cuentaUsuarioService.cambiarEstado(cuenta, "Activo".equals(veterinario.getEstado()));
         veterinario.setUser(cuenta);
         veterinarioRepository.save(veterinario);
-    }
-
-    @Override
-    public Veterinario obtenerPorCorreoYContrasena(String identificador, String contrasena) {
-        // El formulario acepta correo o cédula: se busca primero por correo y,
-        // si no hay coincidencia, por documento. Política del portal: solo un
-        // veterinario "Activo" inicia sesión.
-        Veterinario porCorreo = veterinarioRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
-                identificador, contrasena, "Activo");
-        return porCorreo != null
-                ? porCorreo
-                : veterinarioRepository.findByCedulaAndContrasenaAndEstado(
-                        identificador, contrasena, "Activo");
     }
 
     /**

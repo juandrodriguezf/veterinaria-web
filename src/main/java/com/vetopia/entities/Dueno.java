@@ -63,9 +63,13 @@ public class Dueno {
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
 
-    /** Contraseña de acceso del dueño. */
+    /**
+     * Contraseña capturada en el formulario. Solo se usa como dato de
+     * entrada para crear o actualizar la cuenta BCrypt: JPA no la persiste
+     * (vive cifrada en UserEntity) y Jackson no la devuelve.
+     */
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(nullable = false, length = 255)
+    @Transient
     private String contrasena;
 
     /** Número de celular del dueño (dato opcional). */

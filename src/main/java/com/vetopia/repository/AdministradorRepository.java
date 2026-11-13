@@ -13,15 +13,6 @@ import com.vetopia.entities.Administrador;
 @Repository
 public interface AdministradorRepository extends JpaRepository<Administrador, Integer> {
 
-    /** Administrador cuyas credenciales coinciden, o null si no existe. */
-    Administrador findByCorreoIgnoreCaseAndContrasena(String correo, String contrasena);
-
-    /**
-     * Administrador por cédula y contraseña: alternativa al correo para
-     * iniciar sesión con el documento.
-     */
-    Administrador findByCedulaAndContrasena(String cedula, String contrasena);
-
     /** Administrador por correo: soporta la validación de unicidad global. */
     Administrador findByCorreoIgnoreCase(String correo);
 

@@ -34,12 +34,6 @@ public interface DuenoService {
     void guardar(Dueno dueno);
 
     /**
-     * Busca un dueño por correo o cédula y contraseña (para login). Solo
-     * devuelve el registro si su estado es "Activo".
-     */
-    Dueno obtenerPorCorreoYContrasena(String identificador, String contrasena);
-
-    /**
      * Obtiene el dueño con el id indicado y valida que esté "Activo"
      * (misma política del login: un cliente desactivado no ingresa al
      * portal). Lanza IllegalArgumentException si el id es inválido,

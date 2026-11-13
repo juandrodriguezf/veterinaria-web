@@ -119,13 +119,13 @@ public class DuenoServiceImpl implements DuenoService {
                                         + dueno.getId() + "\"."));
 
         // Política de contraseñas: en edición, dejar el campo en blanco
-        // significa "conservar la clave actual"; en creación se asigna una
+        // significa "conservar el hash actual"; en creación se asigna una
         // clave provisional. La clave en claro solo se usa para cifrarla.
         String clave = dueno.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
-        if (!claveNueva) {
-            clave = actual != null ? actual.getContrasena() : "vetopia123";
-            dueno.setContrasena(clave);
+        if (actual == null && !claveNueva) {
+            clave = "vetopia123";
+            claveNueva = true;
         }
         if (dueno.getEstado() == null || dueno.getEstado().isBlank()) {
             dueno.setEstado(actual != null ? actual.getEstado() : "Activo");
@@ -136,7 +136,8 @@ public class DuenoServiceImpl implements DuenoService {
         UserEntity cuenta = actual != null ? actual.getUser() : null;
         if (cuenta == null) {
             cuenta = cuentaUsuarioService.construir(
-                    dueno.getCorreo(), clave, CuentaUsuarioService.ROL_CLIENTE);
+                    dueno.getCorreo(), claveNueva ? clave : "vetopia123",
+                    CuentaUsuarioService.ROL_CLIENTE);
         } else {
             cuentaUsuarioService.sincronizar(
                     cuenta, dueno.getCorreo(), claveNueva ? clave : null,
@@ -145,19 +146,6 @@ public class DuenoServiceImpl implements DuenoService {
         cuentaUsuarioService.cambiarEstado(cuenta, "Activo".equals(dueno.getEstado()));
         dueno.setUser(cuenta);
         duenoRepository.save(dueno);
-    }
-
-    @Override
-    public Dueno obtenerPorCorreoYContrasena(String identificador, String contrasena) {
-        // El formulario acepta correo o cédula: se busca primero por correo y,
-        // si no hay coincidencia, por documento. Misma política del portal:
-        // solo un cliente "Activo" inicia sesión.
-        Dueno porCorreo = duenoRepository.findByCorreoIgnoreCaseAndContrasenaAndEstado(
-                identificador, contrasena, "Activo");
-        return porCorreo != null
-                ? porCorreo
-                : duenoRepository.findByCedulaAndContrasenaAndEstado(
-                        identificador, contrasena, "Activo");
     }
 
     /**
