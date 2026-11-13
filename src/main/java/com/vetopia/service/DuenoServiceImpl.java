@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.entities.UserEntity;
 import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.DuenoRepository;
 
@@ -31,6 +32,10 @@ public class DuenoServiceImpl implements DuenoService {
     /** Validador de cédula y correo únicos entre las cuentas del sistema. */
     @Autowired
     private IdentificadorUnicoService identificadorUnicoService;
+
+    /** Cuenta unificada de acceso (users/roles). */
+    @Autowired
+    private CuentaUsuarioService cuentaUsuarioService;
 
     /** Servicio de mascotas (para la eliminación en cascada). */
     @Autowired
@@ -103,27 +108,42 @@ public class DuenoServiceImpl implements DuenoService {
         dueno.setCorreo(dueno.getCorreo() == null ? null : dueno.getCorreo().trim());
         identificadorUnicoService.validarCliente(
                 dueno.getCedula(), dueno.getCorreo(), dueno.getId());
+
+        // En edición se carga el registro actual una sola vez: de allí se
+        // recuperan la clave y la cuenta que el formulario no devuelve.
+        Dueno actual = dueno.getId() == null
+                ? null
+                : duenoRepository.findById(dueno.getId()).orElseThrow(
+                        () -> new RecursoNoEncontradoException(
+                                "No encontramos ningún cliente registrado con el identificador \""
+                                        + dueno.getId() + "\"."));
+
         // Política de contraseñas: en edición, dejar el campo en blanco
-        // significa "conservar la clave actual" (el formulario no la
-        // devuelve, se envía vacía); en creación se asigna una clave
-        // provisional. Cubre al flujo original de registro, cuyo
-        // formulario no pide estos campos, y evita violar la columna
-        // NOT NULL.
-        if (dueno.getContrasena() == null || dueno.getContrasena().isBlank()) {
-            if (dueno.getId() != null) {
-                Dueno actual = duenoRepository.findById(dueno.getId()).orElse(null);
-                if (actual == null) {
-                    throw new RecursoNoEncontradoException(
-                            "No encontramos ningún cliente registrado con el identificador \"" + dueno.getId() + "\".");
-                }
-                dueno.setContrasena(actual.getContrasena());
-            } else {
-                dueno.setContrasena("vetopia123");
-            }
+        // significa "conservar la clave actual"; en creación se asigna una
+        // clave provisional. La clave en claro solo se usa para cifrarla.
+        String clave = dueno.getContrasena();
+        boolean claveNueva = clave != null && !clave.isBlank();
+        if (!claveNueva) {
+            clave = actual != null ? actual.getContrasena() : "vetopia123";
+            dueno.setContrasena(clave);
         }
         if (dueno.getEstado() == null || dueno.getEstado().isBlank()) {
-            dueno.setEstado("Activo");
+            dueno.setEstado(actual != null ? actual.getEstado() : "Activo");
         }
+
+        // La cuenta unificada se sincroniza con el perfil: correo como
+        // usuario, BCrypt para la clave y el rol de cliente.
+        UserEntity cuenta = actual != null ? actual.getUser() : null;
+        if (cuenta == null) {
+            cuenta = cuentaUsuarioService.construir(
+                    dueno.getCorreo(), clave, CuentaUsuarioService.ROL_CLIENTE);
+        } else {
+            cuentaUsuarioService.sincronizar(
+                    cuenta, dueno.getCorreo(), claveNueva ? clave : null,
+                    CuentaUsuarioService.ROL_CLIENTE);
+        }
+        cuentaUsuarioService.cambiarEstado(cuenta, "Activo".equals(dueno.getEstado()));
+        dueno.setUser(cuenta);
         duenoRepository.save(dueno);
     }
 
@@ -150,6 +170,9 @@ public class DuenoServiceImpl implements DuenoService {
                 () -> new RecursoNoEncontradoException(
                         "No encontramos ningún cliente registrado con el identificador \"" + id + "\"."));
         dueno.setEstado(estado);
+        // La cuenta de acceso sigue el mismo estado: un cliente inactivo
+        // tampoco puede autenticarse.
+        cuentaUsuarioService.cambiarEstado(dueno.getUser(), "Activo".equals(estado));
         duenoRepository.save(dueno);
     }
 

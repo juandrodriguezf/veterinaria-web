@@ -58,6 +58,9 @@ class TratamientoServiceIntegrationTest {
     @Autowired
     private TratamientoRepository tratamientoRepository;
 
+    @Autowired
+    private CuentaUsuarioService cuentaUsuarioService;
+
     private Dueno dueno;
     private Mascota mascotaActiva;
     private Veterinario veterinarioActivo;
@@ -72,6 +75,8 @@ class TratamientoServiceIntegrationTest {
                 .contrasena("dueño123")
                 .celular("3000000000")
                 .estado(ACTIVO)
+                .user(cuentaUsuarioService.construir(
+                        "ana@correo.com", "dueño123", CuentaUsuarioService.ROL_CLIENTE))
                 .build();
         dueno = duenoRepository.save(dueno);
 
@@ -99,6 +104,8 @@ class TratamientoServiceIntegrationTest {
                 .nombre("Carlos")
                 .estado(ACTIVO)
                 .urlFoto("http://placekitten.com/100/100")
+                .user(cuentaUsuarioService.construir(
+                        "carlos@vetopia.com", "vet123", CuentaUsuarioService.ROL_VETERINARIO))
                 .build();
         veterinarioActivo = veterinarioRepository.save(veterinarioActivo);
 

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vetopia.entities.UserEntity;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.errors.RecursoNoEncontradoException;
 import com.vetopia.repository.VeterinarioRepository;
@@ -30,6 +31,10 @@ public class VeterinarioServiceImpl implements VeterinarioService {
     /** Validador de cédula y correo únicos entre las cuentas del sistema. */
     @Autowired
     private IdentificadorUnicoService identificadorUnicoService;
+
+    /** Cuenta unificada de acceso (users/roles). */
+    @Autowired
+    private CuentaUsuarioService cuentaUsuarioService;
 
     /**
      * Servicio de tratamientos: antes de eliminar al veterinario se
@@ -83,20 +88,23 @@ public class VeterinarioServiceImpl implements VeterinarioService {
                 veterinario.getCorreo() == null ? null : veterinario.getCorreo().trim());
         identificadorUnicoService.validarVeterinario(
                 veterinario.getCedula(), veterinario.getCorreo(), veterinario.getId());
-        // Política de contraseñas: en edición, dejar el campo en blanco
-        // significa "conservar la clave actual" (el formulario no la
-        // devuelve); en creación se asigna la clave provisional del
-        // equipo ("vet123"), igual que los datos de prueba.
-        // En edicion se carga el registro actual una sola vez: de alli se
-        // recuperan los campos que el formulario no envia para no borrarlos.
+        // En edición se carga el registro actual una sola vez: de allí se
+        // recuperan la clave, la cuenta y los campos que el formulario no
+        // envía para no borrarlos.
         Veterinario actual = veterinario.getId() == null
                 ? null
                 : veterinarioRepository.findById(veterinario.getId()).orElseThrow(
                         () -> new RecursoNoEncontradoException(
                                 "No encontramos ningún veterinario registrado con el identificador \""
                                         + veterinario.getId() + "\"."));
-        if (veterinario.getContrasena() == null || veterinario.getContrasena().isBlank()) {
-            veterinario.setContrasena(actual != null ? actual.getContrasena() : "vet123");
+
+        // Contraseña: vacía en edición significa conservar la actual; en
+        // creación se asigna la clave provisional del equipo ("vet123").
+        String clave = veterinario.getContrasena();
+        boolean claveNueva = clave != null && !clave.isBlank();
+        if (!claveNueva) {
+            clave = actual != null ? actual.getContrasena() : "vet123";
+            veterinario.setContrasena(clave);
         }
         if (veterinario.getEstado() == null || veterinario.getEstado().isBlank()) {
             veterinario.setEstado(actual != null ? actual.getEstado() : "Activo");
@@ -107,6 +115,19 @@ public class VeterinarioServiceImpl implements VeterinarioService {
         if (veterinario.getUrlFoto() == null) {
             veterinario.setUrlFoto(actual != null ? actual.getUrlFoto() : null);
         }
+
+        // Cuenta unificada: correo como usuario, clave cifrada y rol.
+        UserEntity cuenta = actual != null ? actual.getUser() : null;
+        if (cuenta == null) {
+            cuenta = cuentaUsuarioService.construir(
+                    veterinario.getCorreo(), clave, CuentaUsuarioService.ROL_VETERINARIO);
+        } else {
+            cuentaUsuarioService.sincronizar(
+                    cuenta, veterinario.getCorreo(), claveNueva ? clave : null,
+                    CuentaUsuarioService.ROL_VETERINARIO);
+        }
+        cuentaUsuarioService.cambiarEstado(cuenta, "Activo".equals(veterinario.getEstado()));
+        veterinario.setUser(cuenta);
         veterinarioRepository.save(veterinario);
     }
 
@@ -133,6 +154,9 @@ public class VeterinarioServiceImpl implements VeterinarioService {
                 () -> new RecursoNoEncontradoException(
                         "No encontramos ningún veterinario registrado con el identificador \"" + id + "\"."));
         veterinario.setEstado(estado);
+        // La cuenta de acceso sigue el mismo estado: un veterinario
+        // inactivo no puede autenticarse.
+        cuentaUsuarioService.cambiarEstado(veterinario.getUser(), "Activo".equals(estado));
         veterinarioRepository.save(veterinario);
     }
 

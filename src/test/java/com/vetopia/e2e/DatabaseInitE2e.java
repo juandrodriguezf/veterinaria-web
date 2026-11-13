@@ -18,6 +18,7 @@ import com.vetopia.repository.DuenoRepository;
 import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
+import com.vetopia.service.CuentaUsuarioService;
 
 /**
  * CARGADOR DE DATOS - perfil de pruebas
@@ -75,18 +76,23 @@ public class DatabaseInitE2e implements CommandLineRunner {
 
     private final TratamientoRepository tratamientoRepository;
 
+    /** Crea la cuenta unificada (users/roles) de cada perfil sembrado. */
+    private final CuentaUsuarioService cuentaUsuarioService;
+
     public DatabaseInitE2e(VeterinarioRepository veterinarioRepository,
             AdministradorRepository administradorRepository,
             DuenoRepository duenoRepository,
             MascotaRepository mascotaRepository,
             DrogaRepository drogaRepository,
-            TratamientoRepository tratamientoRepository) {
+            TratamientoRepository tratamientoRepository,
+            CuentaUsuarioService cuentaUsuarioService) {
         this.veterinarioRepository = veterinarioRepository;
         this.administradorRepository = administradorRepository;
         this.duenoRepository = duenoRepository;
         this.mascotaRepository = mascotaRepository;
         this.drogaRepository = drogaRepository;
         this.tratamientoRepository = tratamientoRepository;
+        this.cuentaUsuarioService = cuentaUsuarioService;
     }
 
     @Override
@@ -103,6 +109,8 @@ public class DatabaseInitE2e implements CommandLineRunner {
                 .correo(ADMIN_EMAIL)
                 .contrasena(ADMIN_PASSWORD)
                 .nombre(ADMIN_NOMBRE)
+                .user(cuentaUsuarioService.construir(
+                        ADMIN_EMAIL, ADMIN_PASSWORD, CuentaUsuarioService.ROL_ADMINISTRADOR))
                 .build());
 
         veterinarioRepository.save(Veterinario.builder()
@@ -113,6 +121,8 @@ public class DatabaseInitE2e implements CommandLineRunner {
                 .numeroAtenciones(0)
                 .nombre(VET_NOMBRE)
                 .estado("Activo")
+                .user(cuentaUsuarioService.construir(
+                        VET_EMAIL, VET_PASSWORD, CuentaUsuarioService.ROL_VETERINARIO))
                 .build());
 
         Dueno dueno = duenoRepository.save(Dueno.builder()
@@ -122,6 +132,8 @@ public class DatabaseInitE2e implements CommandLineRunner {
                 .contrasena(OWNER_PASSWORD)
                 .celular("3000000000")
                 .estado("Activo")
+                .user(cuentaUsuarioService.construir(
+                        OWNER_EMAIL, OWNER_PASSWORD, CuentaUsuarioService.ROL_CLIENTE))
                 .build());
 
         mascotaRepository.save(Mascota.builder()

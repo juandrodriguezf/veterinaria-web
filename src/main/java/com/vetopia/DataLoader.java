@@ -22,6 +22,7 @@ import com.vetopia.repository.DuenoRepository;
 import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
+import com.vetopia.service.CuentaUsuarioService;
 
 /**
  * CARGADOR DE DATOS - semillas de Vetopia
@@ -57,15 +58,20 @@ public class DataLoader implements CommandLineRunner {
     private final AdministradorRepository administradorRepository;
     private final TratamientoRepository tratamientoRepository;
 
+    /** Crea la cuenta unificada (users/roles) de cada perfil sembrado. */
+    private final CuentaUsuarioService cuentaUsuarioService;
+
     public DataLoader(DuenoRepository duenoRepository, MascotaRepository mascotaRepository,
                       DrogaRepository drogaRepository, VeterinarioRepository veterinarioRepository,
-                      AdministradorRepository administradorRepository, TratamientoRepository tratamientoRepository) {
+                      AdministradorRepository administradorRepository, TratamientoRepository tratamientoRepository,
+                      CuentaUsuarioService cuentaUsuarioService) {
         this.duenoRepository = duenoRepository;
         this.mascotaRepository = mascotaRepository;
         this.drogaRepository = drogaRepository;
         this.veterinarioRepository = veterinarioRepository;
         this.administradorRepository = administradorRepository;
         this.tratamientoRepository = tratamientoRepository;
+        this.cuentaUsuarioService = cuentaUsuarioService;
     }
 
     @Override
@@ -85,6 +91,10 @@ public class DataLoader implements CommandLineRunner {
                 .correo("maria@correo.com").contrasena("dueño123").celular("3010001111").estado("Inactivo").build();
         List<Dueno> duenos = new ArrayList<>(List.of(ana, pedro, maria));
         duenos.addAll(generarClientes());
+        // Cada cliente recibe su cuenta de acceso (users) con la clave
+        // cifrada y el rol ROLE_CLIENTE antes de persistirse en cascada.
+        duenos.forEach(dueno -> dueno.setUser(cuentaUsuarioService.construir(
+                dueno.getCorreo(), dueno.getContrasena(), CuentaUsuarioService.ROL_CLIENTE)));
         duenoRepository.saveAll(duenos);
 
         // ---- Mascotas (cada una conectada a su dueño real) ----
@@ -182,16 +192,38 @@ public class DataLoader implements CommandLineRunner {
 
         // Administradores al final (no dependen de nadie; 5 para cumplir
         // el estándar de al menos 5 objetos por tabla).
-        administradorRepository.save(Administrador.builder().cedula("1000000001")
+        guardarAdministrador(Administrador.builder().cedula("1000000001")
                 .correo("admin@vetopia.com").contrasena("admin123").nombre("Dirección Vetopia").build());
-        administradorRepository.save(Administrador.builder().cedula("1000000002")
+        guardarAdministrador(Administrador.builder().cedula("1000000002")
                 .correo("gerencia@vetopia.com").contrasena("gerencia123").nombre("Gerencia General").build());
-        administradorRepository.save(Administrador.builder().cedula("1000000003")
+        guardarAdministrador(Administrador.builder().cedula("1000000003")
                 .correo("finanzas@vetopia.com").contrasena("finanzas123").nombre("Finanzas").build());
-        administradorRepository.save(Administrador.builder().cedula("1000000004")
+        guardarAdministrador(Administrador.builder().cedula("1000000004")
                 .correo("inventario@vetopia.com").contrasena("inventario123").nombre("Control de Inventario").build());
-        administradorRepository.save(Administrador.builder().cedula("1000000005")
+        guardarAdministrador(Administrador.builder().cedula("1000000005")
                 .correo("calidad@vetopia.com").contrasena("calidad123").nombre("Auditoría Clínica").build());
+    }
+
+    /**
+     * Guarda un veterinario con su cuenta de acceso unificada: la cuenta se
+     * persiste en cascada con la clave cifrada y el rol ROLE_VETERINARIO.
+     */
+    private void guardarVeterinario(Veterinario veterinario) {
+        veterinario.setUser(cuentaUsuarioService.construir(
+                veterinario.getCorreo(), veterinario.getContrasena(),
+                CuentaUsuarioService.ROL_VETERINARIO));
+        veterinarioRepository.save(veterinario);
+    }
+
+    /**
+     * Guarda un administrador con su cuenta de acceso unificada: la cuenta
+     * se persiste en cascada con la clave cifrada y el rol ROLE_ADMINISTRADOR.
+     */
+    private void guardarAdministrador(Administrador administrador) {
+        administrador.setUser(cuentaUsuarioService.construir(
+                administrador.getCorreo(), administrador.getContrasena(),
+                CuentaUsuarioService.ROL_ADMINISTRADOR));
+        administradorRepository.save(administrador);
     }
 
     /**
@@ -237,23 +269,23 @@ public class DataLoader implements CommandLineRunner {
      * Siembra los cinco veterinarios activos del equipo.
      */
     private void sembrarVeterinarios() {
-        veterinarioRepository.save(Veterinario.builder().cedula("1002003001").contrasena("vet123")
+        guardarVeterinario(Veterinario.builder().cedula("1002003001").contrasena("vet123")
                 .correo("carlos.gutierrez@vetopia.com").especialidad("Medicina General")
                 .numeroAtenciones(0).nombre("Carlos Gutiérrez").estado("Activo")
                 .urlFoto("https://example.com/foto-carlos.jpg").build());
-        veterinarioRepository.save(Veterinario.builder().cedula("1002003002").contrasena("vet123")
+        guardarVeterinario(Veterinario.builder().cedula("1002003002").contrasena("vet123")
                 .correo("laura.mendez@vetopia.com").especialidad("Cirugía")
                 .numeroAtenciones(0).nombre("Laura Méndez").estado("Activo")
                 .build());
-        veterinarioRepository.save(Veterinario.builder().cedula("1002003003").contrasena("vet123")
+        guardarVeterinario(Veterinario.builder().cedula("1002003003").contrasena("vet123")
                 .correo("jorge.santana@vetopia.com").especialidad("Dermatología")
                 .numeroAtenciones(0).nombre("Jorge Santana").estado("Activo")
                 .build());
-        veterinarioRepository.save(Veterinario.builder().cedula("1002003004").contrasena("vet123")
+        guardarVeterinario(Veterinario.builder().cedula("1002003004").contrasena("vet123")
                 .correo("sofia.rincon@vetopia.com").especialidad("Odontología")
                 .numeroAtenciones(0).nombre("Sofía Rincón").estado("Activo")
                 .urlFoto("https://example.com/foto-sofia.jpg").build());
-        veterinarioRepository.save(Veterinario.builder().cedula("1002003005").contrasena("vet123")
+        guardarVeterinario(Veterinario.builder().cedula("1002003005").contrasena("vet123")
                 .correo("diego.paredes@vetopia.com").especialidad("Nutrición")
                 .numeroAtenciones(0).nombre("Diego Paredes").estado("Activo")
                 .build());

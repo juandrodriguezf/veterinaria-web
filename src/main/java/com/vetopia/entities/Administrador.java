@@ -7,11 +7,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -39,7 +43,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"veterinarios"})
+@ToString(exclude = {"veterinarios", "user"})
 public class Administrador {
 
     /** Identificador único del administrador (autogenerado por la base de datos). */
@@ -74,4 +78,14 @@ public class Administrador {
     @OneToMany(mappedBy = "administrador")
     @Builder.Default
     private List<Veterinario> veterinarios = new ArrayList<>();
+
+    /**
+     * Cuenta de acceso unificada (tabla users). El administrador se
+     * autentica con esta cuenta, igual que el veterinario y el cliente; la
+     * relación se guarda en cascada y se elimina junto con el perfil.
+     */
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private UserEntity user;
 }
