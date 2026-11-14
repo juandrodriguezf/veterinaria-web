@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.DrogaDto;
-import com.vetopia.entities.Droga;
+import com.vetopia.dto.DrogaRequest;
+
 import com.vetopia.mapper.DrogaMapper;
 import com.vetopia.service.DrogaService;
 
@@ -49,7 +50,7 @@ public class DrogaRestController {
 
     @Operation(summary = "Registra una droga nueva en el inventario.")
     @PostMapping("/add")
-    public void agregarDroga(@RequestBody Droga droga) {
-        drogaService.guardar(droga);
+    public void agregarDroga(@RequestBody DrogaRequest solicitud) {
+        drogaService.guardar(DrogaMapper.INSTANCE.toEntity(solicitud));
     }
 }

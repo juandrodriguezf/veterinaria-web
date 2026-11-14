@@ -106,9 +106,8 @@ export class MascotasFormularioComponent {
         pesoKg: formValue.pesoKg ?? undefined,
         color: formValue.color ?? '',
         imagen: formValue.imagen ?? '',
-        dueno,
+        duenoId: dueno.id,
         estado: formValue.estado ?? 'Activo',
-        tratamientos: [],
       })
       .subscribe({
         next: () => this.router.navigate(['/mascotas']),

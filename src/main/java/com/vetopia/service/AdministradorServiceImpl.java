@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vetopia.dto.AdministradorRequest;
 import com.vetopia.entities.Administrador;
 import com.vetopia.entities.UserEntity;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.mapper.AdministradorMapper;
 import com.vetopia.repository.AdministradorRepository;
 
 /**
@@ -60,7 +62,8 @@ public class AdministradorServiceImpl implements AdministradorService {
      * reserva también los identificadores de cuentas inactivas.
      */
     @Override
-    public void guardar(Administrador administrador) {
+    public void guardar(AdministradorRequest solicitud) {
+        Administrador administrador = AdministradorMapper.INSTANCE.toEntity(solicitud);
         administrador.setCedula(
                 administrador.getCedula() == null ? null : administrador.getCedula().trim());
         administrador.setCorreo(
@@ -76,7 +79,7 @@ public class AdministradorServiceImpl implements AdministradorService {
                         () -> new RecursoNoEncontradoException(
                                 "No encontramos ningún administrador registrado con el identificador \""
                                         + administrador.getId() + "\"."));
-        String clave = administrador.getContrasena();
+        String clave = solicitud.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
         if (actual == null && !claveNueva) {
             clave = "admin123";

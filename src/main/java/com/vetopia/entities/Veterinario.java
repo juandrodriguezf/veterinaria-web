@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,7 +17,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -60,17 +58,7 @@ public class Veterinario {
     @Column(nullable = false, unique = true, length = 20)
     private String cedula;
 
-    /**
-     * Contraseña capturada en el formulario. Solo se usa como dato de
-     * entrada para crear o actualizar la cuenta BCrypt: JPA no la persiste
-     * (vive cifrada en UserEntity) y Jackson no la devuelve.
-     */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Transient
-    private String contrasena;
-
-    /**
-     * Correo electrónico del veterinario (único; es el usuario del login).
+    /** Correo electrónico del veterinario (único; es el usuario del login).
      * Viaja en la API para que el administrador lo consulte y lo edite.
      */
     @Column(nullable = false, unique = true, length = 150)

@@ -3,9 +3,11 @@ package com.vetopia.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.vetopia.dto.TratamientoDto;
+import com.vetopia.dto.TratamientoRequest;
 import com.vetopia.entities.Tratamiento;
 
 /**
@@ -22,4 +24,9 @@ public interface TratamientoMapper {
     TratamientoDto toDto(Tratamiento tratamiento);
 
     List<TratamientoDto> toDto(List<Tratamiento> tratamientos);
+
+    @Mapping(source = "mascotaId", target = "mascota.id")
+    @Mapping(source = "drogaId", target = "droga.id")
+    @Mapping(source = "veterinarioId", target = "veterinario.id")
+    Tratamiento toEntity(TratamientoRequest solicitud);
 }

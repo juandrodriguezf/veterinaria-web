@@ -2,6 +2,7 @@ package com.vetopia.service;
 
 import java.util.List;
 
+import com.vetopia.dto.AdministradorRequest;
 import com.vetopia.entities.Administrador;
 
 /**
@@ -23,5 +24,5 @@ public interface AdministradorService {
      * el correo no pertenezcan a ninguna otra cuenta del sistema; al
      * editar, el registro actual no cuenta como duplicado.
      */
-    void guardar(Administrador administrador);
+    void guardar(AdministradorRequest solicitud);
 }

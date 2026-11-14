@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.CascadeType;
@@ -17,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,15 +57,6 @@ public class Administrador {
     /** Correo electrónico del administrador (único; es el usuario del login). */
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
-
-    /**
-     * Contraseña capturada en el formulario. Solo se usa como dato de
-     * entrada para crear o actualizar la cuenta BCrypt: JPA no la persiste
-     * (vive cifrada en UserEntity) y Jackson no la devuelve.
-     */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Transient
-    private String contrasena;
 
     /** Nombre completo del administrador. */
     @Column(nullable = false, length = 100)

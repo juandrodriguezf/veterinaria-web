@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.AdministradorDto;
+import com.vetopia.dto.AdministradorRequest;
 import com.vetopia.dto.ResumenDashboard;
-import com.vetopia.entities.Administrador;
+
 import com.vetopia.mapper.AdministradorMapper;
 import com.vetopia.service.AdministradorService;
 import com.vetopia.service.DashboardService;
@@ -62,7 +63,7 @@ public class AdministradorRestController {
 
     @Operation(summary = "Registra un administrador nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
-    public void agregarAdministrador(@RequestBody Administrador administrador) {
-        administradorService.guardar(administrador);
+    public void agregarAdministrador(@RequestBody AdministradorRequest solicitud) {
+        administradorService.guardar(solicitud);
     }
 }

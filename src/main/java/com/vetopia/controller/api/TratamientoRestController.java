@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.DrogaDto;
 import com.vetopia.dto.TratamientoDto;
+import com.vetopia.dto.TratamientoRequest;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Tratamiento;
 import com.vetopia.mapper.DrogaMapper;
@@ -69,7 +70,8 @@ public class TratamientoRestController {
 
     @Operation(summary = "Asigna un tratamiento (valida mascota activa y stock; descuenta inventario).")
     @PostMapping("/add")
-    public DrogaDto asignarTratamiento(@RequestBody Tratamiento tratamiento) {
+    public DrogaDto asignarTratamiento(@RequestBody TratamientoRequest solicitud) {
+        Tratamiento tratamiento = TratamientoMapper.INSTANCE.toEntity(solicitud);
         Droga droga = tratamientoService.asignar(tratamiento);
         return DrogaMapper.INSTANCE.toDto(droga);
     }

@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.MascotaDto;
-import com.vetopia.entities.Mascota;
+import com.vetopia.dto.MascotaRequest;
+
 import com.vetopia.mapper.MascotaMapper;
 import com.vetopia.service.MascotaService;
 
@@ -89,14 +90,14 @@ public class MascotaRestController {
 
     @Operation(summary = "Crea o actualiza una mascota (dueño obligatorio, estado inicial Activo).")
     @PostMapping("/add")
-    public void agregarMascota(@RequestBody Mascota mascota) {
-        mascotaService.guardarValidada(mascota);
+    public void agregarMascota(@RequestBody MascotaRequest solicitud) {
+        mascotaService.guardarValidada(MascotaMapper.INSTANCE.toEntity(solicitud));
     }
 
     @Operation(summary = "Actualiza una mascota existente.")
     @PutMapping("/update")
-    public void actualizarMascota(@RequestBody Mascota mascota) {
-        mascotaService.guardarValidada(mascota);
+    public void actualizarMascota(@RequestBody MascotaRequest solicitud) {
+        mascotaService.guardarValidada(MascotaMapper.INSTANCE.toEntity(solicitud));
     }
 
     @Operation(summary = "Alterna el estado de la mascota (Activo <-> Inactivo) y lo devuelve.")

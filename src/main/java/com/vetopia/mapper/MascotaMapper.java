@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.vetopia.dto.MascotaDto;
+import com.vetopia.dto.MascotaRequest;
 import com.vetopia.entities.Mascota;
 
 /**
@@ -23,4 +24,8 @@ public interface MascotaMapper {
     MascotaDto toDto(Mascota mascota);
 
     List<MascotaDto> toDto(List<Mascota> mascotas);
+
+    @Mapping(source = "duenoId", target = "dueno.id")
+    @Mapping(target = "tratamientos", ignore = true)
+    Mascota toEntity(MascotaRequest solicitud);
 }

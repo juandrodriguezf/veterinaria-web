@@ -107,7 +107,6 @@ public class DatabaseInitE2e implements CommandLineRunner {
         administradorRepository.save(Administrador.builder()
                 .cedula(ADMIN_CEDULA)
                 .correo(ADMIN_EMAIL)
-                .contrasena(ADMIN_PASSWORD)
                 .nombre(ADMIN_NOMBRE)
                 .user(cuentaUsuarioService.construir(
                         ADMIN_EMAIL, ADMIN_PASSWORD, CuentaUsuarioService.ROL_ADMINISTRADOR))
@@ -115,7 +114,6 @@ public class DatabaseInitE2e implements CommandLineRunner {
 
         veterinarioRepository.save(Veterinario.builder()
                 .cedula(VET_CEDULA)
-                .contrasena(VET_PASSWORD)
                 .correo(VET_EMAIL)
                 .especialidad("Medicina General")
                 .numeroAtenciones(0)
@@ -129,7 +127,6 @@ public class DatabaseInitE2e implements CommandLineRunner {
                 .cedula(OWNER_CEDULA)
                 .nombre(OWNER_NOMBRE)
                 .correo(OWNER_EMAIL)
-                .contrasena(OWNER_PASSWORD)
                 .celular("3000000000")
                 .estado("Activo")
                 .user(cuentaUsuarioService.construir(

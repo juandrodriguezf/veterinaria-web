@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.VeterinarioDto;
-import com.vetopia.entities.Veterinario;
+import com.vetopia.dto.VeterinarioRequest;
+
 import com.vetopia.mapper.VeterinarioMapper;
 import com.vetopia.service.VeterinarioService;
 
@@ -59,14 +60,14 @@ public class VeterinarioRestController {
 
     @Operation(summary = "Registra un veterinario nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
-    public void agregarVeterinario(@RequestBody Veterinario veterinario) {
-        veterinarioService.guardar(veterinario);
+    public void agregarVeterinario(@RequestBody VeterinarioRequest solicitud) {
+        veterinarioService.guardar(solicitud);
     }
 
     @Operation(summary = "Actualiza un veterinario existente (valida cédula y correo únicos en todo el sistema).")
     @PutMapping("/update")
-    public void actualizarVeterinario(@RequestBody Veterinario veterinario) {
-        veterinarioService.guardar(veterinario);
+    public void actualizarVeterinario(@RequestBody VeterinarioRequest solicitud) {
+        veterinarioService.guardar(solicitud);
     }
 
     @Operation(summary = "Alterna el estado del veterinario (Activo <-> Inactivo) y lo devuelve.")

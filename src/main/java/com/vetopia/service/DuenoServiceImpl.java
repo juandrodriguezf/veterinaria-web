@@ -5,10 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vetopia.dto.DuenoRequest;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 import com.vetopia.entities.UserEntity;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.mapper.DuenoMapper;
 import com.vetopia.repository.DuenoRepository;
 
 import jakarta.transaction.Transactional;
@@ -99,7 +101,8 @@ public class DuenoServiceImpl implements DuenoService {
 
     @Override
     @Transactional
-    public void guardar(Dueno dueno) {
+    public void guardar(DuenoRequest solicitud) {
+        Dueno dueno = DuenoMapper.INSTANCE.toEntity(solicitud);
         // La cédula y el correo identifican la cuenta en el login, así que
         // deben ser únicos entre clientes, veterinarios y administradores.
         // El validador central ignora este mismo registro al editar y
@@ -121,7 +124,7 @@ public class DuenoServiceImpl implements DuenoService {
         // Política de contraseñas: en edición, dejar el campo en blanco
         // significa "conservar el hash actual"; en creación se asigna una
         // clave provisional. La clave en claro solo se usa para cifrarla.
-        String clave = dueno.getContrasena();
+        String clave = solicitud.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
         if (actual == null && !claveNueva) {
             clave = "vetopia123";

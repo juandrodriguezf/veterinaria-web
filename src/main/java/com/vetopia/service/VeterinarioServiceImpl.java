@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vetopia.dto.VeterinarioRequest;
 import com.vetopia.entities.UserEntity;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.mapper.VeterinarioMapper;
 import com.vetopia.repository.VeterinarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -81,7 +83,8 @@ public class VeterinarioServiceImpl implements VeterinarioService {
      * reserva también los identificadores de cuentas inactivas.
      */
     @Override
-    public void guardar(Veterinario veterinario) {
+    public void guardar(VeterinarioRequest solicitud) {
+        Veterinario veterinario = VeterinarioMapper.INSTANCE.toEntity(solicitud);
         veterinario.setCedula(
                 veterinario.getCedula() == null ? null : veterinario.getCedula().trim());
         veterinario.setCorreo(
@@ -100,7 +103,7 @@ public class VeterinarioServiceImpl implements VeterinarioService {
 
         // Contraseña: vacía en edición significa conservar el hash actual;
         // en creación se asigna la clave provisional del equipo ("vet123").
-        String clave = veterinario.getContrasena();
+        String clave = solicitud.getContrasena();
         boolean claveNueva = clave != null && !clave.isBlank();
         if (actual == null && !claveNueva) {
             clave = "vet123";

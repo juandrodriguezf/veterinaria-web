@@ -11,9 +11,9 @@ import { Tratamiento } from '../models/tratamiento.model';
  */
 export interface NuevoTratamiento {
   fecha: string;
-  mascota: { id: number };
-  droga: { id: number };
-  veterinario: { id: number };
+  mascotaId: number;
+  drogaId: number;
+  veterinarioId: number;
 }
 
 /**

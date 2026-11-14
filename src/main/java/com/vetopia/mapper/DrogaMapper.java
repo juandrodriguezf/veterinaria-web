@@ -3,9 +3,11 @@ package com.vetopia.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.vetopia.dto.DrogaDto;
+import com.vetopia.dto.DrogaRequest;
 import com.vetopia.entities.Droga;
 
 /**
@@ -20,4 +22,7 @@ public interface DrogaMapper {
     DrogaDto toDto(Droga droga);
 
     List<DrogaDto> toDto(List<Droga> drogas);
+
+    @Mapping(target = "tratamientos", ignore = true)
+    Droga toEntity(DrogaRequest solicitud);
 }

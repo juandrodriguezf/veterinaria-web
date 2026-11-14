@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -62,15 +61,6 @@ public class Dueno {
     /** Correo electrónico del dueño (único; es el usuario del login). */
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
-
-    /**
-     * Contraseña capturada en el formulario. Solo se usa como dato de
-     * entrada para crear o actualizar la cuenta BCrypt: JPA no la persiste
-     * (vive cifrada en UserEntity) y Jackson no la devuelve.
-     */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Transient
-    private String contrasena;
 
     /** Número de celular del dueño (dato opcional). */
     @Column(length = 20)

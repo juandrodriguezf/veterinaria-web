@@ -72,7 +72,6 @@ class TratamientoServiceIntegrationTest {
                 .cedula("1001")
                 .nombre("Ana")
                 .correo("ana@correo.com")
-                .contrasena("dueño123")
                 .celular("3000000000")
                 .estado(ACTIVO)
                 .user(cuentaUsuarioService.construir(
@@ -97,7 +96,6 @@ class TratamientoServiceIntegrationTest {
 
         veterinarioActivo = Veterinario.builder()
                 .cedula("2001")
-                .contrasena("vet123")
                 .correo("carlos@vetopia.com")
                 .especialidad("Medicina general")
                 .numeroAtenciones(0)
