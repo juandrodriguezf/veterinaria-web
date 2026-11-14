@@ -108,7 +108,6 @@ export class TratamientoAsignarComponent {
         fecha: formValue.fecha ?? '',
         mascotaId: Number(formValue.mascotaId),
         drogaId: Number(formValue.drogaId),
-        veterinarioId,
       })
       .subscribe({
         next: (droga) => {

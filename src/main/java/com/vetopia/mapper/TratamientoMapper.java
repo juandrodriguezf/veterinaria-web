@@ -27,6 +27,5 @@ public interface TratamientoMapper {
 
     @Mapping(source = "mascotaId", target = "mascota.id")
     @Mapping(source = "drogaId", target = "droga.id")
-    @Mapping(source = "veterinarioId", target = "veterinario.id")
     Tratamiento toEntity(TratamientoRequest solicitud);
 }

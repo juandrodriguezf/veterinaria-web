@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.MascotaDto;
 import com.vetopia.dto.MascotaRequest;
 
 import com.vetopia.mapper.MascotaMapper;
+import com.vetopia.security.PermisoService;
 import com.vetopia.service.MascotaService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,24 +49,32 @@ public class MascotaRestController {
     @Autowired
     private MascotaService mascotaService;
 
+    /** Resuelve la identidad del token para los endpoints del cliente. */
+    @Autowired
+    private PermisoService permisoService;
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Lista todas las mascotas.")
     @GetMapping("/all")
     public List<MascotaDto> listarMascotas() {
         return MascotaMapper.INSTANCE.toDto(mascotaService.listarMascotas());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Obtiene una mascota por su identificador.")
     @GetMapping("/find/{id}")
     public MascotaDto obtenerMascota(@PathVariable Integer id) {
         return MascotaMapper.INSTANCE.toDto(mascotaService.obtenerMascotaPorId(id));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Busca mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
     public List<MascotaDto> buscarPorNombre(@PathVariable String nombre) {
         return MascotaMapper.INSTANCE.toDto(mascotaService.buscarPorNombre(nombre));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO') or (hasAuthority('ROLE_CLIENTE') and @permisoService.esPerfilAutenticado(#duenoId))")
     @Operation(summary = "Lista las mascotas de un dueño existente (opcionalmente filtradas por nombre).")
     @GetMapping("/byDueno/{duenoId}")
     public List<MascotaDto> listarPorDueno(@PathVariable Integer duenoId,
@@ -76,36 +86,58 @@ public class MascotaRestController {
                 mascotaService.buscarPorDuenoYNombre(duenoId, nombre));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO') or (hasAuthority('ROLE_CLIENTE') and @permisoService.esPerfilAutenticado(#duenoId))")
     @Operation(summary = "Obtiene una mascota validando que pertenezca al dueño indicado.")
     @GetMapping("/propia/{id}/{duenoId}")
     public MascotaDto obtenerPropia(@PathVariable Integer id, @PathVariable Integer duenoId) {
         return MascotaMapper.INSTANCE.toDto(mascotaService.obtenerPropia(id, duenoId));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CLIENTE')")
+    @Operation(summary = "Lista las mascotas del cliente autenticado (el dueño sale del token).")
+    @GetMapping("/mias")
+    public List<MascotaDto> listarMias() {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.buscarPorDuenoYNombre(
+                permisoService.perfilAutenticadoId(), null));
+    }
+
+    @PreAuthorize("hasAuthority('ROLE_CLIENTE') and @permisoService.esMascotaDelCliente(#id)")
+    @Operation(summary = "Obtiene una mascota propia validando la propiedad con el token.")
+    @GetMapping("/mias/{id}")
+    public MascotaDto obtenerMia(@PathVariable Integer id) {
+        return MascotaMapper.INSTANCE.toDto(mascotaService.obtenerPropia(
+                id, permisoService.perfilAutenticadoId()));
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Lista solo las mascotas activas (candidatas a tratamiento).")
     @GetMapping("/activas")
     public List<MascotaDto> listarMascotasActivas() {
         return MascotaMapper.INSTANCE.toDto(mascotaService.listarMascotasActivas());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Crea o actualiza una mascota (dueño obligatorio, estado inicial Activo).")
     @PostMapping("/add")
     public void agregarMascota(@RequestBody MascotaRequest solicitud) {
         mascotaService.guardarValidada(MascotaMapper.INSTANCE.toEntity(solicitud));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Actualiza una mascota existente.")
     @PutMapping("/update")
     public void actualizarMascota(@RequestBody MascotaRequest solicitud) {
         mascotaService.guardarValidada(MascotaMapper.INSTANCE.toEntity(solicitud));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Alterna el estado de la mascota (Activo <-> Inactivo) y lo devuelve.")
     @PutMapping("/toggle/{id}")
     public String alternarEstado(@PathVariable Integer id) {
         return mascotaService.alternarEstado(id);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Elimina definitivamente una mascota (desvincula su historial).")
     @DeleteMapping("/delete/{id}")
     public void eliminarMascota(@PathVariable Integer id) {

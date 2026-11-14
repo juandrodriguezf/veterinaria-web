@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.AdministradorDto;
@@ -41,12 +42,14 @@ public class AdministradorRestController {
     @Autowired
     private DashboardService dashboardService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Calcula los indicadores del dashboard del administrador.")
     @GetMapping("/dashboard")
     public ResumenDashboard obtenerDashboard() {
         return dashboardService.generarResumen();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Lista todos los administradores.")
     @GetMapping("/all")
     public List<AdministradorDto> listarAdministradores() {
@@ -54,6 +57,7 @@ public class AdministradorRestController {
                 administradorService.listarAdministradores());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Obtiene un administrador por su identificador.")
     @GetMapping("/find/{id}")
     public AdministradorDto obtenerAdministrador(@PathVariable Integer id) {
@@ -61,6 +65,7 @@ public class AdministradorRestController {
                 administradorService.obtenerAdministradorPorId(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Registra un administrador nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarAdministrador(@RequestBody AdministradorRequest solicitud) {

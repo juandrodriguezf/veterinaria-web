@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.DrogaDto;
@@ -36,18 +37,21 @@ public class DrogaRestController {
     @Autowired
     private DrogaService drogaService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Lista todas las drogas del inventario.")
     @GetMapping("/all")
     public List<DrogaDto> listarDrogas() {
         return DrogaMapper.INSTANCE.toDto(drogaService.listarDrogas());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Obtiene una droga por su identificador.")
     @GetMapping("/find/{id}")
     public DrogaDto obtenerDroga(@PathVariable Integer id) {
         return DrogaMapper.INSTANCE.toDto(drogaService.obtenerDrogaPorId(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Registra una droga nueva en el inventario.")
     @PostMapping("/add")
     public void agregarDroga(@RequestBody DrogaRequest solicitud) {

@@ -13,7 +13,6 @@ export interface NuevoTratamiento {
   fecha: string;
   mascotaId: number;
   drogaId: number;
-  veterinarioId: number;
 }
 
 /**

@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.DuenoDto;
 import com.vetopia.dto.DuenoRequest;
 
 import com.vetopia.mapper.DuenoMapper;
+import com.vetopia.security.PermisoService;
 import com.vetopia.service.DuenoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,48 +40,68 @@ public class DuenoRestController {
     @Autowired
     private DuenoService duenoService;
 
+    /** Resuelve la identidad del token para el portal del cliente. */
+    @Autowired
+    private PermisoService permisoService;
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Lista todos los clientes.")
     @GetMapping("/all")
     public List<DuenoDto> listarDuenos() {
         return DuenoMapper.INSTANCE.toDto(duenoService.listarDuenos());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Obtiene un cliente por su identificador.")
     @GetMapping("/find/{id}")
     public DuenoDto obtenerDueno(@PathVariable Integer id) {
         return DuenoMapper.INSTANCE.toDto(duenoService.obtenerDuenoPorId(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CLIENTE') and @permisoService.esPerfilAutenticado(#id)")
     @Operation(summary = "Obtiene un cliente activo para su portal (rechaza clientes inactivos).")
     @GetMapping("/activo/{id}")
     public DuenoDto obtenerDuenoActivo(@PathVariable Integer id) {
         return DuenoMapper.INSTANCE.toDto(duenoService.obtenerActivo(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_CLIENTE')")
+    @Operation(summary = "Obtiene el perfil del cliente autenticado (el id sale del token).")
+    @GetMapping("/me")
+    public DuenoDto obtenerMiPerfil() {
+        return DuenoMapper.INSTANCE.toDto(
+                duenoService.obtenerActivo(permisoService.perfilAutenticadoId()));
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Busca clientes por nombre (coincidencia parcial, sin distinguir mayúsculas).")
     @GetMapping("/search/{nombre}")
     public List<DuenoDto> buscarPorNombre(@PathVariable String nombre) {
         return DuenoMapper.INSTANCE.toDto(duenoService.buscarPorNombre(nombre));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VETERINARIO')")
     @Operation(summary = "Crea un cliente (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarDueno(@RequestBody DuenoRequest solicitud) {
         duenoService.guardar(solicitud);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VETERINARIO')")
     @Operation(summary = "Actualiza un cliente existente (valida cédula y correo únicos en todo el sistema).")
     @PutMapping("/update")
     public void actualizarDueno(@RequestBody DuenoRequest solicitud) {
         duenoService.guardar(solicitud);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VETERINARIO')")
     @Operation(summary = "Alterna el estado del cliente (Activo <-> Inactivo) y lo devuelve.")
     @PutMapping("/toggle/{id}")
     public String alternarEstado(@PathVariable Integer id) {
         return duenoService.alternarEstado(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_VETERINARIO')")
     @Operation(summary = "Elimina un cliente y, en cascada, sus mascotas.")
     @DeleteMapping("/delete/{id}")
     public void eliminarDueno(@PathVariable Integer id) {

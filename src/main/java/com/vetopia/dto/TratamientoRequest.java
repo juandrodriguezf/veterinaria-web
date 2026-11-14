@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * DTO - TratamientoRequest
- * Cuerpo de entrada para asignar un tratamiento. Solo viajan las
- * referencias mínimas: la mascota, la droga y el veterinario por id.
+ * Cuerpo de entrada para asignar un tratamiento. Solo viajan la mascota y
+ * la droga por id; el veterinario responsable se toma del token firmado.
  */
 @Data
 @NoArgsConstructor
@@ -21,5 +21,4 @@ public class TratamientoRequest {
     private LocalDate fecha;
     private Integer mascotaId;
     private Integer drogaId;
-    private Integer veterinarioId;
 }

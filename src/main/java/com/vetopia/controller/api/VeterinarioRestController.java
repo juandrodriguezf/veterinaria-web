@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vetopia.dto.VeterinarioDto;
@@ -39,12 +40,14 @@ public class VeterinarioRestController {
     @Autowired
     private VeterinarioService veterinarioService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Lista todos los veterinarios.")
     @GetMapping("/all")
     public List<VeterinarioDto> listarVeterinarios() {
         return VeterinarioMapper.INSTANCE.toDto(veterinarioService.listarVeterinarios());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Obtiene un veterinario por su identificador.")
     @GetMapping("/find/{id}")
     public VeterinarioDto obtenerVeterinario(@PathVariable Integer id) {
@@ -52,30 +55,35 @@ public class VeterinarioRestController {
                 veterinarioService.obtenerVeterinarioPorId(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Busca veterinarios por cédula o nombre (coincidencia parcial).")
     @GetMapping("/search/{termino}")
     public List<VeterinarioDto> buscar(@PathVariable String termino) {
         return VeterinarioMapper.INSTANCE.toDto(veterinarioService.buscar(termino));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Registra un veterinario nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
     public void agregarVeterinario(@RequestBody VeterinarioRequest solicitud) {
         veterinarioService.guardar(solicitud);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Actualiza un veterinario existente (valida cédula y correo únicos en todo el sistema).")
     @PutMapping("/update")
     public void actualizarVeterinario(@RequestBody VeterinarioRequest solicitud) {
         veterinarioService.guardar(solicitud);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Alterna el estado del veterinario (Activo <-> Inactivo) y lo devuelve.")
     @PutMapping("/toggle/{id}")
     public String alternarEstado(@PathVariable Integer id) {
         return veterinarioService.alternarEstado(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Elimina un veterinario y desvincula sus tratamientos.")
     @DeleteMapping("/delete/{id}")
     public void eliminarVeterinario(@PathVariable Integer id) {

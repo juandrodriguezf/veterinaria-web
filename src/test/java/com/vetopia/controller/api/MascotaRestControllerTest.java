@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 import com.vetopia.security.JwtAuthenticationFilter;
+import com.vetopia.security.PermisoService;
 import com.vetopia.service.MascotaService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -58,6 +59,9 @@ class MascotaRestControllerTest {
 
     @MockBean
     private MascotaService mascotaService;
+
+    @MockBean
+    private PermisoService permisoService;
 
     private Mascota mascotaActiva;
     private Mascota mascotaInactiva;
