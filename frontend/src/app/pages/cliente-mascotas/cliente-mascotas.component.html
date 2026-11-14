@@ -1,5 +1,5 @@
 <div class="bg-portal-surface text-portal-on-surface font-portal-body-md antialiased min-h-screen flex flex-col">
-  <app-cliente-header [idUsuario]="idUsuario" [nombreCliente]="dueno?.nombre" seccion="mascotas"></app-cliente-header>
+  <app-cliente-header [nombreCliente]="dueno?.nombre" seccion="mascotas"></app-cliente-header>
 
   <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
     @if (errorCarga) {
@@ -68,7 +68,6 @@
             </div>
           } @else {
             <app-cliente-mascota-tabla
-              [idUsuario]="idUsuario"
               [mascotas]="mascotas"
               [nombre]="nombre"
             ></app-cliente-mascota-tabla>

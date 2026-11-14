@@ -5,7 +5,7 @@ import { SesionService } from '../../service/sesion.service';
 /**
  * Encabezado del portal del cliente. Estaba copiado en las dos pantallas
  * del cliente (sus mascotas y el detalle); aquí queda en un solo
- * componente que recibe el dueño y la sección activa.
+ * componente que recibe el nombre y la sección activa.
  */
 @Component({
   selector: 'app-cliente-header',
@@ -15,9 +15,6 @@ import { SesionService } from '../../service/sesion.service';
 })
 export class ClienteHeaderComponent {
   private sesionService = inject(SesionService);
-
-  /** Identificador del cliente (para volver a sus mascotas). */
-  idUsuario = input<number>();
 
   /** Nombre del cliente que se muestra junto al logo. */
   nombreCliente = input<string>();

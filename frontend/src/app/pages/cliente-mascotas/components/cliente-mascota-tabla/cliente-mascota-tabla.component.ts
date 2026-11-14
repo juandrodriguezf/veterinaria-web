@@ -18,8 +18,6 @@ export class ClienteMascotaTablaComponent {
 
   nombre = input<string>('');
 
-  idUsuario = input.required<number>();
-
   readonly descripcionEdad = descripcionEdad;
 
   numeroPaciente(mascota: Mascota): string {

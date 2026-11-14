@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
 import { FooterPortalComponent } from '../../components/footer-portal/footer-portal.component';
 import { Dueno } from '../../models/dueno.model';
@@ -11,8 +11,8 @@ import { ClienteMascotaTablaComponent } from './components/cliente-mascota-tabla
 
 /**
  * Página "Mis mascotas" del portal del cliente.
- * Valida que el cliente siga activo, carga su listado y delega la tabla
- * al componente presentacional.
+ * El backend identifica al dueño por el JWT: no hay id en la URL, así que
+ * el cliente no puede cambiar la ruta para ver las mascotas de otro.
  */
 @Component({
   selector: 'app-cliente-mascotas',
@@ -26,16 +26,12 @@ import { ClienteMascotaTablaComponent } from './components/cliente-mascota-tabla
   templateUrl: './cliente-mascotas.component.html',
   styleUrl: './cliente-mascotas.component.scss',
 })
-export class ClienteMascotasComponent {
+export class ClienteMascotasComponent implements OnInit {
   private duenoService = inject(DuenoService);
 
   private mascotaService = inject(MascotaService);
 
-  private activatedRoute = inject(ActivatedRoute);
-
   private router = inject(Router);
-
-  idUsuario = 0;
 
   dueno?: Dueno;
 
@@ -43,54 +39,44 @@ export class ClienteMascotasComponent {
 
   nombre = '';
 
-  /** true cuando el cliente de la URL no existe o el id no es válido. */
+  /** true cuando no se pudo cargar el perfil del cliente. */
   errorCarga = false;
 
-  /** true cuando falla la consulta de mascotas de un cliente válido. */
+  /** true cuando falla la consulta de mascotas. */
   errorMascotas = false;
 
   /** Mensaje del backend para el estado de error. */
   mensajeError = '';
 
-  /** true mientras se resuelve el cliente o su listado de mascotas. */
+  /** true mientras se resuelve el perfil o su listado de mascotas. */
   cargando = true;
 
   ngOnInit() {
-    // El id del cliente viaja en la ruta; el login lo puso ahí al autenticar.
-    this.idUsuario = Number(this.activatedRoute.snapshot.params['idUsuario']);
-    // Un id no numérico o no positivo no llega a la API: se informa de una vez.
-    if (!Number.isInteger(this.idUsuario) || this.idUsuario <= 0) {
-      this.errorCarga = true;
-      this.cargando = false;
-      this.mensajeError = 'El identificador del cliente no es válido.';
-      return;
-    }
-    // Primero se valida el dueño: sin él no tiene sentido consultar mascotas
-    // ni mostrar el estado vacío como si fuera un cliente válido.
-    this.duenoService.obtenerActivo(this.idUsuario).subscribe({
+    // Primero se valida el perfil: el backend lo resuelve desde el token.
+    this.duenoService.obtenerMiPerfil().subscribe({
       next: (data) => {
         this.dueno = data;
         this.cargar();
       },
       error: (error) => {
-        // Un cliente inactivo (409) o un id invalido (400) no entra al portal.
-        if (error?.status === 409 || error?.status === 400) {
+        // Un cliente inactivo (409) vuelve al login; el 401 lo maneja el interceptor.
+        if (error?.status === 409) {
           this.router.navigate(['/login']);
           return;
         }
         this.errorCarga = true;
         this.cargando = false;
-        this.mensajeError = error?.error?.mensaje ?? 'No encontramos el cliente solicitado.';
+        this.mensajeError = error?.error?.mensaje ?? 'No encontramos tu perfil de cliente.';
       },
     });
   }
 
-  /** Carga las mascotas del cliente (todas o filtradas por nombre). */
+  /** Carga las mascotas propias (todas o filtradas por nombre). */
   cargar() {
     this.cargando = true;
     this.errorMascotas = false;
     this.mensajeError = '';
-    this.mascotaService.listarPorDueno(this.idUsuario, this.nombre).subscribe({
+    this.mascotaService.listarMias(this.nombre).subscribe({
       next: (data) => {
         this.mascotas = data;
         this.cargando = false;
@@ -115,5 +101,4 @@ export class ClienteMascotasComponent {
       this.cargar();
     }
   }
-
 }

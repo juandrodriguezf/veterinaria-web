@@ -1,9 +1,9 @@
 <div class="bg-portal-surface text-portal-on-surface font-portal-body-md antialiased min-h-screen flex flex-col">
-  <app-cliente-header [idUsuario]="idUsuario" [nombreCliente]="dueno?.nombre"></app-cliente-header>
+  <app-cliente-header [nombreCliente]="dueno?.nombre"></app-cliente-header>
 
   <main class="flex-grow w-full max-w-portal-container-max mx-auto px-portal-gutter py-portal-stack-lg">
     <section class="mb-portal-stack-md">
-      <a class="inline-flex items-center gap-2 text-portal-on-surface-variant font-portal-button text-portal-button uppercase hover:text-portal-primary transition-colors" [routerLink]="['/cliente/mascotas', idUsuario]">
+      <a class="inline-flex items-center gap-2 text-portal-on-surface-variant font-portal-button text-portal-button uppercase hover:text-portal-primary transition-colors" routerLink="/cliente/mascotas">
         <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
         Volver a Mis Mascotas
       </a>
@@ -21,7 +21,7 @@
         </span>
         <h1 class="font-portal-headline-lg text-portal-headline-lg text-portal-on-surface mb-2">Mascota no encontrada</h1>
         <p class="max-w-xl mx-auto font-portal-body-lg text-portal-body-lg text-portal-on-surface-variant mb-8">{{ mensajeError }}</p>
-        <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-6 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" [routerLink]="['/cliente/mascotas', idUsuario]">
+        <a class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-6 py-3 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary" routerLink="/cliente/mascotas">
           Ver mis mascotas
           <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">arrow_forward</span>
         </a>

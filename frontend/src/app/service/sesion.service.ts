@@ -1,4 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { ResultadoLogin } from '../models/resultado-login.model';
 
 /**
@@ -12,22 +14,42 @@ export interface SesionUsuario {
   nombre: string;
 }
 
+/** Página inicial de cada rol, usada al restaurar la sesión y en los guards. */
+export function rutaInicioPorRol(rol: string): string {
+  switch (rol) {
+    case 'ADMINISTRADOR':
+      return '/admin/dashboard';
+    case 'VETERINARIO':
+      return '/mascotas';
+    case 'CLIENTE':
+      return '/cliente/mascotas';
+    default:
+      return '/';
+  }
+}
+
 /**
  * SERVICIO - Sesión
  * En localStorage vive únicamente el token JWT; el rol, el id y el nombre
- * se mantienen en memoria. Así, aunque alguien edite el almacenamiento,
- * no puede cambiar el id ni el rol para entrar al portal de otro usuario:
- * el backend valida la firma del token y deriva la identidad de él.
+ * se mantienen en memoria y se recuperan del backend (`/usuario/me`) al
+ * abrir la aplicación. Aunque alguien edite el almacenamiento, no puede
+ * cambiar el id ni el rol: el backend valida la firma del token y deriva
+ * la identidad de él.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class SesionService {
+  private http = inject(HttpClient);
+
   /** Clave única del token dentro de localStorage. */
   private readonly claveToken = 'vetopia.token';
 
   /** Clave anterior (rol/id/nombre); se elimina al iniciar sesión. */
   private readonly claveAnterior = 'vetopia.sesion';
+
+  /** URL de la identidad del usuario autenticado. */
+  private readonly urlPerfil = 'http://localhost:8080/usuario/me';
 
   /** Token vigente; se carga al iniciar el servicio para sobrevivir recargas. */
   private readonly tokenActual = signal<string | null>(this.leerToken());
@@ -41,6 +63,12 @@ export class SesionService {
   /** Sesión completa en memoria, solo lectura. */
   readonly sesion = this.usuarioActual.asReadonly();
 
+  /** Indica si el token existe y no ha expirado (sin validar la firma). */
+  readonly tokenVigente = computed(() => {
+    const token = this.tokenActual();
+    return token !== null && !this.tokenExpirado(token);
+  });
+
   /** Nombre del usuario autenticado (cadena vacía si no hay sesión). */
   readonly nombre = computed(() => this.usuarioActual()?.nombre ?? '');
 
@@ -51,16 +79,32 @@ export class SesionService {
   readonly rol = computed(() => this.usuarioActual()?.rol ?? '');
 
   /** Indica si la sesión actual pertenece a un veterinario. */
-  readonly esVeterinario = computed(() => {
-    const sesion = this.usuarioActual();
-    return sesion !== null && sesion.rol === 'VETERINARIO';
-  });
+  readonly esVeterinario = computed(() => this.rol() === 'VETERINARIO');
 
   /** Indica si la sesión actual pertenece a un administrador. */
-  readonly esAdministrador = computed(() => {
-    const sesion = this.usuarioActual();
-    return sesion !== null && sesion.rol === 'ADMINISTRADOR';
-  });
+  readonly esAdministrador = computed(() => this.rol() === 'ADMINISTRADOR');
+
+  /**
+   * Restaura la sesión al abrir la aplicación: si hay token vigente pide
+   * la identidad al backend; si el token expiró o es inválido lo elimina.
+   */
+  async restaurarSesion(): Promise<void> {
+    const token = this.tokenActual();
+    if (!token || this.tokenExpirado(token)) {
+      this.cerrar();
+      return;
+    }
+    try {
+      const perfil = await firstValueFrom(this.http.get<SesionUsuario>(this.urlPerfil));
+      this.usuarioActual.set({
+        rol: perfil.rol,
+        id: perfil.id,
+        nombre: perfil.nombre ?? '',
+      });
+    } catch {
+      this.cerrar();
+    }
+  }
 
   /**
    * Guarda el token y mantiene la identidad solo en memoria. El id y el rol
@@ -95,5 +139,20 @@ export class SesionService {
       return null;
     }
     return token;
+  }
+
+  /** Comprueba la fecha de expiración del payload sin validar la firma. */
+  private tokenExpirado(token: string): boolean {
+    try {
+      const payload = token.split('.')[1];
+      const normalizado = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const datos = JSON.parse(atob(normalizado)) as { exp?: number };
+      if (!datos.exp) {
+        return true;
+      }
+      return datos.exp * 1000 <= Date.now();
+    } catch {
+      return true;
+    }
   }
 }
