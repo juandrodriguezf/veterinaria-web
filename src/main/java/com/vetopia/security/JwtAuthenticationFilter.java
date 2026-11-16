@@ -50,12 +50,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtService.esValido(token)) {
                     String username = jwtService.extraerUsername(token);
                     UserDetails detalles = userDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken autenticacion =
-                            new UsernamePasswordAuthenticationToken(
-                                    detalles, null, detalles.getAuthorities());
-                    autenticacion.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(autenticacion);
+                    // Una cuenta desactivada no puede seguir usando un token
+                    // emitido antes de la desactivación.
+                    if (detalles.isEnabled()) {
+                        UsernamePasswordAuthenticationToken autenticacion =
+                                new UsernamePasswordAuthenticationToken(
+                                        detalles, null, detalles.getAuthorities());
+                        autenticacion.setDetails(
+                                new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(autenticacion);
+                    }
                 }
             } catch (Exception excepcion) {
                 // Token alterado, expirado o de una cuenta eliminada: se

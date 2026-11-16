@@ -96,9 +96,10 @@ public class MascotaRestController {
     @PreAuthorize("hasAuthority('ROLE_CLIENTE')")
     @Operation(summary = "Lista las mascotas del cliente autenticado (el dueño sale del token).")
     @GetMapping("/mias")
-    public List<MascotaDto> listarMias() {
+    public List<MascotaDto> listarMias(
+            @RequestParam(name = "nombre", required = false) String nombre) {
         return MascotaMapper.INSTANCE.toDto(mascotaService.buscarPorDuenoYNombre(
-                permisoService.perfilAutenticadoId(), null));
+                permisoService.perfilAutenticadoId(), nombre));
     }
 
     @PreAuthorize("hasAuthority('ROLE_CLIENTE') and @permisoService.esMascotaDelCliente(#id)")

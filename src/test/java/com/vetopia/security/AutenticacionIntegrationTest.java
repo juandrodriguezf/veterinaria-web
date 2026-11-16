@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vetopia.entities.UserEntity;
+import com.vetopia.repository.UserRepository;
 
 /**
  * PRUEBAS DE INTEGRACIÓN - Seguridad
@@ -36,12 +38,17 @@ class AutenticacionIntegrationTest {
     private static final String VETERINARIO_CLAVE = "vet123";
     private static final String CLIENTE = "ana.e2e@vetopia.com";
     private static final String CLIENTE_CLAVE = "ana123";
+    private static final String CLIENTE_INACTIVO = "inactivo.e2e@vetopia.com";
+    private static final String CLIENTE_INACTIVO_CLAVE = "inactivo123";
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void sinTokenDevuelve401() throws Exception {
@@ -116,6 +123,45 @@ class AutenticacionIntegrationTest {
 
         mockMvc.perform(get("/mascota/mias/999").header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void clienteInactivoNoPuedeIniciarSesion() throws Exception {
+        mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(credenciales(CLIENTE_INACTIVO, CLIENTE_INACTIVO_CLAVE)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.mensaje").value("La cuenta se encuentra inactiva."));
+    }
+
+    @Test
+    void tokenDeCuentaDesactivadaDevuelve401() throws Exception {
+        String token = token(CLIENTE, CLIENTE_CLAVE);
+
+        UserEntity cuenta = userRepository.findByUsernameIgnoreCase(CLIENTE).orElseThrow();
+        boolean estadoOriginal = cuenta.isActivo();
+        cuenta.setActivo(false);
+        userRepository.save(cuenta);
+
+        try {
+            mockMvc.perform(get("/mascota/mias")
+                    .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isUnauthorized());
+        } finally {
+            cuenta.setActivo(estadoOriginal);
+            userRepository.save(cuenta);
+        }
+    }
+
+    @Test
+    void clienteBuscaSusMascotasPorNombre() throws Exception {
+        String token = token(CLIENTE, CLIENTE_CLAVE);
+
+        mockMvc.perform(get("/mascota/mias").param("nombre", "Max")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].nombre").value("Max"));
     }
 
     @Test

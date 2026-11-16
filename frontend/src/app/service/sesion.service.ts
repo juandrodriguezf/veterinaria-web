@@ -45,8 +45,8 @@ export class SesionService {
   /** Clave única del token dentro de localStorage. */
   private readonly claveToken = 'vetopia.token';
 
-  /** Clave anterior (rol/id/nombre); se elimina al iniciar sesión. */
-  private readonly claveAnterior = 'vetopia.sesion';
+  /** Clave anterior (rol/id/nombre) y su variante con guion. */
+  private readonly clavesAnteriores = ['vetopia.sesion', 'vetopia-sesion'];
 
   /** URL de la identidad del usuario autenticado. */
   private readonly urlPerfil = 'http://localhost:8080/usuario/me';
@@ -89,6 +89,9 @@ export class SesionService {
    * la identidad al backend; si el token expiró o es inválido lo elimina.
    */
   async restaurarSesion(): Promise<void> {
+    // Limpia cualquier clave de sesiones anteriores, incluidas variantes
+    // que guardaban rol e id fuera del token.
+    this.limpiarClavesAnteriores();
     const token = this.tokenActual();
     if (!token || this.tokenExpirado(token)) {
       this.cerrar();
@@ -120,14 +123,14 @@ export class SesionService {
       id: resultado.id,
       nombre: resultado.nombre ?? '',
     });
-    // Limpieza de la sesión anterior, que guardaba id y rol en localStorage.
-    localStorage.removeItem(this.claveAnterior);
+    // Limpieza de sesiones anteriores, que guardaban id y rol en localStorage.
+    this.limpiarClavesAnteriores();
   }
 
   /** Elimina el token del almacenamiento local y limpia la sesión en memoria. */
   cerrar() {
     localStorage.removeItem(this.claveToken);
-    localStorage.removeItem(this.claveAnterior);
+    this.limpiarClavesAnteriores();
     this.tokenActual.set(null);
     this.usuarioActual.set(null);
   }
@@ -154,5 +157,10 @@ export class SesionService {
     } catch {
       return true;
     }
+  }
+
+  /** Borra las claves de sesión de versiones anteriores de la aplicación. */
+  private limpiarClavesAnteriores() {
+    this.clavesAnteriores.forEach((clave) => localStorage.removeItem(clave));
   }
 }

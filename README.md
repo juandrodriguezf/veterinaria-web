@@ -113,8 +113,9 @@ La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`
 1. `POST /login` acepta **correo o cédula**; la cédula se traduce al correo del perfil y se autentica con `AuthenticationManager` + BCrypt.
 2. El backend firma un **JWT HS512** con `sub` (usuario), `rol`, `perfilId`, `nombre`, `iat` y `exp` (1 hora por defecto).
 3. Angular guarda **solo el token** en `localStorage`; el rol, el id y el nombre se mantienen en memoria y se restauran con `GET /usuario/me` al abrir la aplicación (no se guardan ids editables).
-4. Cada petición sale con `Authorization: Bearer <token>`; `JwtAuthenticationFilter` valida firma y expiración y `@PreAuthorize` restringe por rol y propiedad.
-5. `401` = sin token, token vencido o alterado; `403` = autenticado pero sin permiso o intentando acceder a un recurso ajeno.
+4. Cada petición sale con `Authorization: Bearer <token>`; `JwtAuthenticationFilter` valida firma y expiración, y `@PreAuthorize` restringe por rol y propiedad.
+5. Una cuenta inactiva no inicia sesión y su token deja de servir inmediatamente si se desactiva después del login (`401`).
+6. `401` = sin token, token vencido o alterado; `403` = autenticado pero sin permiso o intentando acceder a un recurso ajeno.
 
 ### Matriz de permisos
 

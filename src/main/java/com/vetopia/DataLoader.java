@@ -15,6 +15,7 @@ import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
 import com.vetopia.entities.Tratamiento;
+import com.vetopia.entities.UserEntity;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.repository.AdministradorRepository;
 import com.vetopia.repository.DrogaRepository;
@@ -93,8 +94,14 @@ public class DataLoader implements CommandLineRunner {
         duenos.addAll(generarClientes());
         // Cada cliente recibe su cuenta de acceso (users) con la clave
         // cifrada y el rol ROLE_CLIENTE antes de persistirse en cascada.
-        duenos.forEach(dueno -> dueno.setUser(cuentaUsuarioService.construir(
-                dueno.getCorreo(), "dueño123", CuentaUsuarioService.ROL_CLIENTE)));
+        // El indicador de cuenta activa sigue el estado del perfil: un
+        // cliente inactivo no debe poder iniciar sesión.
+        duenos.forEach(dueno -> {
+            UserEntity cuenta = cuentaUsuarioService.construir(
+                    dueno.getCorreo(), "dueño123", CuentaUsuarioService.ROL_CLIENTE);
+            cuenta.setActivo("Activo".equals(dueno.getEstado()));
+            dueno.setUser(cuenta);
+        });
         duenoRepository.saveAll(duenos);
 
         // ---- Mascotas (cada una conectada a su dueño real) ----
@@ -209,9 +216,11 @@ public class DataLoader implements CommandLineRunner {
      * persiste en cascada con la clave cifrada y el rol ROLE_VETERINARIO.
      */
     private void guardarVeterinario(Veterinario veterinario) {
-        veterinario.setUser(cuentaUsuarioService.construir(
+        UserEntity cuenta = cuentaUsuarioService.construir(
                 veterinario.getCorreo(), "vet123",
-                CuentaUsuarioService.ROL_VETERINARIO));
+                CuentaUsuarioService.ROL_VETERINARIO);
+        cuenta.setActivo("Activo".equals(veterinario.getEstado()));
+        veterinario.setUser(cuenta);
         veterinarioRepository.save(veterinario);
     }
 

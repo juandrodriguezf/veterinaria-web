@@ -11,6 +11,7 @@ import com.vetopia.entities.Administrador;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.entities.UserEntity;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.repository.AdministradorRepository;
 import com.vetopia.repository.DrogaRepository;
@@ -50,6 +51,11 @@ public class DatabaseInitE2e implements CommandLineRunner {
     private static final String OWNER_NOMBRE = "Ana E2E";
     private static final String OWNER_EMAIL = "ana.e2e@vetopia.com";
     private static final String OWNER_PASSWORD = "ana123";
+
+    private static final String INACTIVE_CEDULA = "1000000009";
+    private static final String INACTIVE_NOMBRE = "Inactivo E2E";
+    private static final String INACTIVE_EMAIL = "inactivo.e2e@vetopia.com";
+    private static final String INACTIVE_PASSWORD = "inactivo123";
 
     private static final String PET_NOMBRE = "Max";
     private static final String PET_ESPECIE = "Perro";
@@ -131,6 +137,20 @@ public class DatabaseInitE2e implements CommandLineRunner {
                 .estado("Activo")
                 .user(cuentaUsuarioService.construir(
                         OWNER_EMAIL, OWNER_PASSWORD, CuentaUsuarioService.ROL_CLIENTE))
+                .build());
+
+        // Cliente inactivo: su cuenta también debe quedar deshabilitada para
+        // probar que el login rechaza credenciales válidas de una baja.
+        UserEntity cuentaInactiva = cuentaUsuarioService.construir(
+                INACTIVE_EMAIL, INACTIVE_PASSWORD, CuentaUsuarioService.ROL_CLIENTE);
+        cuentaInactiva.setActivo(false);
+        duenoRepository.save(Dueno.builder()
+                .cedula(INACTIVE_CEDULA)
+                .nombre(INACTIVE_NOMBRE)
+                .correo(INACTIVE_EMAIL)
+                .celular("3000000009")
+                .estado("Inactivo")
+                .user(cuentaInactiva)
                 .build());
 
         mascotaRepository.save(Mascota.builder()
