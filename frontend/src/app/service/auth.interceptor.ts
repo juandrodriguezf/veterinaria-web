@@ -1,5 +1,11 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { SesionService } from './sesion.service';
 
 /**
@@ -8,17 +14,24 @@ import { SesionService } from './sesion.service';
  * Authorization: Bearer <token>. El login queda excluido porque todavía
  * no existe sesión cuando se envía.
  */
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const sesionService = inject(SesionService);
-  const token = sesionService.token();
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private sesionService = inject(SesionService);
 
-  if (!token || req.url.endsWith('/login')) {
-    return next(req);
+  intercept(
+    req: HttpRequest<unknown>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<unknown>> {
+    const token = this.sesionService.token();
+
+    if (!token || req.url.endsWith('/login')) {
+      return next.handle(req);
+    }
+
+    return next.handle(
+      req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
+      }),
+    );
   }
-
-  return next(
-    req.clone({
-      setHeaders: { Authorization: `Bearer ${token}` },
-    }),
-  );
-};
+}

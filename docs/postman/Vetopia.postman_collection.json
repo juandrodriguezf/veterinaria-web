@@ -419,10 +419,6 @@
         },
         {
           "name": "Registrar droga (administrador)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
-          },
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -430,7 +426,8 @@
               "mode": "raw",
               "raw": "{\n  \"nombre\": \"DROGA POSTMAN\",\n  \"precioCompra\": 10000,\n  \"precioVenta\": 15000,\n  \"unidadesDisponibles\": 10,\n  \"unidadesVendidas\": 0\n}"
             },
-            "url": "{{baseUrl}}/droga/add"
+            "url": "{{baseUrl}}/droga/add",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
           }
         }
       ]
@@ -444,19 +441,21 @@
       "item": [
         {
           "name": "Listar todos (administrador)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
-          },
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/all" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tratamiento/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
         },
         {
           "name": "Buscar tratamiento por id (administrador)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
-          },
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/find/1" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tratamiento/find/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
         },
         {
           "name": "Historial de una mascota",
@@ -580,10 +579,6 @@
         },
         {
           "name": "Cliente en listado general (403)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }]
-          },
           "event": [
             {
               "listen": "test",
@@ -593,14 +588,15 @@
               }
             }
           ],
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/all" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
         },
         {
           "name": "Veterinario en dashboard (403)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
-          },
           "event": [
             {
               "listen": "test",
@@ -610,14 +606,15 @@
               }
             }
           ],
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/administrador/dashboard" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/administrador/dashboard",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }] }
+          }
         },
         {
           "name": "Cliente consultando otro dueño (403)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }]
-          },
           "event": [
             {
               "listen": "test",
@@ -627,14 +624,15 @@
               }
             }
           ],
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/activo/2" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dueno/activo/2",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
         },
         {
           "name": "Cliente consultando mascota ajena (403)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }]
-          },
           "event": [
             {
               "listen": "test",
@@ -644,14 +642,15 @@
               }
             }
           ],
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/mias/5" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/mias/5",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
         },
         {
           "name": "Administrador asignando tratamiento (403)",
-          "auth": {
-            "type": "bearer",
-            "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
-          },
           "event": [
             {
               "listen": "test",
@@ -668,7 +667,8 @@
               "mode": "raw",
               "raw": "{\n  \"fecha\": \"2026-11-14\",\n  \"mascotaId\": 1,\n  \"drogaId\": 1\n}"
             },
-            "url": "{{baseUrl}}/tratamiento/add"
+            "url": "{{baseUrl}}/tratamiento/add",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
           }
         }
       ]

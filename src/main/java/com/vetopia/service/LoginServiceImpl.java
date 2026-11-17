@@ -12,10 +12,10 @@ import com.vetopia.security.JwtService;
 /**
  * CAPA SERVICIO - Implementación de LoginService
  * Autentica contra la cuenta unificada (users/roles) con el
- * AuthenticationManager de Spring Security y devuelve un JWT firmado con
- * el rol, el id del perfil y el nombre. El formulario sigue aceptando
- * correo o cédula: la cédula se traduce al correo de su perfil antes de
- * autenticar.
+ * AuthenticationManager de Spring Security y devuelve un JWT firmado y,
+ * por separado, el rol, el id del perfil y el nombre. El formulario sigue
+ * aceptando correo o cédula: la cédula se traduce al correo de su perfil
+ * antes de autenticar.
  */
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -51,8 +51,7 @@ public class LoginServiceImpl implements LoginService {
                 new UsernamePasswordAuthenticationToken(username, contrasena));
 
         UsuarioSesion perfil = perfilUsuarioService.obtenerPorUsername(autenticacion.getName());
-        String token = jwtService.generarToken(
-                autenticacion.getName(), perfil.getRol(), perfil.getId(), perfil.getNombre());
+        String token = jwtService.generarToken(autenticacion);
 
         return new LoginResponse(token, "Bearer", perfil.getRol(),
                 perfil.getId(), perfil.getNombre());

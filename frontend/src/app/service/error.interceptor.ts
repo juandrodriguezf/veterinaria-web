@@ -1,7 +1,13 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { SesionService } from './sesion.service';
 
 /**
@@ -10,19 +16,25 @@ import { SesionService } from './sesion.service';
  * se limpia la sesión y se vuelve al login. El propio login queda excluido
  * para no borrar la pantalla mientras el usuario corrige sus credenciales.
  */
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const sesion = inject(SesionService);
-  const router = inject(Router);
+@Injectable()
+export class ErrorInterceptor implements HttpInterceptor {
+  private sesion = inject(SesionService);
+  private router = inject(Router);
 
-  return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && !req.url.endsWith('/login')) {
-        sesion.cerrar();
-        if (router.url !== '/login') {
-          void router.navigate(['/login']);
+  intercept(
+    req: HttpRequest<unknown>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<unknown>> {
+    return next.handle(req).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401 && !req.url.endsWith('/login')) {
+          this.sesion.cerrar();
+          if (this.router.url !== '/login') {
+            void this.router.navigate(['/login']);
+          }
         }
-      }
-      return throwError(() => error);
-    }),
-  );
-};
+        return throwError(() => error);
+      }),
+    );
+  }
+}

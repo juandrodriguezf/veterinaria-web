@@ -111,7 +111,7 @@ La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`
 ### Flujo de autenticación
 
 1. `POST /login` acepta **correo o cédula**; la cédula se traduce al correo del perfil y se autentica con `AuthenticationManager` + BCrypt.
-2. El backend firma un **JWT HS512** con `sub` (usuario), `rol`, `perfilId`, `nombre`, `iat` y `exp` (1 hora por defecto).
+2. El backend firma un **JWT HS512** con `sub` (usuario), `iat` y `exp` (1 hora por defecto). La clave se genera aleatoriamente al arrancar y vive en memoria, así que reiniciar el backend invalida los tokens anteriores.
 3. Angular guarda **solo el token** en `localStorage`; el rol, el id y el nombre se mantienen en memoria y se restauran con `GET /usuario/me` al abrir la aplicación (no se guardan ids editables).
 4. Cada petición sale con `Authorization: Bearer <token>`; `JwtAuthenticationFilter` valida firma y expiración, y `@PreAuthorize` restringe por rol y propiedad.
 5. Una cuenta inactiva no inicia sesión y su token deja de servir inmediatamente si se desactiva después del login (`401`).
@@ -279,7 +279,7 @@ Vetopia/
     │   └── errors/                          # RecursoNoEncontradoException y RestExceptionHandler
     └── resources/
         ├── data/medicamentos.xlsx           # Inventario de medicamentos que carga DrogaExcelLoader
-        ├── application.properties           # Puerto, perfil activo y clave/expiración JWT
+        ├── application.properties           # Puerto, perfil activo y vigencia JWT
         └── application-h2.properties        # Datasource H2 en archivo, consola y ddl-auto
 ```
 
