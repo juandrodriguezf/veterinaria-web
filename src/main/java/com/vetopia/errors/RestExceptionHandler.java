@@ -8,7 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -32,7 +32,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
  * IllegalArgumentException a 401); este manejador cubre el resto de casos.
  */
 @RestControllerAdvice
-@CrossOrigin(origins = "http://localhost:4200")
 public class RestExceptionHandler {
 
     /** Logger para registrar los errores de la API. */
@@ -118,6 +117,17 @@ public class RestExceptionHandler {
         log.warn(excepcion.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("mensaje", "No se pudo completar la operación porque los datos entran en conflicto con un registro existente."));
+    }
+
+    /**
+     * El usuario está autenticado pero su rol o la propiedad del recurso no
+     * permiten la operación: 403 en el mismo formato JSON.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> manejarAccesoDenegado(AccessDeniedException excepcion) {
+        log.warn(excepcion.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("mensaje", "No tienes permisos para realizar esta operación."));
     }
 
     /**

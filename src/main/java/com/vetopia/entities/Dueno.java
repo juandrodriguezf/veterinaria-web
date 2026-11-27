@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -39,7 +42,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"mascotas"})
+@ToString(exclude = {"mascotas", "user"})
 public class Dueno {
 
     /** Identificador único del dueño (autogenerado por la base de datos). */
@@ -58,11 +61,6 @@ public class Dueno {
     /** Correo electrónico del dueño (único; es el usuario del login). */
     @Column(nullable = false, unique = true, length = 150)
     private String correo;
-
-    /** Contraseña de acceso del dueño. */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(nullable = false, length = 255)
-    private String contrasena;
 
     /** Número de celular del dueño (dato opcional). */
     @Column(length = 20)
@@ -91,4 +89,14 @@ public class Dueno {
      */
     @Transient
     private Integer mascotaCount;
+
+    /**
+     * Cuenta de acceso unificada (tabla users). El cliente se autentica con
+     * esta cuenta y comparte el modelo con administradores y veterinarios;
+     * se guarda en cascada y se elimina junto con el perfil.
+     */
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private UserEntity user;
 }

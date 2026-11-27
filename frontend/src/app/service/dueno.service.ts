@@ -37,6 +37,11 @@ export class DuenoService {
     return this.http.get<Dueno>(`${this.baseUrl}/activo/${id}`);
   }
 
+  /** Obtiene el perfil del cliente autenticado (el id sale del JWT). */
+  obtenerMiPerfil(): Observable<Dueno> {
+    return this.http.get<Dueno>(`${this.baseUrl}/me`);
+  }
+
   /** Busca clientes por nombre (coincidencia parcial, sin distinguir mayúsculas). */
   buscarPorNombre(nombre: string): Observable<Dueno[]> {
     return this.http.get<Dueno[]>(`${this.baseUrl}/search/${encodeURIComponent(nombre)}`);

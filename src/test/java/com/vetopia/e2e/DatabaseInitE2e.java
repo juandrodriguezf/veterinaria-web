@@ -11,6 +11,7 @@ import com.vetopia.entities.Administrador;
 import com.vetopia.entities.Droga;
 import com.vetopia.entities.Dueno;
 import com.vetopia.entities.Mascota;
+import com.vetopia.entities.UserEntity;
 import com.vetopia.entities.Veterinario;
 import com.vetopia.repository.AdministradorRepository;
 import com.vetopia.repository.DrogaRepository;
@@ -18,6 +19,7 @@ import com.vetopia.repository.DuenoRepository;
 import com.vetopia.repository.MascotaRepository;
 import com.vetopia.repository.TratamientoRepository;
 import com.vetopia.repository.VeterinarioRepository;
+import com.vetopia.service.CuentaUsuarioService;
 
 /**
  * CARGADOR DE DATOS - perfil de pruebas
@@ -50,6 +52,11 @@ public class DatabaseInitE2e implements CommandLineRunner {
     private static final String OWNER_EMAIL = "ana.e2e@vetopia.com";
     private static final String OWNER_PASSWORD = "ana123";
 
+    private static final String INACTIVE_CEDULA = "1000000009";
+    private static final String INACTIVE_NOMBRE = "Inactivo E2E";
+    private static final String INACTIVE_EMAIL = "inactivo.e2e@vetopia.com";
+    private static final String INACTIVE_PASSWORD = "inactivo123";
+
     private static final String PET_NOMBRE = "Max";
     private static final String PET_ESPECIE = "Perro";
     private static final String PET_RAZA = "Doberman";
@@ -75,18 +82,23 @@ public class DatabaseInitE2e implements CommandLineRunner {
 
     private final TratamientoRepository tratamientoRepository;
 
+    /** Crea la cuenta unificada (users/roles) de cada perfil sembrado. */
+    private final CuentaUsuarioService cuentaUsuarioService;
+
     public DatabaseInitE2e(VeterinarioRepository veterinarioRepository,
             AdministradorRepository administradorRepository,
             DuenoRepository duenoRepository,
             MascotaRepository mascotaRepository,
             DrogaRepository drogaRepository,
-            TratamientoRepository tratamientoRepository) {
+            TratamientoRepository tratamientoRepository,
+            CuentaUsuarioService cuentaUsuarioService) {
         this.veterinarioRepository = veterinarioRepository;
         this.administradorRepository = administradorRepository;
         this.duenoRepository = duenoRepository;
         this.mascotaRepository = mascotaRepository;
         this.drogaRepository = drogaRepository;
         this.tratamientoRepository = tratamientoRepository;
+        this.cuentaUsuarioService = cuentaUsuarioService;
     }
 
     @Override
@@ -101,27 +113,44 @@ public class DatabaseInitE2e implements CommandLineRunner {
         administradorRepository.save(Administrador.builder()
                 .cedula(ADMIN_CEDULA)
                 .correo(ADMIN_EMAIL)
-                .contrasena(ADMIN_PASSWORD)
                 .nombre(ADMIN_NOMBRE)
+                .user(cuentaUsuarioService.construir(
+                        ADMIN_EMAIL, ADMIN_PASSWORD, CuentaUsuarioService.ROL_ADMINISTRADOR))
                 .build());
 
         veterinarioRepository.save(Veterinario.builder()
                 .cedula(VET_CEDULA)
-                .contrasena(VET_PASSWORD)
                 .correo(VET_EMAIL)
                 .especialidad("Medicina General")
                 .numeroAtenciones(0)
                 .nombre(VET_NOMBRE)
                 .estado("Activo")
+                .user(cuentaUsuarioService.construir(
+                        VET_EMAIL, VET_PASSWORD, CuentaUsuarioService.ROL_VETERINARIO))
                 .build());
 
         Dueno dueno = duenoRepository.save(Dueno.builder()
                 .cedula(OWNER_CEDULA)
                 .nombre(OWNER_NOMBRE)
                 .correo(OWNER_EMAIL)
-                .contrasena(OWNER_PASSWORD)
                 .celular("3000000000")
                 .estado("Activo")
+                .user(cuentaUsuarioService.construir(
+                        OWNER_EMAIL, OWNER_PASSWORD, CuentaUsuarioService.ROL_CLIENTE))
+                .build());
+
+        // Cliente inactivo: su cuenta también debe quedar deshabilitada para
+        // probar que el login rechaza credenciales válidas de una baja.
+        UserEntity cuentaInactiva = cuentaUsuarioService.construir(
+                INACTIVE_EMAIL, INACTIVE_PASSWORD, CuentaUsuarioService.ROL_CLIENTE);
+        cuentaInactiva.setActivo(false);
+        duenoRepository.save(Dueno.builder()
+                .cedula(INACTIVE_CEDULA)
+                .nombre(INACTIVE_NOMBRE)
+                .correo(INACTIVE_EMAIL)
+                .celular("3000000009")
+                .estado("Inactivo")
+                .user(cuentaInactiva)
                 .build());
 
         mascotaRepository.save(Mascota.builder()

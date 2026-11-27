@@ -21,7 +21,10 @@ export interface Mascota {
   fechaIngreso?: string;
   enfermedad?: string;
   duenoId?: number;
-  /** Solo se envía al crear/editar; la API nunca lo devuelve anidado. */
+  /**
+   * Dato de apoyo que la ficha arma en memoria con el id del dueño.
+   * No viaja a la API: las escrituras envían solo duenoId.
+   */
   dueno?: Dueno;
   estado: string;
   tratamientos?: Tratamiento[];

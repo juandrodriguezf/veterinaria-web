@@ -2,6 +2,7 @@ package com.vetopia.service;
 
 import java.util.List;
 
+import com.vetopia.dto.VeterinarioRequest;
 import com.vetopia.entities.Veterinario;
 
 /**
@@ -32,14 +33,7 @@ public interface VeterinarioService {
      * sistema; en edición, una contraseña en blanco conserva la actual y
      * el estado vacío se completa con "Activo" al crear.
      */
-    void guardar(Veterinario veterinario);
-
-    /**
-     * Busca un veterinario por correo o cédula y contraseña (para login).
-     * Solo devuelve el registro si su estado es "Activo": un veterinario
-     * desactivado por el administrador no puede ingresar al portal.
-     */
-    Veterinario obtenerPorCorreoYContrasena(String identificador, String contrasena);
+    void guardar(VeterinarioRequest solicitud);
 
     /**
      * Alterna el estado del veterinario (Activo <-> Inactivo) y devuelve

@@ -42,7 +42,7 @@ export class LoginComponent {
         // La sesión se guarda antes de navegar para que el portal ya tenga
         // la identidad cuando se construyan sus componentes.
         this.sesionService.guardar(resultado);
-        this.navegarPorRol(resultado.rol, resultado.id);
+        this.navegarPorRol(resultado.rol);
       },
       error: (error) => {
         // El backend responde 401 con el mensaje exacto del service.
@@ -51,13 +51,13 @@ export class LoginComponent {
     });
   }
 
-  private navegarPorRol(rol: string, id: number) {
+  private navegarPorRol(rol: string) {
     switch (rol) {
       case 'VETERINARIO':
         this.router.navigate(['/mascotas']);
         break;
       case 'CLIENTE':
-        this.router.navigate(['/cliente/mascotas', id]);
+        this.router.navigate(['/cliente/mascotas']);
         break;
       case 'ADMINISTRADOR':
         this.router.navigate(['/admin/dashboard']);

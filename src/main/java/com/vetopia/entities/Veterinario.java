@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +43,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"administrador", "tratamientos"})
+@ToString(exclude = {"administrador", "tratamientos", "user"})
 public class Veterinario {
 
     /** Identificador único del veterinario (autogenerado por la base de datos). */
@@ -56,13 +58,7 @@ public class Veterinario {
     @Column(nullable = false, unique = true, length = 20)
     private String cedula;
 
-    /** Contraseña de acceso del veterinario. */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(nullable = false, length = 255)
-    private String contrasena;
-
-    /**
-     * Correo electrónico del veterinario (único; es el usuario del login).
+    /** Correo electrónico del veterinario (único; es el usuario del login).
      * Viaja en la API para que el administrador lo consulte y lo edite.
      */
     @Column(nullable = false, unique = true, length = 150)
@@ -111,4 +107,14 @@ public class Veterinario {
     @OneToMany(mappedBy = "veterinario")
     @Builder.Default
     private List<Tratamiento> tratamientos = new ArrayList<>();
+
+    /**
+     * Cuenta de acceso unificada (tabla users). El veterinario se autentica
+     * con esta cuenta y comparte el modelo con administradores y clientes;
+     * se guarda en cascada y se elimina junto con el perfil.
+     */
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", unique = true)
+    private UserEntity user;
 }

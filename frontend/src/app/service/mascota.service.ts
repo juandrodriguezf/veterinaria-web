@@ -52,6 +52,19 @@ export class MascotaService {
     return this.http.get<Mascota>(`${this.baseUrl}/propia/${id}/${duenoId}`);
   }
 
+  /** Mascotas del cliente autenticado (el dueño sale del JWT). */
+  listarMias(nombre?: string): Observable<Mascota[]> {
+    const url = `${this.baseUrl}/mias`;
+    return nombre && nombre.trim()
+      ? this.http.get<Mascota[]>(url, { params: { nombre } })
+      : this.http.get<Mascota[]>(url);
+  }
+
+  /** Mascota propia del cliente autenticado (valida la propiedad con el JWT). */
+  obtenerMia(id: number): Observable<Mascota> {
+    return this.http.get<Mascota>(`${this.baseUrl}/mias/${id}`);
+  }
+
   /** Solo las mascotas activas (candidatas a recibir tratamiento). */
   listarMascotasActivas(): Observable<Mascota[]> {
     return this.http.get<Mascota[]>(`${this.baseUrl}/activas`);

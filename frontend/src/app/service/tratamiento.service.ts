@@ -11,9 +11,8 @@ import { Tratamiento } from '../models/tratamiento.model';
  */
 export interface NuevoTratamiento {
   fecha: string;
-  mascota: { id: number };
-  droga: { id: number };
-  veterinario: { id: number };
+  mascotaId: number;
+  drogaId: number;
 }
 
 /**
@@ -37,12 +36,12 @@ export class TratamientoService {
   }
 
   /**
-   * Tratamientos aplicados por un veterinario (GET /byVeterinario/{id}).
-   * Alimenta la pestaña "Tratadas" del portal: la página agrupa el
-   * resultado por mascota para mostrar a quiénes ha atendido.
+   * Tratamientos del veterinario autenticado (GET /mios). Alimenta la
+   * pestaña "Tratadas" del portal: la página agrupa el resultado por
+   * mascota para mostrar a quiénes ha atendido.
    */
-  listarTratamientosPorVeterinario(veterinarioId: number): Observable<Tratamiento[]> {
-    return this.http.get<Tratamiento[]>(`${this.baseUrl}/byVeterinario/${veterinarioId}`);
+  listarMios(): Observable<Tratamiento[]> {
+    return this.http.get<Tratamiento[]>(`${this.baseUrl}/mios`);
   }
 
   /**

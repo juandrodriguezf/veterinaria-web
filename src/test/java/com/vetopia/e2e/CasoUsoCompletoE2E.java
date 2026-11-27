@@ -135,7 +135,7 @@ public class CasoUsoCompletoE2E {
         escribir("username", NEW_CLIENT_CEDULA);
         escribir("password", NEW_CLIENT_PASSWORD);
         esperarId("btnIngresar").click();
-        wait.until(ExpectedConditions.urlContains("/cliente/mascotas/"));
+        wait.until(ExpectedConditions.urlToBe(BASE_URL + "/cliente/mascotas"));
         esperarTexto(NEW_PET_NOMBRE);
 
         wait.until(ExpectedConditions.elementToBeClickable(

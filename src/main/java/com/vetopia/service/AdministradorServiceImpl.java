@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.vetopia.dto.AdministradorRequest;
 import com.vetopia.entities.Administrador;
+import com.vetopia.entities.UserEntity;
 import com.vetopia.errors.RecursoNoEncontradoException;
+import com.vetopia.mapper.AdministradorMapper;
 import com.vetopia.repository.AdministradorRepository;
 
 /**
@@ -28,6 +31,10 @@ public class AdministradorServiceImpl implements AdministradorService {
     /** Validador de cédula y correo únicos entre las cuentas del sistema. */
     @Autowired
     private IdentificadorUnicoService identificadorUnicoService;
+
+    /** Cuenta unificada de acceso (users/roles). */
+    @Autowired
+    private CuentaUsuarioService cuentaUsuarioService;
 
     @Override
     public List<Administrador> listarAdministradores() {
@@ -55,24 +62,43 @@ public class AdministradorServiceImpl implements AdministradorService {
      * reserva también los identificadores de cuentas inactivas.
      */
     @Override
-    public void guardar(Administrador administrador) {
+    public void guardar(AdministradorRequest solicitud) {
+        Administrador administrador = AdministradorMapper.INSTANCE.toEntity(solicitud);
         administrador.setCedula(
                 administrador.getCedula() == null ? null : administrador.getCedula().trim());
         administrador.setCorreo(
                 administrador.getCorreo() == null ? null : administrador.getCorreo().trim());
         identificadorUnicoService.validarAdministrador(
                 administrador.getCedula(), administrador.getCorreo(), administrador.getId());
-        administradorRepository.save(administrador);
-    }
 
-    @Override
-    public Administrador obtenerPorCorreoYContrasena(String identificador, String contrasena) {
-        // El formulario acepta correo o cédula: se busca primero por correo y,
-        // si no hay coincidencia, por documento.
-        Administrador porCorreo = administradorRepository
-                .findByCorreoIgnoreCaseAndContrasena(identificador, contrasena);
-        return porCorreo != null
-                ? porCorreo
-                : administradorRepository.findByCedulaAndContrasena(identificador, contrasena);
+        // En edición se recuperan la clave y la cuenta que el formulario no
+        // devuelve; en creación se usa la clave provisional del equipo.
+        Administrador actual = administrador.getId() == null
+                ? null
+                : administradorRepository.findById(administrador.getId()).orElseThrow(
+                        () -> new RecursoNoEncontradoException(
+                                "No encontramos ningún administrador registrado con el identificador \""
+                                        + administrador.getId() + "\"."));
+        String clave = solicitud.getContrasena();
+        boolean claveNueva = clave != null && !clave.isBlank();
+        if (actual == null && !claveNueva) {
+            clave = "admin123";
+            claveNueva = true;
+        }
+
+        // Cuenta unificada: correo como usuario, clave cifrada y rol.
+        UserEntity cuenta = actual != null ? actual.getUser() : null;
+        if (cuenta == null) {
+            cuenta = cuentaUsuarioService.construir(
+                    administrador.getCorreo(), claveNueva ? clave : "admin123",
+                    CuentaUsuarioService.ROL_ADMINISTRADOR);
+        } else {
+            cuentaUsuarioService.sincronizar(
+                    cuenta, administrador.getCorreo(), claveNueva ? clave : null,
+                    CuentaUsuarioService.ROL_ADMINISTRADOR);
+        }
+        cuentaUsuarioService.cambiarEstado(cuenta, true);
+        administrador.setUser(cuenta);
+        administradorRepository.save(administrador);
     }
 }

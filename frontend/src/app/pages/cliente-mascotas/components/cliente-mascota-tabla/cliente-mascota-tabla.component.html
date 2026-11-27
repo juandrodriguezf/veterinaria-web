@@ -47,7 +47,7 @@
           <td class="px-6 py-4">
             <a [attr.data-testid]="'ver-detalle-' + mascota.id" class="inline-flex items-center gap-2 rounded-full bg-portal-primary-container px-5 py-2.5 font-portal-button text-portal-button uppercase text-portal-on-primary-container transition-colors hover:bg-portal-primary hover:text-portal-on-primary"
                [attr.aria-label]="'Consultar detalles de ' + mascota.nombre"
-               [routerLink]="['/cliente/mascotas', idUsuario(), 'detalle', mascota.id]">
+               [routerLink]="['/cliente/mascotas', 'detalle', mascota.id]">
               Ver detalles
               <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">visibility</span>
             </a>

@@ -18,22 +18,6 @@ import com.vetopia.entities.Veterinario;
 public interface VeterinarioRepository extends JpaRepository<Veterinario, Integer> {
 
     /**
-     * Veterinario por sus credenciales y estado: solo los veterinarios con
-     * estado "Activo" pueden iniciar sesión (misma política que Dueno).
-     */
-    Veterinario findByCorreoIgnoreCaseAndContrasenaAndEstado(String correo,
-            String contrasena,
-            String estado);
-
-    /**
-     * Veterinario por cédula y credenciales, solo si está "Activo": permite
-     * iniciar sesión con el documento, igual que con el correo.
-     */
-    Veterinario findByCedulaAndContrasenaAndEstado(String cedula,
-            String contrasena,
-            String estado);
-
-    /**
      * Veterinario por correo: soporta la validación de unicidad global
      * entre clientes, veterinarios y administradores.
      */

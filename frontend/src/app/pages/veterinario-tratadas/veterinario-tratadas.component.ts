@@ -48,12 +48,11 @@ export class VeterinarioTratadasComponent {
   /** Pide el historial del veterinario autenticado al backend. */
   cargar() {
     this.mensajeError = '';
-    const veterinarioId = this.sesionService.id();
-    if (!this.sesionService.esVeterinario() || veterinarioId === null) {
+    if (!this.sesionService.esVeterinario() || this.sesionService.id() === null) {
       this.router.navigate(['/login']);
       return;
     }
-    this.tratamientoService.listarTratamientosPorVeterinario(veterinarioId).subscribe({
+    this.tratamientoService.listarMios().subscribe({
       next: (tratamientos) => (this.tratamientos = tratamientos),
       error: () => {
         this.mensajeError = 'No se pudo cargar el historial de pacientes atendidos.';

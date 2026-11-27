@@ -4,7 +4,7 @@
   <img src="docs/logo/logo_Vetopia_letrasNegras.png" alt="Logo de Vetopia" width="320">
 </p>
 
-**Vetopia – Hospital Veterinario del Futuro.** Sistema de gestión para la clínica veterinaria Vetopia: los veterinarios administran a los **dueños**, sus **mascotas** y sus **tratamientos**. El proyecto tiene dos partes: un **backend Spring Boot** que expone una **API REST** y un **frontend Angular** que la consume con `HttpClient`.
+**Vetopia – Hospital Veterinario del Futuro.** Sistema de gestión para la clínica veterinaria Vetopia: los veterinarios administran a los **dueños**, sus **mascotas** y sus **tratamientos**. El proyecto tiene dos partes: un **backend Spring Boot** que expone una **API REST protegida con Spring Security y JWT** y un **frontend Angular** que la consume con `HttpClient`.
 
 Construida con **Spring Boot** siguiendo el patrón de diseño de capas:
 
@@ -23,7 +23,7 @@ La **unicidad de cédula y correo** se valida en la capa service (`Identificador
 - **API REST de dueños (clientes)**: listar, consultar, buscar por nombre, crear, actualizar, alternar estado (baja lógica reversible) y **eliminar de forma definitiva** junto con todas sus mascotas; el historial de tratamientos se conserva porque los tratamientos quedan **desvinculados** de la mascota en lugar de borrarse.
 - **API REST de tratamientos y drogas**: consultar el historial de una mascota o de un veterinario, asignar un tratamiento (recibe el veterinario responsable, valida mascota y veterinario activos y stock, descuenta una unidad del inventario, registra la unidad vendida y devuelve la droga actualizada) y listar/registrar el inventario de medicamentos, que se **carga desde un Excel fijo** al arrancar.
 - **API REST de veterinarios y administradores**: CRUD de veterinarios con búsqueda por cédula o nombre, activar/desactivar y eliminar (desvinculando sus tratamientos); además el administrador consulta el **dashboard** con los indicadores del negocio.
-- **API REST de login**: autentica por correo o cédula y contraseña, busca el usuario en las tablas de veterinario, administrador y dueño, y devuelve el **rol**, el **id** y el **nombre** para que el frontend navegue a su portal y muestre la cuenta autenticada; veterinarios y clientes solo entran si están **activos** (el administrador no maneja estado).
+- **API REST de login con JWT**: autentica por correo o cédula y contraseña contra la cuenta unificada (`users`/`roles`) con BCrypt, y devuelve un **token firmado** junto con el **rol**, el **id** del perfil y el **nombre**; veterinarios y clientes solo entran si están **activos**. El token se envía en `Authorization: Bearer <token>` y el backend deriva de él la identidad y los permisos.
 - **Portal del cliente**: cada dueño activo consulta únicamente **sus** mascotas (con búsqueda por nombre) y el detalle de cada una con su historial de tratamientos; si la cuenta fue desactivada, el portal lo devuelve al login.
 - **Portal del administrador**: dashboard con los indicadores del negocio (tratamientos del último mes, veterinarios activos e inactivos, mascotas activas e inactivas, ventas y ganancias, y las drogas más usadas) y gestión de veterinarios con búsqueda, alta, edición, activación/desactivación y eliminación.
 - **Edición sin pérdida de datos**: al actualizar una mascota o un veterinario se conservan los campos que el formulario no envía (`fechaIngreso`, `enfermedad`, `numeroAtenciones`, `urlFoto` y `estado`).
@@ -35,7 +35,9 @@ La **unicidad de cédula y correo** se valida en la capa service (`Identificador
 
 - Java 21
 - Spring Boot 3.5.4 (Web)
-- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas (sin JPQL); borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
+- **Spring Security 6 + JWT (jjwt)**: API stateless, contraseñas BCrypt, roles `ROLE_ADMINISTRADOR`, `ROLE_VETERINARIO` y `ROLE_CLIENTE`, filtro `JwtAuthenticationFilter` y autorización por método con `@PreAuthorize`
+- **MapStruct**: mappers de entidades a DTOs de respuesta y de petición a entidades
+- **Spring Data JPA + H2**: entidades con `@Entity`, `@Column(nullable/unique/length)`, `@ManyToOne` con IDENTITY; repositorios `JpaRepository` con consultas derivadas y consultas JPQL puntuales; borrado en cascada por capas desde el service con `@Transactional` (no depende del DDL); la FK `tratamiento.mascota` admite nulo y el service la desvincula antes de eliminar la mascota, de modo que el historial clínico sobrevive a la eliminación del dueño y sus mascotas
 - Lombok
 - **springdoc-openapi** para documentar la API (Swagger UI en `/swagger-ui/index.html` y OpenAPI en `/v3/api-docs`)
 - **Apache POI** para leer el inventario de medicamentos desde un Excel fijo (`resources/data/medicamentos.xlsx`)
@@ -45,15 +47,19 @@ La **unicidad de cédula y correo** se valida en la capa service (`Identificador
 
 ## API REST
 
-Todos los controladores son `@RestController`, viven en `controller/api/` y están abiertos a `http://localhost:4200` con `@CrossOrigin`. Las entidades se exponen directamente como JSON y las colecciones `@OneToMany` van con `@JsonIgnore` para cortar la recursión de Jackson; por eso las relaciones se consultan con rutas aparte (por ejemplo, las mascotas de un dueño o el historial de una mascota). En `Tratamiento` las relaciones viajan planas —`drogaId`, `drogaNombre`, `veterinarioId`, `veterinarioNombre`, `veterinarioEspecialidad`, `mascotaId` y `mascotaNombre`— y solo se reciben por id, de modo que Angular no anida objetos.
+Todos los controladores son `@RestController`, viven en `controller/api/` y responden DTOs planos generados con **MapStruct** (nunca entidades). Las relaciones de las entidades van con `@JsonIgnore`, de modo que ninguna respuesta anida objetos: las escrituras reciben ids planos (`duenoId`, `mascotaId`, `drogaId`) y las relaciones se consultan con rutas aparte (por ejemplo, las mascotas de un dueño o el historial de una mascota). El **veterinario de un tratamiento sale del token**, no del cuerpo de la petición.
+
+Salvo `POST /login`, la documentación Swagger y la consola H2, **todas las peticiones exigen `Authorization: Bearer <token>`**. El backend valida la firma, la expiración y el rol antes de ejecutar el controller. Los endpoints del cliente no reciben ids de identidad manipulables: `/dueno/me`, `/mascota/mias` y `/tratamiento/mios` resuelven al usuario desde el JWT.
 
 | Método | Ruta | Descripción |
 |---|---|---|
 | `GET` | `/mascota/all` | Todas las mascotas |
 | `GET` | `/mascota/find/{id}` | Una mascota por id |
 | `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas) |
-| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (búsqueda opcional con `?nombre=`) |
-| `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño |
+| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (solo ADMIN/VETERINARIO; búsqueda opcional con `?nombre=`) |
+| `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño (solo ADMIN/VETERINARIO) |
+| `GET` | `/mascota/mias` | Mascotas del cliente autenticado (el dueño sale del token) |
+| `GET` | `/mascota/mias/{id}` | Mascota propia del cliente autenticado (valida propiedad) |
 | `GET` | `/mascota/activas` | Solo las mascotas activas |
 | `POST` | `/mascota/add` | Crea una mascota (dueño obligatorio, estado inicial Activo) |
 | `PUT` | `/mascota/update` | Actualiza una mascota |
@@ -61,7 +67,8 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `DELETE` | `/mascota/delete/{id}` | Elimina una mascota (desvincula su historial) |
 | `GET` | `/dueno/all` | Todos los clientes |
 | `GET` | `/dueno/find/{id}` | Un cliente por id |
-| `GET` | `/dueno/activo/{id}` | Un cliente solo si está activo (portal del dueño) |
+| `GET` | `/dueno/activo/{id}` | Un cliente solo si está activo (valida que sea el cliente del token) |
+| `GET` | `/dueno/me` | Perfil del cliente autenticado (el id sale del token) |
 | `GET` | `/dueno/search/{nombre}` | Clientes por nombre (coincidencia parcial, sin distinguir mayúsculas) |
 | `POST` | `/dueno/add` | Crea un cliente (valida cédula y correo únicos en todo el sistema) |
 | `PUT` | `/dueno/update` | Actualiza un cliente (valida cédula y correo únicos en todo el sistema) |
@@ -70,7 +77,8 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/tratamiento/all` | Todos los tratamientos |
 | `GET` | `/tratamiento/find/{id}` | Un tratamiento por id |
 | `GET` | `/tratamiento/byMascota/{mascotaId}` | Historial de tratamientos de una mascota |
-| `GET` | `/tratamiento/byVeterinario/{veterinarioId}` | Historial de tratamientos aplicados por un veterinario |
+| `GET` | `/tratamiento/byVeterinario/{veterinarioId}` | Historial de tratamientos aplicados por un veterinario (admin o el propio veterinario) |
+| `GET` | `/tratamiento/mios` | Tratamientos del veterinario autenticado (el id sale del token) |
 | `POST` | `/tratamiento/add` | Asigna un tratamiento (valida mascota activa y stock; descuenta inventario y registra la unidad vendida) |
 | `GET` | `/droga/all` | Inventario de medicamentos |
 | `GET` | `/droga/find/{id}` | Una droga por id |
@@ -86,9 +94,58 @@ Todos los controladores son `@RestController`, viven en `controller/api/` y est�
 | `GET` | `/administrador/find/{id}` | Un administrador por id |
 | `GET` | `/administrador/dashboard` | Indicadores del negocio para el dashboard |
 | `POST` | `/administrador/add` | Registra un administrador (valida cédula y correo únicos en todo el sistema) |
-| `POST` | `/login` | Autentica por correo o cédula y contraseña; devuelve `{rol, id, nombre}` o `401 {mensaje}` |
+| `POST` | `/login` | Autentica contra la cuenta unificada; devuelve `{token, tipo, rol, id, nombre}` o `401 {mensaje}` |
+| `GET` | `/usuario/me` | Identidad del usuario autenticado (`{rol, id, nombre}`) |
 
 La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`); cada operación lleva su `@Operation(summary = "…")` y cada recurso su `@Tag`.
+
+## Seguridad (JWT y roles)
+
+### Modelo de cuentas unificado
+
+- **`users`**: `username` (el correo), `password` (hash BCrypt) y `activo`.
+- **`roles`**: catálogo `ROLE_ADMINISTRADOR`, `ROLE_VETERINARIO` y `ROLE_CLIENTE`.
+- **`user_roles`**: relación ManyToMany entre cuentas y roles.
+- **`administradores`, `veterinarios` y `duenos`**: cada perfil se enlaza con `users` mediante `OneToOne` (`user_id` único) y se guarda/elimina en cascada. La contraseña en claro **no** vive en las tablas de perfil: solo el hash en `users`.
+
+### Flujo de autenticación
+
+1. `POST /login` acepta **correo o cédula**; la cédula se traduce al correo del perfil y se autentica con `AuthenticationManager` + BCrypt.
+2. El backend firma un **JWT HS512** con `sub` (usuario), `iat` y `exp` (1 hora por defecto). La clave se genera aleatoriamente al arrancar y vive en memoria, así que reiniciar el backend invalida los tokens anteriores.
+3. Angular guarda **solo el token** en `localStorage`; el rol, el id y el nombre se mantienen en memoria y se restauran con `GET /usuario/me` al abrir la aplicación (no se guardan ids editables).
+4. Cada petición sale con `Authorization: Bearer <token>`; `JwtAuthenticationFilter` valida firma y expiración, y `@PreAuthorize` restringe por rol y propiedad.
+5. Una cuenta inactiva no inicia sesión y su token deja de servir inmediatamente si se desactiva después del login (`401`).
+6. `401` = sin token, token vencido o alterado; `403` = autenticado pero sin permiso o intentando acceder a un recurso ajeno.
+
+### Matriz de permisos
+
+| Recurso | ADMINISTRADOR | VETERINARIO | CLIENTE |
+|---|---|---|---|
+| `/administrador/**` | ✅ | ❌ | ❌ |
+| `/veterinario/**` | ✅ | ❌ | ❌ |
+| `/dueno/all`, `/find`, `/search` | ✅ lectura | ✅ | ❌ |
+| `/dueno/add`, `/update`, `/toggle`, `/delete` | ❌ | ✅ | ❌ |
+| `/dueno/me`, `/dueno/activo/{id}` | ❌ | ❌ | ✅ solo el propio |
+| `/mascota/all`, `/find`, `/search`, `/activas`, CRUD | ✅ | ✅ | ❌ |
+| `/mascota/byDueno/{id}`, `/propia/{id}/{duenoId}` | ✅ | ✅ | ❌ |
+| `/mascota/mias`, `/mascota/mias/{id}` | ❌ | ❌ | ✅ solo las propias |
+| `/droga/all`, `/find` | ✅ | ✅ | ❌ |
+| `/droga/add` | ✅ | ❌ | ❌ |
+| `/tratamiento/all`, `/find` | ✅ | ❌ | ❌ |
+| `/tratamiento/byMascota/{id}` | ✅ | ✅ | ✅ solo sus mascotas |
+| `/tratamiento/byVeterinario/{id}` | ✅ | ✅ solo el propio | ❌ |
+| `/tratamiento/mios` | ❌ | ✅ | ❌ |
+| `/tratamiento/add` | ❌ | ✅ (el veterinario sale del token) | ❌ |
+| `/usuario/me` | ✅ | ✅ | ✅ |
+
+### Probar la seguridad desde Postman
+
+La colección [`docs/postman/Vetopia.postman_collection.json`](docs/postman/Vetopia.postman_collection.json) incluye **todas** las peticiones del backend, organizadas por recurso, con variables de token y pruebas automáticas.
+
+1. Importar la colección en Postman.
+2. Ejecutar primero la carpeta **1. Autenticación**: los scripts guardan `tokenAdmin`, `tokenVeterinario` y `tokenCliente` en las variables de la colección.
+3. Las carpetas 2–9 llevan el `Bearer` correspondiente en cada nivel.
+4. La carpeta **10. Pruebas de seguridad** valida sin token (401), token alterado (401), rol equivocado (403) y acceso a recursos de otro cliente (403).
 
 ## Datos de prueba
 
@@ -118,8 +175,8 @@ El backend queda en `http://localhost:8080`. Rutas útiles:
 | `http://localhost:8080/swagger-ui/index.html` | Documentación interactiva de la API (Swagger UI) |
 | `http://localhost:8080/v3/api-docs` | Especificación OpenAPI en JSON |
 | `http://localhost:8080/h2` | Consola de la base de datos H2 |
-| `http://localhost:8080/mascota/all` | Ejemplo: todas las mascotas |
-| `http://localhost:8080/dueno/all` | Ejemplo: todos los dueños |
+| `http://localhost:8080/mascota/all` | Ejemplo protegido: todas las mascotas (requiere `Bearer` token) |
+| `http://localhost:8080/dueno/all` | Ejemplo protegido: todos los dueños (requiere `Bearer` token) |
 
 La interfaz de usuario vive en el [frontend Angular](frontend/README.md) (`http://localhost:4200`), que consume esta API con `HttpClient`.
 
@@ -129,9 +186,9 @@ La interfaz de usuario vive en el [frontend Angular](frontend/README.md) (`http:
 
 | Rol | Usuario | Contraseña | Estado |
 |---|---|---|---|
-| Veterinario | `carlos.gutierrez@vetopia.com` | `vet123` | — |
-| Veterinario | `laura.mendez@vetopia.com` | `vet123` | — |
-| Administrador | `admin@vetopia.com` | `admin123` | — |
+| Veterinario | `carlos.gutierrez@vetopia.com` | `vet123` | Activa |
+| Veterinario | `laura.mendez@vetopia.com` | `vet123` | Activa |
+| Administrador | `admin@vetopia.com` | `admin123` | Activa |
 | Cliente | `ana@correo.com` | `dueño123` | Activa |
 | Cliente | `pedro@correo.com` | `dueño123` | Activa |
 | Cliente | `maria@correo.com` | `dueño123` | Inactiva (no inicia sesión) |
@@ -154,8 +211,8 @@ Prototipo de alta fidelidad de la interfaz: [Vetopia en Figma](https://www.figma
 |---|---|---|
 | Landing Page | `/` | Implementada |
 | Log In | `/login` | Implementada |
-| Principal Cliente | `/cliente/mascotas/:idUsuario` | Implementada |
-| Detalle mascota Cliente | `/cliente/mascotas/:idUsuario/detalle/:id` | Implementada |
+| Principal Cliente | `/cliente/mascotas` | Implementada |
+| Detalle mascota Cliente | `/cliente/mascotas/detalle/:id` | Implementada |
 | Mascotas a Cargo | `/mascotas` | Implementada |
 | Ficha Clínica | `/mascotas/:id` | Implementada |
 | Registrar Nuevo Cliente (paso 1) | `/clientes/new` | Implementada |
@@ -169,7 +226,7 @@ El prototipo también anticipa rutas aún no implementadas (`Citas`, `Historial 
 
 ## Frontend Angular
 
-La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), y **consume esta API REST con `HttpClient`** (los servicios ya no tienen datos quemados). El login devuelve `{rol, id, nombre}` y el frontend conserva esa identidad en `localStorage` para mostrar la cuenta autenticada en cada portal.
+La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, construida con **Angular 19** (componentes standalone) y **Tailwind CSS 3**. Reproduce el landing institucional, las tres pantallas del CRUD de mascotas (listado, formulario y ficha clínica) y las dos del CRUD de dueños (listado y formulario), y **consume esta API REST con `HttpClient`** (los servicios ya no tienen datos quemados). El login guarda **solo el token JWT** en `localStorage`; el rol y el id viven en memoria y se restauran con `/usuario/me`. Un `AuthInterceptor` añade `Authorization: Bearer`, los guards protegen cada ruta por rol y el home redirige al portal correspondiente cuando hay sesión.
 
 | Ruta | Descripción |
 |---|---|
@@ -182,8 +239,8 @@ La carpeta [`frontend/`](frontend/README.md) contiene la aplicación cliente, co
 | `http://localhost:4200/clientes` | Listado de dueños |
 | `http://localhost:4200/clientes/new` | Registrar cliente |
 | `http://localhost:4200/clientes/update/:id` | Editar cliente |
-| `http://localhost:4200/cliente/mascotas/:idUsuario` | Portal del cliente: sus mascotas |
-| `http://localhost:4200/cliente/mascotas/:idUsuario/detalle/:id` | Detalle de una mascota del cliente |
+| `http://localhost:4200/cliente/mascotas` | Portal del cliente: sus mascotas |
+| `http://localhost:4200/cliente/mascotas/detalle/:id` | Detalle de una mascota del cliente |
 | `http://localhost:4200/tratamiento/asignar` | Asignar un tratamiento |
 | `http://localhost:4200/veterinario/tratadas` | Mascotas tratadas por el veterinario |
 | `http://localhost:4200/admin/dashboard` | Dashboard del administrador |
@@ -203,23 +260,26 @@ El detalle de la estructura, los servicios HTTP, las decisiones de diseño y las
 
 ```
 Vetopia/
-├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Web, JPA, H2, Lombok, springdoc, POI)
-├── docs/                                    # Logo, paleta de colores y diagramas (clases + E/R)
+├── pom.xml                                  # Configuración Maven (Spring Boot 3.5.4, Web, Security, JPA, H2, Lombok, MapStruct, JJWT, springdoc, POI)
+├── docs/                                    # Logo, paleta, diagramas (clases + E/R) y colección Postman
 ├── frontend/                                # Aplicación cliente en Angular 19 + Tailwind
 └── src/main/
     ├── java/com/vetopia/
     │   ├── VetopiaApplication.java          # Clase principal (@SpringBootApplication)
     │   ├── DataLoader.java                  # Siembra datos de prueba al arranque (CommandLineRunner)
     │   ├── DrogaExcelLoader.java            # Carga el inventario de drogas desde el Excel (CommandLineRunner)
+    │   ├── config/                          # Beans de infraestructura (BCryptPasswordEncoder)
     │   ├── controller/api/                  # Controladores REST (@RestController) por recurso
-    │   ├── dto/                             # Payload plano del dashboard (ResumenDashboard, ConteoMedicamento)
+    │   ├── dto/                             # DTOs de respuesta, de petición y del dashboard
+    │   ├── mapper/                          # Mappers MapStruct entidad ↔ DTO
+    │   ├── security/                        # SecurityConfig, JWT, filtro, entrypoint 401/403 y permisos
     │   ├── service/                         # Contratos e implementaciones de lógica de negocio
-    │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas, sin JPQL)
-    │   ├── entities/                        # Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
+    │   ├── repository/                      # Interfaces JpaRepository (consultas derivadas)
+    │   ├── entities/                        # UserEntity, Role, Mascota, Dueno, Veterinario, Tratamiento, Droga, Administrador
     │   └── errors/                          # RecursoNoEncontradoException y RestExceptionHandler
     └── resources/
         ├── data/medicamentos.xlsx           # Inventario de medicamentos que carga DrogaExcelLoader
-        ├── application.properties           # Puerto y perfil activo (h2)
+        ├── application.properties           # Puerto, perfil activo y vigencia JWT
         └── application-h2.properties        # Datasource H2 en archivo, consola y ddl-auto
 ```
 

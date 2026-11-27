@@ -1,0 +1,719 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-vetopia-seguridad",
+    "name": "Vetopia API - Seguridad JWT",
+    "description": "Colección completa de la API de Vetopia. Incluye el login de los tres roles, todas las consultas y escrituras, el portal del cliente y pruebas negativas de 401 y 403. Ejecutar primero las peticiones de la carpeta '1. Autenticación' para capturar los tokens en las variables de colección.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "tokenAdmin", "value": "", "type": "string" },
+    { "key": "tokenVeterinario", "value": "", "type": "string" },
+    { "key": "tokenCliente", "value": "", "type": "string" },
+    { "key": "tokenInvalido", "value": "token.falso.invalido", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Autenticación",
+      "item": [
+        {
+          "name": "Login administrador",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('tokenAdmin', body.token);",
+                  "pm.test('Login exitoso con token y rol ADMINISTRADOR', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(body.token).to.be.a('string');",
+                  "  pm.expect(body.rol).to.eql('ADMINISTRADOR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@vetopia.com\",\n  \"contrasena\": \"admin123\"\n}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "Login veterinario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('tokenVeterinario', body.token);",
+                  "pm.test('Login exitoso con rol VETERINARIO', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(body.rol).to.eql('VETERINARIO');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"carlos.gutierrez@vetopia.com\",\n  \"contrasena\": \"vet123\"\n}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "Login cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('tokenCliente', body.token);",
+                  "pm.test('Login exitoso con rol CLIENTE', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(body.rol).to.eql('CLIENTE');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"ana@correo.com\",\n  \"contrasena\": \"dueño123\"\n}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "Login con cédula",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"1002003001\",\n  \"contrasena\": \"vet123\"\n}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        },
+        {
+          "name": "Login con credenciales inválidas (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Credenciales inválidas devuelven 401', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().mensaje).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"correo\": \"admin@vetopia.com\",\n  \"contrasena\": \"clave-incorrecta\"\n}"
+            },
+            "url": "{{baseUrl}}/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login cliente inactivo (401)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Una cuenta inactiva no inicia sesión', () => {",
+              "  pm.response.to.have.status(401);",
+              "  pm.expect(pm.response.json().mensaje).to.include('inactiva');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"maria@correo.com\",\n  \"contrasena\": \"dueño123\"\n}"
+        },
+        "url": "{{baseUrl}}/login"
+      }
+    },
+    {
+      "name": "2. Usuario autenticado",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Mi identidad (/usuario/me)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Devuelve el perfil del token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().rol).to.eql('ADMINISTRADOR');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/usuario/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Administrador",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Dashboard (KPIs)",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/administrador/dashboard" }
+        },
+        {
+          "name": "Listar administradores",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/administrador/all" }
+        },
+        {
+          "name": "Buscar administrador por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/administrador/find/1" }
+        },
+        {
+          "name": "Registrar administrador",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1000000099\",\n  \"correo\": \"nuevo.admin@vetopia.com\",\n  \"contrasena\": \"admin123\",\n  \"nombre\": \"Administrador Postman\"\n}"
+            },
+            "url": "{{baseUrl}}/administrador/add"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Veterinarios (administrador)",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Listar veterinarios",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/veterinario/all" }
+        },
+        {
+          "name": "Buscar veterinario por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/veterinario/find/1" }
+        },
+        {
+          "name": "Buscar por cédula o nombre",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/veterinario/search/carlos" }
+        },
+        {
+          "name": "Registrar veterinario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1002003099\",\n  \"nombre\": \"Veterinario Postman\",\n  \"correo\": \"nuevo.vet@vetopia.com\",\n  \"contrasena\": \"vet123\",\n  \"especialidad\": \"Medicina General\",\n  \"estado\": \"Activo\",\n  \"numeroAtenciones\": 0\n}"
+            },
+            "url": "{{baseUrl}}/veterinario/add"
+          }
+        },
+        {
+          "name": "Actualizar veterinario",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 2,\n  \"cedula\": \"1002003002\",\n  \"nombre\": \"Laura Méndez\",\n  \"correo\": \"laura.mendez@vetopia.com\",\n  \"especialidad\": \"Cirugía\",\n  \"estado\": \"Activo\",\n  \"numeroAtenciones\": 1\n}"
+            },
+            "url": "{{baseUrl}}/veterinario/update"
+          }
+        },
+        {
+          "name": "Alternar estado del veterinario",
+          "request": { "method": "PUT", "header": [], "url": "{{baseUrl}}/veterinario/toggle/2" }
+        },
+        {
+          "name": "Eliminar veterinario",
+          "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/veterinario/delete/5" }
+        }
+      ]
+    },
+    {
+      "name": "5. Dueños (veterinario)",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Listar clientes",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/all" }
+        },
+        {
+          "name": "Buscar cliente por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/find/1" }
+        },
+        {
+          "name": "Buscar clientes por nombre",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/search/Ana" }
+        },
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"1099000001\",\n  \"nombre\": \"Cliente Postman\",\n  \"correo\": \"nuevo.cliente@vetopia.com\",\n  \"contrasena\": \"cliente123\",\n  \"celular\": \"3009998877\",\n  \"estado\": \"Activo\"\n}"
+            },
+            "url": "{{baseUrl}}/dueno/add"
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"cedula\": \"1020304050\",\n  \"nombre\": \"Ana Rodríguez\",\n  \"correo\": \"ana@correo.com\",\n  \"celular\": \"3001234567\",\n  \"estado\": \"Activo\"\n}"
+            },
+            "url": "{{baseUrl}}/dueno/update"
+          }
+        },
+        {
+          "name": "Alternar estado del cliente",
+          "request": { "method": "PUT", "header": [], "url": "{{baseUrl}}/dueno/toggle/2" }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/dueno/delete/53" }
+        }
+      ]
+    },
+    {
+      "name": "6. Mascotas (solo veterinario)",
+      "description": "Peticiones de gestion de mascotas para ADMINISTRADOR y VETERINARIO. Todas usan tokenVeterinario; el cliente no debe ejecutarlas. El portal del cliente esta en la carpeta 9 y usa /mascota/mias.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Listar mascotas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Buscar mascota por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/find/1" }
+        },
+        {
+          "name": "Buscar mascotas por nombre",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/search/Max" }
+        },
+        {
+          "name": "Mascotas de un dueño",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/byDueno/1?nombre=Max" }
+        },
+        {
+          "name": "Mascota propia de un dueño",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/propia/1/1" }
+        },
+        {
+          "name": "Mascotas activas",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/activas" }
+        },
+        {
+          "name": "Registrar mascota",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Mascota Postman\",\n  \"especie\": \"Perro\",\n  \"raza\": \"Criollo\",\n  \"edad\": 3.0,\n  \"sexo\": \"Macho\",\n  \"pesoKg\": 12.0,\n  \"color\": \"Café\",\n  \"duenoId\": 1,\n  \"estado\": \"Activo\"\n}"
+            },
+            "url": "{{baseUrl}}/mascota/add"
+          }
+        },
+        {
+          "name": "Actualizar mascota",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"nombre\": \"Max\",\n  \"especie\": \"Perro\",\n  \"raza\": \"Doberman\",\n  \"edad\": 5.0,\n  \"sexo\": \"Macho\",\n  \"pesoKg\": 32.0,\n  \"color\": \"Negro\",\n  \"duenoId\": 1,\n  \"estado\": \"Activo\"\n}"
+            },
+            "url": "{{baseUrl}}/mascota/update"
+          }
+        },
+        {
+          "name": "Alternar estado de la mascota",
+          "request": { "method": "PUT", "header": [], "url": "{{baseUrl}}/mascota/toggle/1" }
+        },
+        {
+          "name": "Eliminar mascota",
+          "request": { "method": "DELETE", "header": [], "url": "{{baseUrl}}/mascota/delete/103" }
+        }
+      ]
+    },
+    {
+      "name": "7. Drogas",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Listar inventario",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/droga/all" }
+        },
+        {
+          "name": "Buscar droga por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/droga/find/1" }
+        },
+        {
+          "name": "Registrar droga (administrador)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"DROGA POSTMAN\",\n  \"precioCompra\": 10000,\n  \"precioVenta\": 15000,\n  \"unidadesDisponibles\": 10,\n  \"unidadesVendidas\": 0\n}"
+            },
+            "url": "{{baseUrl}}/droga/add",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Tratamientos",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Listar todos (administrador)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tratamiento/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Buscar tratamiento por id (administrador)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/tratamiento/find/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Historial de una mascota",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/byMascota/1" }
+        },
+        {
+          "name": "Historial de un veterinario",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/byVeterinario/1" }
+        },
+        {
+          "name": "Mis tratamientos (veterinario del token)",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/mios" }
+        },
+        {
+          "name": "Asignar tratamiento",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Tratamiento aplicado y stock descontado', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().unidadesDisponibles).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-14\",\n  \"mascotaId\": 1,\n  \"drogaId\": 1\n}"
+            },
+            "url": "{{baseUrl}}/tratamiento/add"
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Portal del cliente",
+      "auth": {
+        "type": "bearer",
+        "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }]
+      },
+      "item": [
+        {
+          "name": "Mi perfil de cliente",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/me" }
+        },
+        {
+          "name": "Mi perfil activo por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/dueno/activo/1" }
+        },
+        {
+          "name": "Mis mascotas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Solo devuelve las mascotas del cliente del token', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/mias" }
+        },
+        {
+          "name": "Buscar mis mascotas por nombre",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/mias?nombre=Max" }
+        },
+        {
+          "name": "Mi mascota por id",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/mias/1" }
+        },
+        {
+          "name": "Historial de mi mascota",
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/tratamiento/byMascota/1" }
+        }
+      ]
+    },
+    {
+      "name": "10. Pruebas de seguridad",
+      "item": [
+        {
+          "name": "Sin token (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Sin token devuelve 401', () => pm.response.to.have.status(401));"]
+              }
+            }
+          ],
+          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/all" }
+        },
+        {
+          "name": "Token alterado (401)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Token inválido devuelve 401', () => pm.response.to.have.status(401));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenInvalido}}" }],
+            "url": "{{baseUrl}}/mascota/all"
+          }
+        },
+        {
+          "name": "Cliente en listado general (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Rol sin permiso devuelve 403', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Veterinario en dashboard (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Dashboard solo para administrador', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/administrador/dashboard",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando otro dueño (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('No puede cambiar el id del dueño en la URL', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/dueno/activo/2",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando mascota ajena (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('No puede cambiar el id de la mascota en la URL', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/mias/5",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando mascotas de otro dueno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('El cliente no puede listar mascotas por dueno', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/byDueno/2",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando mascota ajena por dueno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('El cliente no puede consultar mascotas por dueno', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/propia/5/1",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Administrador asignando tratamiento (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('Solo el veterinario asigna tratamientos', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fecha\": \"2026-11-14\",\n  \"mascotaId\": 1,\n  \"drogaId\": 1\n}"
+            },
+            "url": "{{baseUrl}}/tratamiento/add",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenAdmin}}", "type": "string" }] }
+          }
+        }
+      ]
+    }
+  ]
+}

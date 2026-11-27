@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { ClienteHeaderComponent } from '../../components/cliente-header/cliente-header.component';
@@ -13,7 +13,8 @@ import { DetalleMascotaComponent } from './components/detalle-mascota/detalle-ma
 
 /**
  * Detalle de una mascota del cliente autenticado.
- * Valida el cliente activo, la pertenencia de la mascota y carga su historial.
+ * La ruta solo lleva el id de la mascota: el dueño sale del JWT y el
+ * backend valida que la mascota le pertenezca antes de devolverla.
  */
 @Component({
   selector: 'app-cliente-detalle',
@@ -21,7 +22,7 @@ import { DetalleMascotaComponent } from './components/detalle-mascota/detalle-ma
   templateUrl: './cliente-detalle.component.html',
   styleUrl: './cliente-detalle.component.scss',
 })
-export class ClienteDetalleComponent {
+export class ClienteDetalleComponent implements OnInit {
   private duenoService = inject(DuenoService);
 
   private mascotaService = inject(MascotaService);
@@ -32,8 +33,6 @@ export class ClienteDetalleComponent {
 
   private router = inject(Router);
 
-  idUsuario = 0;
-
   dueno?: Dueno;
 
   mascota?: Mascota;
@@ -41,16 +40,15 @@ export class ClienteDetalleComponent {
   mensajeError = '';
 
   ngOnInit() {
-    this.idUsuario = Number(this.activatedRoute.snapshot.params['idUsuario']);
     const id = Number(this.activatedRoute.snapshot.params['id']);
-    // Primero se valida que el cliente siga activo; solo entonces se
-    // consultan la mascota propia y su historial de tratamientos.
+    // Primero se valida el perfil; solo entonces se consultan la mascota
+    // propia y su historial de tratamientos.
     this.duenoService
-      .obtenerActivo(this.idUsuario)
+      .obtenerMiPerfil()
       .pipe(
         mergeMap((dueno) => {
           this.dueno = dueno;
-          return this.mascotaService.obtenerPropia(id, this.idUsuario);
+          return this.mascotaService.obtenerMia(id);
         }),
         mergeMap((mascota) => {
           this.mascota = mascota;
@@ -65,12 +63,12 @@ export class ClienteDetalleComponent {
           }
         },
         error: (error) => {
-          // Un cliente inactivo (409) o un id invalido (400) vuelve al login.
-          if (error?.status === 409 || error?.status === 400) {
+          // Un cliente inactivo (409) vuelve al login; el 401 lo maneja el interceptor.
+          if (error?.status === 409) {
             this.router.navigate(['/login']);
             return;
           }
-          // Id inexistente o de otro dueño: el panel informativo.
+          // 403/404: la mascota no existe o no pertenece al cliente.
           this.mensajeError = 'No encontramos ninguna mascota registrada a tu nombre.';
         },
       });

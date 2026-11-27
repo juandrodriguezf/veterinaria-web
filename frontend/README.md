@@ -20,8 +20,8 @@ Este proyecto reproduce las pantallas del prototipo que el backend ya soporta, p
 | Registrar Nuevo Cliente (crear) | `/clientes/new` | Portada |
 | Registrar Nuevo Cliente (editar) | `/clientes/update/:id` | Portada |
 | Asignar Nuevo Tratamiento / Tratamiento Aplicado | `/tratamiento/asignar` | Portada |
-| Principal Cliente | `/cliente/mascotas/:idUsuario` | Portada |
-| Detalle mascota Cliente | `/cliente/mascotas/:idUsuario/detalle/:id` | Portada |
+| Principal Cliente | `/cliente/mascotas` | Portada |
+| Detalle mascota Cliente | `/cliente/mascotas/detalle/:id` | Portada |
 | Dashboard Administrativo | `/admin/dashboard` | Portada |
 | Gestión Veterinarios | `/admin/veterinarios` | Portada |
 | Mascotas tratadas (veterinario) | `/veterinario/tratadas` | Portada |
@@ -82,7 +82,10 @@ src/app/
 │           └── veterinario-campos/  Campos del formulario
 ├── service/                     Peticiones HTTP a la API REST
 │   ├── login.service.ts         Autenticación (POST /login)
-│   ├── sesion.service.ts        Identidad del usuario en localStorage
+│   ├── auth.interceptor.ts      Adjunta Authorization: Bearer
+│   ├── auth.guard.ts            Guards de sesión, rol y redirección del home
+│   ├── error.interceptor.ts     Cierra la sesión ante 401
+│   ├── sesion.service.ts        Token en localStorage e identidad en memoria
 │   ├── dueno.service.ts         CRUD de clientes (GET/POST/PUT/DELETE)
 │   ├── mascota.service.ts       CRUD de mascotas (GET/POST/PUT/DELETE)
 │   ├── tratamiento.service.ts   Historial por mascota y por veterinario, asignación de tratamientos
@@ -106,9 +109,10 @@ Los servicios ya no siembran datos: cada método hace una petición a la API RES
 
 | Servicio | Método | Petición |
 |---|---|---|
-| `LoginService` | `autenticar(identificador, contrasena)` | `POST /login`; acepta correo o cédula y devuelve `{rol, id, nombre}` |
+| `LoginService` | `autenticar(identificador, contrasena)` | `POST /login`; acepta correo o cédula y devuelve `{token, tipo, rol, id, nombre}` |
 | `DuenoService` | `listarDuenos()` | `GET /dueno/all` |
 | `DuenoService` | `obtenerPorId(id)` | `GET /dueno/find/{id}` |
+| `DuenoService` | `obtenerMiPerfil()` | `GET /dueno/me` (perfil del cliente autenticado) |
 | `DuenoService` | `buscarPorNombre(nombre)` | `GET /dueno/search/{nombre}` |
 | `DuenoService` | `guardarValidada(dueno)` | `POST /dueno/add` (sin id) o `PUT /dueno/update` (con id); comando |
 | `DuenoService` | `alternarEstado(id)` | `PUT /dueno/toggle/{id}`; devuelve el estado |
@@ -118,12 +122,14 @@ Los servicios ya no siembran datos: cada método hace una petición a la API RES
 | `MascotaService` | `buscarPorNombre(nombre)` | `GET /mascota/search/{nombre}` |
 | `MascotaService` | `listarPorDueno(duenoId, nombre?)` | `GET /mascota/byDueno/{id}` (búsqueda con `?nombre=`) |
 | `MascotaService` | `obtenerPropia(id, duenoId)` | `GET /mascota/propia/{id}/{duenoId}` (valida la pertenencia) |
+| `MascotaService` | `listarMias(nombre?)` | `GET /mascota/mias` (mascotas del cliente del token) |
+| `MascotaService` | `obtenerMia(id)` | `GET /mascota/mias/{id}` (valida la propiedad con el token) |
 | `MascotaService` | `listarMascotasActivas()` | `GET /mascota/activas` |
 | `MascotaService` | `guardarValidada(mascota)` | `POST /mascota/add` (sin id) o `PUT /mascota/update` (con id); comando |
 | `MascotaService` | `alternarEstado(id)` | `PUT /mascota/toggle/{id}`; devuelve el estado |
 | `MascotaService` | `eliminar(id)` | `DELETE /mascota/delete/{id}`; comando |
 | `TratamientoService` | `listarTratamientosPorMascota(id)` | `GET /tratamiento/byMascota/{id}` |
-| `TratamientoService` | `listarTratamientosPorVeterinario(id)` | `GET /tratamiento/byVeterinario/{id}` |
+| `TratamientoService` | `listarMios()` | `GET /tratamiento/mios` (tratamientos del veterinario del token) |
 | `TratamientoService` | `asignar(tratamiento)` | `POST /tratamiento/add`; devuelve la droga actualizada |
 | `DrogaService` | `listarDrogas()` | `GET /droga/all` |
 | `VeterinarioService` | `listarVeterinarios()` | `GET /veterinario/all` |
@@ -138,11 +144,11 @@ En la creación se omite el `id` (`{ ...entidad, id: null }`) porque el backend 
 
 La ficha clínica y el detalle del cliente encadenan dos consultas con **`mergeMap`** (patrón del video): primero la mascota (`obtenerMascotaPorId` / `obtenerPropia`) y, con esa respuesta, `listarTratamientosPorMascota`, en un solo `subscribe`, en lugar de anidar un `subscribe` dentro de otro.
 
-## Sesión
+## Sesión y seguridad
 
-`SesionService` conserva la identidad que devuelve el login en `localStorage`, bajo la clave `vetopia.sesion`. Solo guarda `{rol, id, nombre}`; la contraseña y el objeto completo del usuario nunca se almacenan. El servicio expone `nombre`, `id`, `rol`, `esVeterinario` y `esAdministrador` como señales, y al recargar la página reconstruye la sesión desde el almacenamiento (si el JSON está incompleto o corrupto, borra la clave).
+`SesionService` guarda **solo el token JWT** en `localStorage` bajo la clave `vetopia.token`; la contraseña, el rol y el id nunca se persisten. El rol, el id y el nombre viven en memoria y se recuperan del backend con `GET /usuario/me` al abrir la aplicación (`provideAppInitializer`), de modo que editar el almacenamiento no permite cambiar de usuario. Si el token expiró o el backend responde 401, el servicio limpia la sesión.
 
-Las páginas del veterinario y del administrador comprueban el rol antes de cargar datos; si no coincide, navegan a `/login`. **No hay guards ni autenticación real**: la sesión es una identidad de presentación y el backend sigue validando las reglas de negocio, pero no verifica que el id enviado pertenezca al usuario autenticado. La seguridad con tokens o sesiones del servidor queda fuera del alcance de esta entrega.
+`AuthInterceptor` agrega `Authorization: Bearer <token>` a cada petición salvo `/login`; `ErrorInterceptor` cierra la sesión y navega al login ante un 401. Los guards `authGuard` y `rolesGuard` protegen cada ruta por rol, y `homeRedirectGuard` lleva al portal correspondiente cuando se abre `/` con un JWT válido (administrador → `/admin/dashboard`, veterinario → `/mascotas`, cliente → `/cliente/mascotas`). El backend valida además la firma, el rol y la propiedad de cada recurso, así que cambiar un id en la URL devuelve 403.
 
 ## Decisiones
 
@@ -156,18 +162,18 @@ Las páginas del veterinario y del administrador comprueban el rol antes de carg
 - **La ficha no tiene página de error propia.** La ficha encadena la mascota con su historial; si el id no existe la petición falla y `mascota` queda sin asignar, así que la plantilla muestra el panel *"Mascota no encontrada"* de la propia ficha. El manejo de errores de las peticiones todavía no está implementado (es un tema posterior del curso).
 - **El estado se cambia con un botón, no con un formulario.** El interruptor llama a `alternarEstado`, que hace `PUT /.../toggle/{id}` y devuelve el estado nuevo.
 - **Las acciones de la tabla de clientes son botones, no enlaces.** La tabla emite un `output()` al componente padre en lugar de navegar. `Eliminar` pide confirmación con un `window.confirm` que anuncia cuántas mascotas se van, porque la cascada borra historial clínico y un clic equivocado no tiene vuelta atrás.
-- **Logout limpia la sesión.** El botón del encabezado borra `vetopia.sesion` mediante `SesionService`; el portal del veterinario y el del administrador vuelven al landing y el del cliente al login. Ya no quedan enlaces muertos en el portal.
+- **Logout limpia la sesión.** El botón del encabezado borra `vetopia.token` mediante `SesionService`; el portal del veterinario y el del administrador vuelven al landing y el del cliente al login. Ya no quedan enlaces muertos en el portal.
 - **Fotografías.** El campo `imagen` guarda las mismas URLs del `DataLoader`. Son enlaces proxeados por `imgs.search.brave.com` que hoy responden **403**, así que las fotos se ven rotas en el listado. Es la única fuente de errores en la consola del navegador.
-- **Login: el rol lo resuelve el backend.** `POST /login` busca en veterinario → administrador → dueño, por correo o cédula, y devuelve `{rol, id, nombre}`; el componente guarda esa identidad en `localStorage` y navega (veterinario → `/mascotas`, cliente → `/cliente/mascotas/{id}`, administrador → `/admin/dashboard`). Es la migración del login de Thymeleaf a REST, **sin guards globales ni autenticación real**: la seguridad del curso queda fuera de esta entrega.
-- **El login tiene manejo de errores explícito.** El video no maneja errores (asume que la consulta salió bien); aquí, para poder avisar "cédula, correo o contraseña incorrectos", `LoginRestController` traduce el `IllegalArgumentException` del service a un **401 con `{mensaje}`** y el componente lo muestra en el banner. El detalle del cliente y la asignación de tratamiento también usan el callback `error`, y `server.error.include-message=always` hace visible el mensaje de las demás excepciones.
-- **El portal del cliente va por ruta, no por query.** El login navega a `/cliente/mascotas/:idUsuario` (y el detalle a `.../detalle/:id`), en lugar del `?idUsuario=` del backend Thymeleaf. La identidad viaja en la URL y el backend valida que el cliente siga activo y que la mascota le pertenezca (`/mascota/propia/{id}/{duenoId}`). La autenticación real sigue fuera de alcance: un usuario podría cambiar el id de la URL, por eso no se promete aislamiento criptográfico ni autorización por token.
+- **Login: el rol lo resuelve el backend con JWT.** `POST /login` autentica contra `users`/`roles`, devuelve un token firmado y, en la respuesta, el `rol`, el `id` y el `nombre`; el componente guarda **solo el token** en `localStorage`; la navegación ocurre en memoria (veterinario → `/mascotas`, cliente → `/cliente/mascotas`, administrador → `/admin/dashboard`) y los guards impiden abrir portales ajenos.
+- **El login tiene manejo de errores explícito.** El video no maneja errores (asume que la consulta salió bien); aquí, para poder avisar "cédula, correo o contraseña incorrectos", `LoginRestController` responde **401 con `{mensaje}`** y el componente lo muestra en el banner. El detalle del cliente y la asignación de tratamiento también usan el callback `error`, y `server.error.include-message=always` hace visible el mensaje de las demás excepciones.
+- **El portal del cliente va por ruta sin id de usuario.** El login navega a `/cliente/mascotas` (y el detalle a `/cliente/mascotas/detalle/:id`). La identidad sale del JWT: el frontend llama a `/dueno/me`, `/mascota/mias` y `/mascota/mias/{id}`, y el backend valida la propiedad. Cambiar el id de la mascota en la URL devuelve 403, así que no se puede entrar al detalle de otro cliente.
 - **Asignar tratamiento: `subscribe` en el componente.** A diferencia de los comandos "ciegos" (`guardarValidada`, `eliminar`), `asignar` devuelve la `Droga` con el stock ya descontado, así que el componente reacciona a esa respuesta para el modal "Tratamiento Aplicado" (misma regla del video: si hay que reaccionar, se hace desde la capa de arriba).
 - **El selector de medicamentos solo ofrece drogas con stock y trae buscador.** El inventario cargado desde Excel trae cientos de drogas, así que el formulario se queda con las que tienen `unidadesDisponibles > 0` y añade un campo de búsqueda que reduce las opciones por nombre; si no queda ninguna con stock, muestra el aviso "No hay medicamentos disponibles" y el botón de aplicar queda deshabilitado, de modo que la regla de negocio del backend también se vea en la pantalla.
 - **La ficha clínica enlaza con la asignación.** El botón "Asignar tratamiento" de la ficha navega a `/tratamiento/asignar?mascotaId={id}` y el formulario lee ese query param para preseleccionar la mascota (solo si está activa, porque el selector únicamente ofrece mascotas hospitalizadas).
 - **Respuesta plana de tratamientos.** El historial ya no navega `droga`, `veterinario` ni `mascota`: el backend responde `drogaNombre`, `veterinarioNombre`, `veterinarioEspecialidad` y `mascotaNombre`, y la plantilla los muestra directo. Si un veterinario o una mascota fue eliminada (la FK queda nula), la fila se ve como "Veterinario retirado" o "Mascota retirada" en lugar de romperse.
 - **Dashboard con un único endpoint.** `GET /administrador/dashboard` devuelve un `ResumenDashboard` plano (nueve indicadores + tres conteos por medicamento) que el backend arma en el service a partir de consultas derivadas, en lugar de que el frontend haga una llamada por tarjeta. El paquete `com.vetopia.dto` aísla ese payload del modelo JPA, sin mover las entidades.
 - **Eliminar veterinario no borra historial.** El service desvincula sus tratamientos (FK a nulo) antes del `delete`, igual que con clientes y mascotas; así el dashboard y el historial conservan las atenciones.
-- **Tratadas se calcula desde los tratamientos.** La página pide `GET /tratamiento/byVeterinario/{id de la sesión}` y agrupa en el componente por mascota (última fecha y total de tratamientos), ordenando por la atención más reciente; el filtro por nombre es local. El id ya no está fijo: sale de `SesionService`, igual que el veterinario que se envía al asignar un tratamiento.
+- **Tratadas se calcula desde los tratamientos.** La página pide `GET /tratamiento/mios` (el veterinario sale del token) y agrupa en el componente por mascota (última fecha y total de tratamientos), ordenando por la atención más reciente; el filtro por nombre es local.
 
 ## Requisitos
 
@@ -223,12 +229,12 @@ Con el backend levantado (`mvn spring-boot:run`) y el frontend en `npm start`, e
 - **Listado de clientes** (`/clientes`): carga los **53 clientes** con `GET /dueno/all` y muestra el conteo de mascotas de cada uno.
 - **Ficha clínica** (`/mascotas/1`): encadena `GET /mascota/find/1` con `GET /tratamiento/byMascota/1` mediante `mergeMap` y muestra el historial de tratamientos.
 - **Alta de mascota**: guarda con `POST /mascota/add`; al volver al listado el contador pasa a **104** y aparece la mascota nueva.
-- **Login** (`/login`): con `ana@correo.com` / `dueño123` (o su cédula `1020304050`) llama a `POST /login`, guarda `{rol, id, nombre}` y navega a `/cliente/mascotas/1`; con `carlos.gutierrez@vetopia.com` / `vet123` (o `1002003001`) va a `/mascotas` con Carlos en la cabecera; con `laura.mendez@vetopia.com` / `vet123` (o `1002003002`) va a `/mascotas` con Laura; con credenciales incorrectas el backend responde **401** y el banner muestra "Cédula, correo o contraseña incorrectos…".
-- **Portal del cliente** (`/cliente/mascotas/1`): valida que Ana siga activa con `GET /dueno/activo/1` y luego carga sus mascotas con `GET /mascota/byDueno/1`; el detalle (`/cliente/mascotas/1/detalle/1`) encadena `GET /mascota/propia/1/1` con `GET /tratamiento/byMascota/1` mediante `mergeMap`, muestra el historial y formatea la fecha de ingreso como “12 de enero de 2026”.
-- **Asignar tratamiento** (`/tratamiento/asignar`): carga las mascotas activas y el inventario del Excel; al aplicar (`POST /tratamiento/add`) envía el `veterinario.id` de la sesión y aparece el modal "Tratamiento Aplicado" con el stock descontado. El buscador reduce el selector por nombre y una droga que llega a **0 unidades desaparece** de la lista. Desde la ficha clínica (`/mascotas/1`) el botón "Asignar tratamiento" abre el formulario con **Max preseleccionada**.
+- **Login** (`/login`): con `ana@correo.com` / `dueño123` (o su cédula `1020304050`) llama a `POST /login`, guarda el token en `localStorage` y navega a `/cliente/mascotas`; con `carlos.gutierrez@vetopia.com` / `vet123` (o `1002003001`) va a `/mascotas` con Carlos en la cabecera; con `laura.mendez@vetopia.com` / `vet123` (o `1002003002`) va a `/mascotas` con Laura; con credenciales incorrectas el backend responde **401** y el banner muestra "Cédula, correo o contraseña incorrectos…". Abrir `/` con sesión redirige al portal del rol.
+- **Portal del cliente** (`/cliente/mascotas`): carga el perfil con `GET /dueno/me` y sus mascotas con `GET /mascota/mias`; el detalle (`/cliente/mascotas/detalle/1`) encadena `GET /mascota/mias/1` con `GET /tratamiento/byMascota/1` mediante `mergeMap`, muestra el historial y formatea la fecha de ingreso como “12 de enero de 2026”. Cambiar el id por una mascota ajena devuelve 403 y muestra "Mascota no encontrada".
+- **Asignar tratamiento** (`/tratamiento/asignar`): carga las mascotas activas y el inventario del Excel; al aplicar (`POST /tratamiento/add`) envía solo `mascotaId` y `drogaId` (el veterinario sale del token) y aparece el modal "Tratamiento Aplicado" con el stock descontado. El buscador reduce el selector por nombre y una droga que llega a **0 unidades desaparece** de la lista. Desde la ficha clínica (`/mascotas/1`) el botón "Asignar tratamiento" abre el formulario con **Max preseleccionada**.
 - **Dashboard del administrador** (`/admin/dashboard`): con `admin@vetopia.com` / `admin123` el login navega aquí, la cabecera muestra el nombre del administrador y `GET /administrador/dashboard` pinta los nueve indicadores y el top de medicamentos; los valores del `DataLoader` cuadran con la base (5 tratamientos, 5 veterinarios activos, 103 mascotas, ventas y ganancias del inventario).
 - **Gestión de veterinarios** (`/admin/veterinarios`): lista con `GET /veterinario/all`, busca por cédula o nombre con `GET /veterinario/search/{termino}`, crea (`POST /veterinario/add`), edita (`PUT /veterinario/update`), activa/desactiva (`PUT /veterinario/toggle/{id}`) y elimina con confirmación (`DELETE /veterinario/delete/{id}`); al eliminar, sus tratamientos quedan sin veterinario.
-- **Mascotas tratadas** (`/veterinario/tratadas`): carga `GET /tratamiento/byVeterinario/{id de la sesión}` (Carlos usa 1 y Laura 2), muestra una fila por mascota con paciente, total de tratamientos y última atención, y filtra por nombre; el historial de la ficha y del detalle del cliente renderiza los campos planos sin errores de consola.
+- **Mascotas tratadas** (`/veterinario/tratadas`): carga `GET /tratamiento/mios` (el veterinario sale del token), muestra una fila por mascota con paciente, total de tratamientos y última atención, y filtra por nombre; el historial de la ficha y del detalle del cliente renderiza los campos planos sin errores de consola.
 
 ## Estilos
 

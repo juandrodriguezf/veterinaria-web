@@ -1,4 +1,6 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { ResultadoLogin } from '../models/resultado-login.model';
 
 /**
@@ -12,83 +14,153 @@ export interface SesionUsuario {
   nombre: string;
 }
 
+/** Página inicial de cada rol, usada al restaurar la sesión y en los guards. */
+export function rutaInicioPorRol(rol: string): string {
+  switch (rol) {
+    case 'ADMINISTRADOR':
+      return '/admin/dashboard';
+    case 'VETERINARIO':
+      return '/mascotas';
+    case 'CLIENTE':
+      return '/cliente/mascotas';
+    default:
+      return '/';
+  }
+}
+
 /**
  * SERVICIO - Sesión
- * Conserva la identidad del usuario autenticado en localStorage, de modo que
- * el portal sepa qué veterinario, administrador o cliente está usando la
- * aplicación. El backend sigue siendo la fuente de verdad de los datos; esta
- * sesión solo evita volver a pedir el nombre y el id después del login.
+ * En localStorage vive únicamente el token JWT; el rol, el id y el nombre
+ * se mantienen en memoria y se recuperan del backend (`/usuario/me`) al
+ * abrir la aplicación. Aunque alguien edite el almacenamiento, no puede
+ * cambiar el id ni el rol: el backend valida la firma del token y deriva
+ * la identidad de él.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class SesionService {
-  /** Clave única de la sesión dentro de localStorage. */
-  private readonly clave = 'vetopia.sesion';
+  private http = inject(HttpClient);
 
-  /** Sesión actual; se carga al iniciar el servicio para sobrevivir recargas. */
-  private readonly sesionActual = signal<SesionUsuario | null>(this.leerSesion());
+  /** Clave única del token dentro de localStorage. */
+  private readonly claveToken = 'vetopia.token';
 
-  /** Sesión completa, solo lectura, para los componentes que la necesiten. */
-  readonly sesion = this.sesionActual.asReadonly();
+  /** Clave anterior (rol/id/nombre) y su variante con guion. */
+  private readonly clavesAnteriores = ['vetopia.sesion', 'vetopia-sesion'];
+
+  /** URL de la identidad del usuario autenticado. */
+  private readonly urlPerfil = 'http://localhost:8080/usuario/me';
+
+  /** Token vigente; se carga al iniciar el servicio para sobrevivir recargas. */
+  private readonly tokenActual = signal<string | null>(this.leerToken());
+
+  /** Identidad en memoria: nunca se persiste en localStorage. */
+  private readonly usuarioActual = signal<SesionUsuario | null>(null);
+
+  /** Token JWT, solo lectura. */
+  readonly token = this.tokenActual.asReadonly();
+
+  /** Sesión completa en memoria, solo lectura. */
+  readonly sesion = this.usuarioActual.asReadonly();
+
+  /** Indica si el token existe y no ha expirado (sin validar la firma). */
+  readonly tokenVigente = computed(() => {
+    const token = this.tokenActual();
+    return token !== null && !this.tokenExpirado(token);
+  });
 
   /** Nombre del usuario autenticado (cadena vacía si no hay sesión). */
-  readonly nombre = computed(() => this.sesionActual()?.nombre ?? '');
+  readonly nombre = computed(() => this.usuarioActual()?.nombre ?? '');
 
   /** Identificador del usuario autenticado (null si no hay sesión). */
-  readonly id = computed(() => this.sesionActual()?.id ?? null);
+  readonly id = computed(() => this.usuarioActual()?.id ?? null);
 
   /** Rol del usuario autenticado (cadena vacía si no hay sesión). */
-  readonly rol = computed(() => this.sesionActual()?.rol ?? '');
+  readonly rol = computed(() => this.usuarioActual()?.rol ?? '');
 
   /** Indica si la sesión actual pertenece a un veterinario. */
-  readonly esVeterinario = computed(() => {
-    const sesion = this.sesionActual();
-    return sesion !== null && sesion.rol === 'VETERINARIO';
-  });
+  readonly esVeterinario = computed(() => this.rol() === 'VETERINARIO');
 
   /** Indica si la sesión actual pertenece a un administrador. */
-  readonly esAdministrador = computed(() => {
-    const sesion = this.sesionActual();
-    return sesion !== null && sesion.rol === 'ADMINISTRADOR';
-  });
+  readonly esAdministrador = computed(() => this.rol() === 'ADMINISTRADOR');
 
-  /** Guarda los datos mínimos que devolvió el login y actualiza la señal. */
+  /**
+   * Restaura la sesión al abrir la aplicación: si hay token vigente pide
+   * la identidad al backend; si el token expiró o es inválido lo elimina.
+   */
+  async restaurarSesion(): Promise<void> {
+    // Limpia cualquier clave de sesiones anteriores, incluidas variantes
+    // que guardaban rol e id fuera del token.
+    this.limpiarClavesAnteriores();
+    const token = this.tokenActual();
+    if (!token || this.tokenExpirado(token)) {
+      this.cerrar();
+      return;
+    }
+    try {
+      const perfil = await firstValueFrom(this.http.get<SesionUsuario>(this.urlPerfil));
+      this.usuarioActual.set({
+        rol: perfil.rol,
+        id: perfil.id,
+        nombre: perfil.nombre ?? '',
+      });
+    } catch {
+      this.cerrar();
+    }
+  }
+
+  /**
+   * Guarda el token y mantiene la identidad solo en memoria. El id y el rol
+   * salen de la respuesta del backend, no de un valor editable por el usuario.
+   */
   guardar(resultado: ResultadoLogin) {
-    const sesion: SesionUsuario = {
+    if (resultado.token) {
+      localStorage.setItem(this.claveToken, resultado.token);
+      this.tokenActual.set(resultado.token);
+    }
+    this.usuarioActual.set({
       rol: resultado.rol,
       id: resultado.id,
       nombre: resultado.nombre ?? '',
-    };
-    localStorage.setItem(this.clave, JSON.stringify(sesion));
-    this.sesionActual.set(sesion);
+    });
+    // Limpieza de sesiones anteriores, que guardaban id y rol en localStorage.
+    this.limpiarClavesAnteriores();
   }
 
-  /** Elimina la sesión del almacenamiento local y limpia la señal. */
+  /** Elimina el token del almacenamiento local y limpia la sesión en memoria. */
   cerrar() {
-    localStorage.removeItem(this.clave);
-    this.sesionActual.set(null);
+    localStorage.removeItem(this.claveToken);
+    this.limpiarClavesAnteriores();
+    this.tokenActual.set(null);
+    this.usuarioActual.set(null);
   }
 
-  /** Lee y valida la sesión guardada; si está corrupta o incompleta la borra. */
-  private leerSesion(): SesionUsuario | null {
-    const guardada = localStorage.getItem(this.clave);
-    if (!guardada) {
+  /** Lee el token guardado; si está vacío lo descarta. */
+  private leerToken(): string | null {
+    const token = localStorage.getItem(this.claveToken);
+    if (!token || !token.trim()) {
       return null;
     }
+    return token;
+  }
+
+  /** Comprueba la fecha de expiración del payload sin validar la firma. */
+  private tokenExpirado(token: string): boolean {
     try {
-      const datos = JSON.parse(guardada) as Partial<SesionUsuario>;
-      if (
-        typeof datos.rol === 'string' &&
-        Number.isInteger(datos.id) &&
-        typeof datos.nombre === 'string'
-      ) {
-        return { rol: datos.rol, id: datos.id as number, nombre: datos.nombre };
+      const payload = token.split('.')[1];
+      const normalizado = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const datos = JSON.parse(atob(normalizado)) as { exp?: number };
+      if (!datos.exp) {
+        return true;
       }
+      return datos.exp * 1000 <= Date.now();
     } catch {
-      // Sesión ilegible: se descarta y se vuelve a pedir el login.
+      return true;
     }
-    localStorage.removeItem(this.clave);
-    return null;
+  }
+
+  /** Borra las claves de sesión de versiones anteriores de la aplicación. */
+  private limpiarClavesAnteriores() {
+    this.clavesAnteriores.forEach((clave) => localStorage.removeItem(clave));
   }
 }

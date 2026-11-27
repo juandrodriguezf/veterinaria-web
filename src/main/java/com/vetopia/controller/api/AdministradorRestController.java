@@ -3,16 +3,19 @@ package com.vetopia.controller.api;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.vetopia.dto.AdministradorDto;
+import com.vetopia.dto.AdministradorRequest;
 import com.vetopia.dto.ResumenDashboard;
-import com.vetopia.entities.Administrador;
+
+import com.vetopia.mapper.AdministradorMapper;
 import com.vetopia.service.AdministradorService;
 import com.vetopia.service.DashboardService;
 
@@ -28,7 +31,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RestController
 @RequestMapping("/administrador")
-@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Administrador", description = "Administradores del hospital.")
 public class AdministradorRestController {
 
@@ -40,27 +42,33 @@ public class AdministradorRestController {
     @Autowired
     private DashboardService dashboardService;
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Calcula los indicadores del dashboard del administrador.")
     @GetMapping("/dashboard")
     public ResumenDashboard obtenerDashboard() {
         return dashboardService.generarResumen();
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Lista todos los administradores.")
     @GetMapping("/all")
-    public List<Administrador> listarAdministradores() {
-        return administradorService.listarAdministradores();
+    public List<AdministradorDto> listarAdministradores() {
+        return AdministradorMapper.INSTANCE.toDto(
+                administradorService.listarAdministradores());
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Obtiene un administrador por su identificador.")
     @GetMapping("/find/{id}")
-    public Administrador obtenerAdministrador(@PathVariable Integer id) {
-        return administradorService.obtenerAdministradorPorId(id);
+    public AdministradorDto obtenerAdministrador(@PathVariable Integer id) {
+        return AdministradorMapper.INSTANCE.toDto(
+                administradorService.obtenerAdministradorPorId(id));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
     @Operation(summary = "Registra un administrador nuevo (valida cédula y correo únicos en todo el sistema).")
     @PostMapping("/add")
-    public void agregarAdministrador(@RequestBody Administrador administrador) {
-        administradorService.guardar(administrador);
+    public void agregarAdministrador(@RequestBody AdministradorRequest solicitud) {
+        administradorService.guardar(solicitud);
     }
 }

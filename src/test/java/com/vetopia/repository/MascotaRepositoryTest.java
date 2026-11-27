@@ -45,7 +45,6 @@ class MascotaRepositoryTest {
                 .cedula("1001")
                 .nombre("Ana")
                 .correo("ana@correo.com")
-                .contrasena("dueño123")
                 .celular("3000000000")
                 .estado(ACTIVO)
                 .build();

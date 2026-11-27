@@ -2,6 +2,7 @@ package com.vetopia.service;
 
 import java.util.List;
 
+import com.vetopia.dto.DuenoRequest;
 import com.vetopia.entities.Dueno;
 
 /**
@@ -31,13 +32,7 @@ public interface DuenoService {
      * correo no pertenezcan a ninguna otra cuenta del sistema; al editar,
      * el registro actual no cuenta como duplicado.
      */
-    void guardar(Dueno dueno);
-
-    /**
-     * Busca un dueño por correo o cédula y contraseña (para login). Solo
-     * devuelve el registro si su estado es "Activo".
-     */
-    Dueno obtenerPorCorreoYContrasena(String identificador, String contrasena);
+    void guardar(DuenoRequest solicitud);
 
     /**
      * Obtiene el dueño con el id indicado y valida que esté "Activo"
