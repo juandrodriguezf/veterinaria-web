@@ -338,7 +338,8 @@
       ]
     },
     {
-      "name": "6. Mascotas (veterinario)",
+      "name": "6. Mascotas (solo veterinario)",
+      "description": "Peticiones de gestion de mascotas para ADMINISTRADOR y VETERINARIO. Todas usan tokenVeterinario; el cliente no debe ejecutarlas. El portal del cliente esta en la carpeta 9 y usa /mascota/mias.",
       "auth": {
         "type": "bearer",
         "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }]
@@ -346,7 +347,12 @@
       "item": [
         {
           "name": "Listar mascotas",
-          "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/mascota/all" }
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/all",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenVeterinario}}", "type": "string" }] }
+          }
         },
         {
           "name": "Buscar mascota por id",
@@ -646,6 +652,42 @@
             "method": "GET",
             "header": [],
             "url": "{{baseUrl}}/mascota/mias/5",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando mascotas de otro dueno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('El cliente no puede listar mascotas por dueno', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/byDueno/2",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
+          }
+        },
+        {
+          "name": "Cliente consultando mascota ajena por dueno (403)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('El cliente no puede consultar mascotas por dueno', () => pm.response.to.have.status(403));"]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/mascota/propia/5/1",
             "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{tokenCliente}}", "type": "string" }] }
           }
         },

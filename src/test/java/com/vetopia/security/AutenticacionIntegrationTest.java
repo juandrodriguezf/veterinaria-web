@@ -123,6 +123,21 @@ class AutenticacionIntegrationTest {
 
         mockMvc.perform(get("/mascota/mias/999").header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
+
+        // El cliente no puede usar los endpoints que reciben un dueño por URL.
+        mockMvc.perform(get("/mascota/byDueno/2").header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/mascota/propia/1/1").header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void veterinarioNoPuedeConsultarMascotaDeOtroDueno() throws Exception {
+        String token = token(VETERINARIO, VETERINARIO_CLAVE);
+
+        mockMvc.perform(get("/mascota/propia/1/2").header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
     }
 
     @Test

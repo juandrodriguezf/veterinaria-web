@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.vetopia.entities.Mascota;
@@ -161,7 +162,7 @@ public class MascotaServiceImpl implements MascotaService {
         // Aislamiento de datos: cada cliente solo consulta sus propias
         // mascotas, aunque conozca los id de las demás.
         if (!duenoId.equals(mascota.getDueno().getId())) {
-            throw new IllegalStateException("Esta mascota no está registrada a tu nombre.");
+            throw new AccessDeniedException("Esta mascota no está registrada a nombre del dueño indicado.");
         }
         return mascota;
     }

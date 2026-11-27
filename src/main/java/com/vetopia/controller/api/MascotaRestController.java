@@ -74,7 +74,7 @@ public class MascotaRestController {
         return MascotaMapper.INSTANCE.toDto(mascotaService.buscarPorNombre(nombre));
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO') or (hasAuthority('ROLE_CLIENTE') and @permisoService.esPerfilAutenticado(#duenoId))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Lista las mascotas de un dueño existente (opcionalmente filtradas por nombre).")
     @GetMapping("/byDueno/{duenoId}")
     public List<MascotaDto> listarPorDueno(@PathVariable Integer duenoId,
@@ -86,7 +86,7 @@ public class MascotaRestController {
                 mascotaService.buscarPorDuenoYNombre(duenoId, nombre));
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO') or (hasAuthority('ROLE_CLIENTE') and @permisoService.esPerfilAutenticado(#duenoId))")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR','ROLE_VETERINARIO')")
     @Operation(summary = "Obtiene una mascota validando que pertenezca al dueño indicado.")
     @GetMapping("/propia/{id}/{duenoId}")
     public MascotaDto obtenerPropia(@PathVariable Integer id, @PathVariable Integer duenoId) {

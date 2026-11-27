@@ -56,8 +56,8 @@ Salvo `POST /login`, la documentación Swagger y la consola H2, **todas las peti
 | `GET` | `/mascota/all` | Todas las mascotas |
 | `GET` | `/mascota/find/{id}` | Una mascota por id |
 | `GET` | `/mascota/search/{nombre}` | Mascotas por nombre (coincidencia parcial, sin distinguir mayúsculas) |
-| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (búsqueda opcional con `?nombre=`) |
-| `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño |
+| `GET` | `/mascota/byDueno/{duenoId}` | Mascotas de un dueño (solo ADMIN/VETERINARIO; búsqueda opcional con `?nombre=`) |
+| `GET` | `/mascota/propia/{id}/{duenoId}` | Una mascota validando que pertenezca al dueño (solo ADMIN/VETERINARIO) |
 | `GET` | `/mascota/mias` | Mascotas del cliente autenticado (el dueño sale del token) |
 | `GET` | `/mascota/mias/{id}` | Mascota propia del cliente autenticado (valida propiedad) |
 | `GET` | `/mascota/activas` | Solo las mascotas activas |
@@ -127,7 +127,7 @@ La API se puede explorar y probar desde **Swagger UI** (`/swagger-ui/index.html`
 | `/dueno/add`, `/update`, `/toggle`, `/delete` | ❌ | ✅ | ❌ |
 | `/dueno/me`, `/dueno/activo/{id}` | ❌ | ❌ | ✅ solo el propio |
 | `/mascota/all`, `/find`, `/search`, `/activas`, CRUD | ✅ | ✅ | ❌ |
-| `/mascota/byDueno/{id}`, `/propia/{id}/{duenoId}` | ✅ | ✅ | ✅ solo el propio |
+| `/mascota/byDueno/{id}`, `/propia/{id}/{duenoId}` | ✅ | ✅ | ❌ |
 | `/mascota/mias`, `/mascota/mias/{id}` | ❌ | ❌ | ✅ solo las propias |
 | `/droga/all`, `/find` | ✅ | ✅ | ❌ |
 | `/droga/add` | ✅ | ❌ | ❌ |
